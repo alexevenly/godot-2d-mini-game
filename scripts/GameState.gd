@@ -56,6 +56,12 @@ func advance_level():
 
 	return false
 
+func drop_progress_on_loss():
+	current_level = 1
+	victories = 0
+	current_level_size = 0.75
+	_refresh_level_type(true)
+
 func get_level_progress_text() -> String:
 	return "Level: " + str(current_level) + "/7"
 
