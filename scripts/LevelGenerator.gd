@@ -253,10 +253,10 @@ func clear_existing_objects():
 	if exit_spawner and is_instance_valid(exit_spawner):
 		exit_spawner.clear_exit()
 
-        for obstacle in obstacles:
-                if is_instance_valid(obstacle):
-                        obstacle.queue_free()
-        obstacles.clear()
+		for obstacle in obstacles:
+			if is_instance_valid(obstacle):
+				obstacle.queue_free()
+		obstacles.clear()
 	for coin in coins:
 		if is_instance_valid(coin):
 			coin.queue_free()
@@ -468,7 +468,7 @@ func _ensure_odd_cell(cell: Vector2i, cols: int, rows: int) -> Vector2i:
 	result.x = clamp(result.x, 1, cols - 2)
 	result.y = clamp(result.y, 1, rows - 2)
 	if result.x % 2 == 0:
-		result.x += (result.x + 1 < cols) ? 1 : -1
+		result.x += 1 if (result.x + 1 < cols) else -1
 	if result.y % 2 == 0:
-		result.y += (result.y + 1 < rows) ? 1 : -1
+		result.y += 1 if (result.y + 1 < rows) else -1
 	return result
