@@ -19,14 +19,14 @@ const Logger = preload("res://scripts/Logger.gd")
 var game_time = 30.0
 var total_coins = 0
 var collected_coins = 0
-var previous_coin_count = 0  # Preserve coin count between levels
+var previous_coin_count = 0 # Preserve coin count between levels
 var exit_active = false
 var exit = null
 var coins = []
-var prevent_game_over = false  # Flag to prevent game over calls
-var level_start_time = 0.0  # Time when level started
-var statistics_file = null  # File handle for statistics logging
-var level_initializing = false  # Guard to pause gameplay ticks during regeneration
+var prevent_game_over = false # Flag to prevent game over calls
+var level_start_time = 0.0 # Time when level started
+var statistics_file = null # File handle for statistics logging
+var level_initializing = false # Guard to pause gameplay ticks during regeneration
 
 func _ready():
 	# Connect signals
@@ -48,34 +48,34 @@ func _ready():
 func _init_statistics_logging():
 	# Create logs directory if it doesn't exist
 	var logs_dir = "logs"
-		if not DirAccess.dir_exists_absolute(logs_dir):
-				DirAccess.make_dir_recursive_absolute(logs_dir)
+	if not DirAccess.dir_exists_absolute(logs_dir):
+		DirAccess.make_dir_recursive_absolute(logs_dir)
 	
 	# Create statistics log file
 	var timestamp = Time.get_datetime_string_from_system()
 	var filename = "logs/statistics_" + timestamp.replace(":", "-") + ".log"
 	statistics_file = FileAccess.open(filename, FileAccess.WRITE)
 	
-		if statistics_file:
-				statistics_file.store_line("Level,Size,MapWidth,MapHeight,CoinsTotal,CoinsCollected,TimeGiven,TimeUsed,TimeLeft,Distance,CompletionRate")
-				statistics_file.flush()
-		else:
-				Logger.log_error("Could not create statistics file", [filename])
+	if statistics_file:
+		statistics_file.store_line("Level,Size,MapWidth,MapHeight,CoinsTotal,CoinsCollected,TimeGiven,TimeUsed,TimeLeft,Distance,CompletionRate")
+		statistics_file.flush()
+	else:
+		Logger.log_error("Could not create statistics file", [filename])
 
 func _log_level_statistics():
-		if statistics_file:
+	if statistics_file:
 		var completion_time = Time.get_ticks_msec() / 1000.0 - level_start_time
 		var time_left = game_time
 		var distance = 0.0
 		
-		# Calculate distance from player to exit
-		if player and exit:
-			distance = player.global_position.distance_to(exit.global_position)
+	# Calculate distance from player to exit
+	if player and exit:
+		distance = player.global_position.distance_to(exit.global_position)
 		
-		# Calculate completion rate (coins collected / total coins)
-		var completion_rate = 0.0
-		if coins.size() > 0:
-			completion_rate = float(collected_coins) / float(coins.size())
+	# Calculate completion rate (coins collected / total coins)
+	var completion_rate = 0.0
+	if coins.size() > 0:
+		completion_rate = float(collected_coins) / float(coins.size())
 		
 		# Create statistics line
 		var stats_line = str(game_state.current_level) + "," + \
@@ -90,16 +90,16 @@ func _log_level_statistics():
 						str(distance) + "," + \
 						str(completion_rate)
 		
-				statistics_file.store_line(stats_line)
-				statistics_file.flush()
+		statistics_file.store_line(stats_line)
+		statistics_file.flush()
 
-				# Register level result with TimerManager
-				if timer_manager:
-						timer_manager.register_level_result(time_left)
-				else:
-						Logger.log_error("TimerManager not found while logging statistics")
+		# Register level result with TimerManager
+		if timer_manager:
+				timer_manager.register_level_result(time_left)
 		else:
-				Logger.log_error("Statistics file was null while logging level statistics")
+				Logger.log_error("TimerManager not found while logging statistics")
+	else:
+			Logger.log_error("Statistics file was null while logging level statistics")
 
 func _process(delta):
 	# Handle Esc key to quit to menu
@@ -121,28 +121,28 @@ func _process(delta):
 		_game_over()
 
 func generate_new_level():
-		level_initializing = true
-		# Ensure level is not > 7
-		if game_state.current_level > 7:
-				game_state.reset_to_start()
-				Logger.log_game_mode("Level exceeded cap, reset to level", [game_state.current_level])
+	level_initializing = true
+	# Ensure level is not > 7
+	if game_state.current_level > 7:
+			game_state.reset_to_start()
+			Logger.log_game_mode("Level exceeded cap, reset to level", [game_state.current_level])
 
-		Logger.log_generation("Generating level %d (size: %.2f)" % [game_state.current_level, game_state.current_level_size])
+	Logger.log_generation("Generating level %d (size: %.2f)" % [game_state.current_level, game_state.current_level_size])
 	
 	# Record level start time
 	level_start_time = Time.get_ticks_msec() / 1000.0
 	
 	# Reset state first
-	collected_coins = previous_coin_count  # Use preserved coin count
+	collected_coins = previous_coin_count # Use preserved coin count
 	exit_active = false
 	exit = null
 	coins = []
-		game_state.set_state(GameState.GameStateType.PLAYING)
+	game_state.set_state(GameState.GameStateType.PLAYING)
 
-		# Ensure we're in playing state
-		if game_state.current_state != GameState.GameStateType.PLAYING:
-				Logger.log_game_mode("Game state corrected to PLAYING before generation")
-				game_state.set_state(GameState.GameStateType.PLAYING)
+	# Ensure we're in playing state
+	if game_state.current_state != GameState.GameStateType.PLAYING:
+			Logger.log_game_mode("Game state corrected to PLAYING before generation")
+			game_state.set_state(GameState.GameStateType.PLAYING)
 	
 	# Stop timer if game is not in playing state
 	_handle_timer_for_game_state()
@@ -200,7 +200,7 @@ func generate_new_level():
 						var timer_start_position = spawn_override if spawn_override != null else (player.global_position if player else LevelUtils.PLAYER_START)
 						game_time = timer_manager.calculate_level_time(game_state.current_level, coins, exit.position if exit else Vector2(), timer_start_position)
 				else:
-						game_time = 30.0  # Fallback
+						game_time = 30.0 # Fallback
 		
 		# Connect coin signals safely
 		for coin in coins:
@@ -260,14 +260,14 @@ func _update_exit_state():
 	exit_active = (collected_coins >= total_coins)
 	if exit and exit.get_node("ExitBody"):
 		if exit_active:
-			exit.get_node("ExitBody").color = Color(0.2, 0.8, 0.2, 1)  # Green when active
+			exit.get_node("ExitBody").color = Color(0.2, 0.8, 0.2, 1) # Green when active
 		else:
-			exit.get_node("ExitBody").color = Color(0.4, 0.4, 0.4, 1)  # Gray when inactive
+			exit.get_node("ExitBody").color = Color(0.4, 0.4, 0.4, 1) # Gray when inactive
 
 func _on_coin_collected(body, coin):
 	if body == player and game_state.is_game_active():
 		collected_coins += 1
-		previous_coin_count = collected_coins  # Preserve coin count
+		previous_coin_count = collected_coins # Preserve coin count
 		# Apply speed boost when collecting coin
 		if player and is_instance_valid(player):
 			player.apply_speed_boost()
@@ -382,7 +382,7 @@ func _on_restart_pressed():
 		Logger.log_game_mode("Restart requested on level %d (size %.2f)" % [game_state.current_level, game_state.current_level_size])
 	
 	# Reset game state
-	collected_coins = previous_coin_count  # Use preserved coin count
+	collected_coins = previous_coin_count # Use preserved coin count
 	exit_active = false
 	# Don't reset prevent_game_over flag here - it should stay true if all levels completed
 	
@@ -416,7 +416,7 @@ func _on_restart_pressed():
 						prevent_game_over = true
 						# Completely reset the timer
 						timer.stop()
-			timer.wait_time = 999999  # Set to a very long time
+			timer.wait_time = 999999 # Set to a very long time
 			# Disconnect timer timeout to prevent further calls
 						if timer.timeout.is_connected(_on_timer_timeout):
 								timer.timeout.disconnect(_on_timer_timeout)
@@ -493,12 +493,12 @@ func position_player_within_level():
 	
 	# Position player at the start position within the scaled level
 	# Use a percentage of the level size to position the player
-	var player_x = offset_x + (level_width * 0.1)  # 10% from left edge
-	var player_y = offset_y + (level_height * 0.5)  # 50% from top (middle vertically)
+	var player_x = offset_x + (level_width * 0.1) # 10% from left edge
+	var player_y = offset_y + (level_height * 0.5) # 50% from top (middle vertically)
 	
 	# Ensure player is within reasonable bounds
-	player_x = max(player_x, 50)  # Minimum 50px from left
-	player_y = max(player_y, 50)  # Minimum 50px from top
+	player_x = max(player_x, 50) # Minimum 50px from left
+	player_y = max(player_y, 50) # Minimum 50px from top
 	
 		player.position = Vector2(player_x, player_y)
 
