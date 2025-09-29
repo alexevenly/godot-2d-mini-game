@@ -27,6 +27,7 @@ var keys = []
 var total_keys = 0
 var collected_keys_count = 0
 var key_checkbox_nodes: Array = []
+var key_colors: Array = []
 var exit_active = false
 var exit = null
 var coins = []
@@ -249,7 +250,7 @@ func generate_new_level():
 
 	# Update displays
 	_update_coin_display()
-	_setup_key_ui(total_keys)
+	_setup_key_ui(keys)
 	_update_exit_state()
 
 	if spawn_override != null and player and is_instance_valid(player):
@@ -304,8 +305,8 @@ func _on_coin_collected(body, coin):
 		# Hide the coin
 		coin.queue_free()
 		coins.erase(coin)
-		_update_coin_display()
-		_update_exit_state()
+	_update_coin_display()
+	_update_exit_state()
 
 		# Check if this was the last coin - the exit collision will be handled by _on_exit_entered
 		# No need to manually check collision here since Area2D handles it via signals
@@ -588,6 +589,7 @@ func _get_state_label(state: int) -> String:
 
 func _clear_key_ui():
 	key_checkbox_nodes.clear()
+	key_colors.clear()
 	if key_status_container:
 		for child in key_status_container.get_children():
 			if is_instance_valid(child):
@@ -595,20 +597,30 @@ func _clear_key_ui():
 	if key_container:
 		key_container.visible = false
 
-func _setup_key_ui(key_count: int):
+func _setup_key_ui(key_nodes: Array):
 	_clear_key_ui()
-	total_keys = key_count
+	if key_nodes == null:
+		key_nodes = []
+	total_keys = key_nodes.size()
 	collected_keys_count = 0
-	if key_count <= 0 or key_status_container == null:
+	if total_keys <= 0 or key_status_container == null:
 		return
 	if key_container:
 		key_container.visible = true
-	for i in range(key_count):
+	for i in range(total_keys):
 		var checkbox := CheckBox.new()
 		checkbox.disabled = true
 		checkbox.focus_mode = Control.FOCUS_NONE
 		checkbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		checkbox.button_pressed = false
+
+		var key_node = key_nodes[i] if i < key_nodes.size() else null
+		var color := Color(0.9, 0.9, 0.2, 1.0)
+		if key_node and key_node.has_meta("group_color"):
+			color = key_node.get_meta("group_color")
+		key_colors.append(color)
+		checkbox.modulate = color
+
 		key_status_container.add_child(checkbox)
 		key_checkbox_nodes.append(checkbox)
 	_update_key_status_display()
@@ -618,7 +630,15 @@ func _update_key_status_display():
 		var checkbox = key_checkbox_nodes[i]
 		if not is_instance_valid(checkbox):
 			continue
-		checkbox.button_pressed = i < collected_keys_count
+		var is_collected = i < collected_keys_count
+		checkbox.button_pressed = is_collected
+		var base_color := key_colors[i] if i < key_colors.size() else Color(0.9, 0.9, 0.2, 1.0)
+		if is_collected:
+			var highlight := base_color.lightened(0.35)
+			highlight.a = base_color.a
+			checkbox.modulate = highlight
+		else:
+			checkbox.modulate = base_color
 	if key_container:
 		key_container.visible = key_checkbox_nodes.size() > 0
 
