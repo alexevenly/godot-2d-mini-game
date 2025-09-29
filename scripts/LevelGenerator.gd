@@ -81,7 +81,8 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 	var level_height: float = float(dims.height)
 	var offset = Vector2(dims.offset_x, dims.offset_y)
 
-	var door_count = randi_range(1, 3)
+	var max_doors = clamp(1 + int(ceil(level / 2.0)), 1, 3)
+	var door_count = randi_range(1, max_doors)
 	var door_width = 26.0
 	var segment_width = level_width / float(door_count + 1)
 
@@ -127,9 +128,9 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 		door.position = Vector2(center_x - door_width * 0.5, offset.y)
 		doors.append(door)
 		if main_scene:
-			main_scene.add_child(door)
+			main_scene.call_deferred("add_child", door)
 		else:
-			add_child(door)
+			call_deferred("add_child", door)
 
 		var keys_needed = int(keys_per_door[i])
 		if keys_needed <= 0:
@@ -177,7 +178,8 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 	if exit_node:
 		exit_pos = exit_node.position
 
-	_set_player_spawn_override(Vector2(offset.x + 80.0, offset.y + level_height * 0.5))
+	var spawn_y = clamp(player_start_position.y, offset.y + 80.0, offset.y + level_height - 80.0)
+	_set_player_spawn_override(Vector2(offset.x + 80.0, spawn_y))
 
 func _generate_maze_level(include_coins: bool, main_scene, player_start_position: Vector2) -> void:
 	var dims = LevelUtils.get_scaled_level_dimensions(current_level_size)
@@ -294,10 +296,10 @@ func _create_door_node(index: int, required_keys: int, initially_open: bool, hei
 
 	return door
 
-func _create_key_node(door: StaticBody2D, position: Vector2, required_keys: int) -> Area2D:
+func _create_key_node(door: StaticBody2D, spawn_position: Vector2, required_keys: int) -> Area2D:
 	var key := Area2D.new()
 	key.name = "Key%d" % key_items.size()
-	key.position = position
+	key.position = spawn_position
 	key.set_script(preload("res://scripts/Key.gd"))
 	key.door_path = door.get_path()
 	key.required_key_count = required_keys
@@ -319,10 +321,10 @@ func _create_key_node(door: StaticBody2D, position: Vector2, required_keys: int)
 
 	return key
 
-func _create_coin_node(position: Vector2) -> Area2D:
+func _create_coin_node(spawn_position: Vector2) -> Area2D:
 	var coin := Area2D.new()
 	coin.name = "Coin" + str(coins.size())
-	coin.position = position
+	coin.position = spawn_position
 
 	var body := ColorRect.new()
 	body.name = "CoinBody"
@@ -395,9 +397,9 @@ func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scen
 				wall.position = offset + Vector2(x * cell_size, y * cell_size)
 				maze_walls.append(wall)
 				if main_scene:
-					main_scene.add_child(wall)
+					main_scene.call_deferred("add_child", wall)
 				else:
-					add_child(wall)
+					call_deferred("add_child", wall)
 
 func _find_farthest_cell(grid: Array, start: Vector2i, cols: int, rows: int) -> Vector2i:
 	var visited: Array = []
@@ -444,7 +446,7 @@ func _generate_maze_coins(grid: Array, start: Vector2i, exit_cell: Vector2i, off
 				continue
 			candidates.append(cell)
 	candidates.shuffle()
-	var desired = clamp(int(candidates.size() / 8), 5, 20)
+	var desired = clamp(int(candidates.size() / 8.0), 5, 20)
 	for i in range(min(desired, candidates.size())):
 		var cell = candidates[i]
 		var world_pos = _maze_cell_to_world(cell, offset, cell_size)

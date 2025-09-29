@@ -127,6 +127,8 @@ func _advance_ghost_trail(delta: float, boost_value: float) -> void:
 func _spawn_ghost(strength_ratio: float) -> void:
 	if player_body == null:
 		return
+	if not is_inside_tree():
+		return
 
 	var ghost := Node2D.new()
 	ghost.position = global_position
@@ -145,7 +147,7 @@ func _spawn_ghost(strength_ratio: float) -> void:
 	ghost.modulate = Color(1.0, 1.0, 1.0, alpha)
 
 	var lifetime := ghost_base_lifetime + ghost_extra_lifetime * strength_ratio
-	var tween := get_tree().create_tween()
+	var tween := create_tween()
 	if tween == null:
 		ghost.queue_free()
 		return
