@@ -5,11 +5,16 @@ signal key_collected(door_id: int)
 @export var door_path: NodePath
 @export var door_id: int = 0
 @export var required_key_count: int = 1
+@export var key_color: Color = Color(0.9, 0.9, 0.2, 1.0)
 
 var door_reference: Node = null
 
+@onready var body: ColorRect = $KeyBody
+
 func _ready():
 	body_entered.connect(_on_body_entered)
+	if body:
+		body.color = key_color
 
 func _on_body_entered(body: Node) -> void:
 	if body == null:

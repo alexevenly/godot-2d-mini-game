@@ -2,6 +2,15 @@ extends Node2D
 
 const Logger = preload("res://scripts/Logger.gd")
 
+const DOOR_GROUP_COLORS := [
+	Color(0.95, 0.49, 0.38, 1.0), # Coral
+	Color(0.41, 0.68, 0.95, 1.0), # Sky blue
+	Color(0.55, 0.83, 0.42, 1.0), # Green
+	Color(0.95, 0.75, 0.35, 1.0), # Amber
+	Color(0.74, 0.56, 0.95, 1.0), # Violet
+	Color(0.37, 0.82, 0.74, 1.0)  # Teal
+]
+
 var obstacles: Array = []
 var coins: Array = []
 var exit_pos: Vector2 = Vector2.ZERO
@@ -123,7 +132,7 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 	coins.clear()
 	var door_positions: Array = []
 	var key_positions: Array = []
-
+	var door_group_colors: Array = []
 	for i in range(door_count):
 		var center_x = offset.x + segment_width * float(i + 1)
 		door_positions.append(center_x)
@@ -134,7 +143,9 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 			max_center_y = min_center_y
 		var door_center_y = randf_range(min_center_y, max_center_y)
 		var door_top = door_center_y - door_gap_height * 0.5
-		var door = _create_door_node(i, keys_per_door[i], not door_states[i], door_gap_height, door_width)
+		var group_color = _get_group_color(i)
+		door_group_colors.append(group_color)
+		var door = _create_door_node(i, keys_per_door[i], not door_states[i], door_gap_height, door_width, group_color)
 		door.position = Vector2(center_x - door_width * 0.5, door_top)
 		doors.append(door)
 		_add_generated_node(door, main_scene)
@@ -187,7 +198,8 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 			if not placed:
 				key_pos = Vector2((segment_left + segment_right) * 0.5, offset.y + level_height * 0.5)
 			key_positions.append(key_pos)
-			var key_node = _create_key_node(door, key_pos, keys_needed)
+			var key_color = door_group_colors[i] if i < door_group_colors.size() else _get_group_color(i)
+			var key_node = _create_key_node(door, key_pos, keys_needed, key_color)
 			key_items.append(key_node)
 			_add_generated_node(key_node, main_scene)
 
@@ -281,10 +293,10 @@ func clear_existing_objects():
 	if exit_spawner and is_instance_valid(exit_spawner):
 		exit_spawner.clear_exit()
 
-		for obstacle in obstacles:
-			if is_instance_valid(obstacle):
-				obstacle.queue_free()
-		obstacles.clear()
+	for obstacle in obstacles:
+		if is_instance_valid(obstacle):
+			obstacle.queue_free()
+	obstacles.clear()
 	for coin in coins:
 		if is_instance_valid(coin):
 			coin.queue_free()
@@ -305,19 +317,21 @@ func _add_generated_node(node: Node, main_scene) -> void:
 	else:
 		call_deferred("add_child", node)
 
-func _create_door_node(index: int, required_keys: int, initially_open: bool, height: float, width: float) -> StaticBody2D:
+func _create_door_node(index: int, required_keys: int, initially_open: bool, height: float, width: float, group_color: Color) -> StaticBody2D:
 	var door := StaticBody2D.new()
 	door.name = "Door%d" % index
 	door.set_script(preload("res://scripts/Door.gd"))
 	door.required_keys = required_keys
 	door.initially_open = initially_open
 	door.door_id = index
+	door.door_color = group_color
+	door.set_meta("group_color", group_color)
 
 	var body := ColorRect.new()
 	body.name = "DoorBody"
 	body.offset_right = width
 	body.offset_bottom = height
-	body.color = Color(0.35, 0.35, 0.75, 1)
+	body.color = group_color
 	door.add_child(body)
 
 	var collision := CollisionShape2D.new()
@@ -351,7 +365,7 @@ func _create_barrier_segment(width: float, height: float) -> StaticBody2D:
 
 	return barrier
 
-func _create_key_node(door: StaticBody2D, spawn_position: Vector2, required_keys: int) -> Area2D:
+func _create_key_node(door: StaticBody2D, spawn_position: Vector2, required_keys: int, key_color: Color) -> Area2D:
 	var key := Area2D.new()
 	key.name = "Key%d" % key_items.size()
 	key.position = spawn_position
@@ -364,12 +378,14 @@ func _create_key_node(door: StaticBody2D, spawn_position: Vector2, required_keys
 	key.door_reference = door
 	if door:
 		key.door_id = door.door_id
+	key.key_color = key_color
+	key.set_meta("group_color", key_color)
 
 	var body := ColorRect.new()
 	body.name = "KeyBody"
 	body.offset_right = 24
 	body.offset_bottom = 24
-	body.color = Color(0.9, 0.9, 0.2, 1)
+	body.color = key_color
 	key.add_child(body)
 
 	var collision := CollisionShape2D.new()
@@ -381,6 +397,11 @@ func _create_key_node(door: StaticBody2D, spawn_position: Vector2, required_keys
 	key.add_child(collision)
 
 	return key
+
+func _get_group_color(index: int) -> Color:
+	if DOOR_GROUP_COLORS.is_empty():
+		return Color(0.9, 0.9, 0.2, 1.0)
+	return DOOR_GROUP_COLORS[index % DOOR_GROUP_COLORS.size()]
 
 func _create_coin_node(spawn_position: Vector2) -> Area2D:
 	var coin := Area2D.new()
