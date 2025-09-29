@@ -44,11 +44,11 @@ func _ready():
 
 func _on_start_pressed():
 	# Set difficulty in TimerManager
-	var timer_manager = get_node("/root/Main/TimerManager")
+	var timer_manager = get_node_or_null("/root/Main/TimerManager")
 	if timer_manager:
 		timer_manager.set_difficulty(difficulty_names[current_difficulty_index])
 	# Set level type in GameState
-	var game_state = get_node("/root/Main/GameState")
+	var game_state = get_node_or_null("/root/Main/GameState")
 	var metadata = level_type_option.get_item_metadata(level_type_option.selected)
 	if metadata == null:
 		metadata = level_type_options[current_level_type_index]["type"]

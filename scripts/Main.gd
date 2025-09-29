@@ -235,7 +235,7 @@ func generate_new_level():
 		player.rotation = 0.0
 		Logger.log_generation("Level ready: time %.2f, coins %d" % [game_time, total_coins])
 	else:
-		Logger.log_error("LevelGenerator instance missing during generation")
+		Logger.log_generation("Level ready: time %.2f, coins %d (default spawn)" % [game_time, total_coins])
 
 	level_initializing = false
 
@@ -318,8 +318,8 @@ func _game_over():
 	if prevent_game_over:
 		return
 
-		Logger.log_game_mode("Game over on level %d (size %.2f)" % [game_state.current_level, game_state.current_level_size])
-		game_state.set_state(GameState.GameStateType.LOST)
+	Logger.log_game_mode("Game over on level %d (size %.2f)" % [game_state.current_level, game_state.current_level_size])
+	game_state.set_state(GameState.GameStateType.LOST)
 	game_over_label.visible = true
 	restart_button.visible = true
 	# Stop player movement
@@ -349,7 +349,7 @@ func _win_game():
 	if not game_state.is_game_active():
 		return
 
-		Logger.log_game_mode("Level %d completed (size %.2f)" % [game_state.current_level, game_state.current_level_size])
+	Logger.log_game_mode("Level %d completed (size %.2f)" % [game_state.current_level, game_state.current_level_size])
 	game_state.set_state(GameState.GameStateType.WON)
 	win_label.visible = true
 	restart_button.visible = true

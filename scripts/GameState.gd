@@ -30,7 +30,7 @@ func _ready():
 	if Engine.has_meta("level_type_selection"):
 		var stored_type = int(Engine.get_meta("level_type_selection"))
 		if stored_type >= 0 and stored_type <= LevelType.RANDOM:
-			selected_level_type = stored_type
+			selected_level_type = LevelType(stored_type)
 	_refresh_level_type(true)
 
 func reset_to_start():
