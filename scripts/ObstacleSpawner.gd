@@ -1,41 +1,42 @@
 extends Node2D
 
+const Logger = preload("res://scripts/Logger.gd")
+
 var obstacles = []
 var current_level_size = 1.0
 
 func generate_obstacles(level_size: float, use_full_map_coverage: bool = true, main_scene = null, level: int = 1) -> Array:
-	print("ObstacleSpawner: Generating obstacles for level size: ", level_size, " level: ", level)
-	print("ObstacleSpawner: Self valid: ", is_instance_valid(self))
-	print("ObstacleSpawner: Parent valid: ", is_instance_valid(get_parent()))
-	current_level_size = level_size
-	clear_obstacles()
-	
-	# Generate obstacles based on level size and level number (progressive scaling)
-	var base_obstacle_count = randi_range(40, 60)  # 
-	var level_multiplier = 1.0 + (level - 1) * 0.2  # +20% per level
-	var obstacle_count = int(base_obstacle_count * current_level_size * level_multiplier)
-	print("ObstacleSpawner: Target count: ", obstacle_count, " (level multiplier: ", level_multiplier, ")")
-	print("ObstacleSpawner: Full map coverage: ", use_full_map_coverage)
-	
-	for i in range(obstacle_count):
-		var obstacle = create_obstacle(use_full_map_coverage)
-		if is_valid_obstacle_position(obstacle):
-			obstacles.append(obstacle)
-			# Add to the main scene tree (Main node)
-			print("ObstacleSpawner: Before add_child - Self valid: ", is_instance_valid(self))
-			print("ObstacleSpawner: Before add_child - Parent valid: ", is_instance_valid(get_parent()))
-			if main_scene:
-				main_scene.add_child(obstacle)
-			else:
-				get_tree().current_scene.add_child(obstacle)
-			print("ObstacleSpawner: After add_child - Self valid: ", is_instance_valid(self))
-			print("ObstacleSpawner: After add_child - Parent valid: ", is_instance_valid(get_parent()))
-			print("ObstacleSpawner: Added obstacle ", i, " at ", obstacle.position)
-		else:
-			print("ObstacleSpawner: Rejected obstacle ", i, " at ", obstacle.position)
-	
-	print("ObstacleSpawner: Final count: ", obstacles.size())
-	return obstacles
+        Logger.log_generation("ObstacleSpawner: generating obstacles (size %.2f, level %d)" % [level_size, level])
+        current_level_size = level_size
+        clear_obstacles()
+
+        # Generate obstacles based on level size and level number (progressive scaling)
+        var base_obstacle_count = randi_range(40, 60)  #
+        var level_multiplier = 1.0 + (level - 1) * 0.2  # +20% per level
+        var obstacle_count = int(base_obstacle_count * current_level_size * level_multiplier)
+        Logger.log_generation("ObstacleSpawner target count %d (mult %.2f)" % [obstacle_count, level_multiplier])
+        if not use_full_map_coverage:
+                Logger.log_generation("ObstacleSpawner using centered coverage grid")
+
+        var added_count := 0
+        var rejected_count := 0
+
+        for i in range(obstacle_count):
+                var obstacle = create_obstacle(use_full_map_coverage)
+                if is_valid_obstacle_position(obstacle):
+                        obstacles.append(obstacle)
+                        # Add to the main scene tree (Main node)
+                        if main_scene:
+                                main_scene.add_child(obstacle)
+                        else:
+                                get_tree().current_scene.add_child(obstacle)
+                        added_count += 1
+                else:
+                        obstacle.queue_free()
+                        rejected_count += 1
+
+        Logger.log_generation("ObstacleSpawner placed %d obstacles (rejected %d)" % [added_count, rejected_count])
+        return obstacles
 
 func create_obstacle(use_full_map_coverage: bool = true):
 	var obstacle = StaticBody2D.new()

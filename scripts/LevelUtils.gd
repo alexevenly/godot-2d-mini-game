@@ -1,5 +1,7 @@
 class_name LevelUtils
 
+const Logger = preload("res://scripts/Logger.gd")
+
 # Common constants for all level generation scripts
 const BASE_LEVEL_WIDTH = 1024
 const BASE_LEVEL_HEIGHT = 600
@@ -57,12 +59,12 @@ static func get_grid_position(level_size: float, grid_cols: int, grid_rows: int,
 
 static func is_position_within_bounds(pos: Vector2, level_width: int, level_height: int, margin: int) -> bool:
 	return (pos.x >= margin and pos.x <= level_width - margin and 
-			pos.y >= margin and pos.y <= level_height - margin)
+                        pos.y >= margin and pos.y <= level_height - margin)
 
 static func get_obstacle_rect(obstacle: Node2D) -> Rect2:
-	var obstacle_body = obstacle.get_node("ObstacleBody")
-	if obstacle_body:
-		return Rect2(
+        var obstacle_body = obstacle.get_node("ObstacleBody")
+        if obstacle_body:
+                return Rect2(
 			obstacle.position.x - obstacle_body.offset_right/2,
 			obstacle.position.y - obstacle_body.offset_bottom/2,
 			obstacle_body.offset_right,
@@ -79,11 +81,11 @@ static func update_level_boundaries(level_size: float, play_area: ColorRect, bou
 	var offset_y = dimensions.offset_y
 	
 	# Update play area
-	if play_area:
-		print("LevelUtils: Updating play area - width: ", level_width, " height: ", level_height, " offset: ", offset_x, ", ", offset_y)
-		play_area.position = Vector2(offset_x, offset_y)
-		play_area.size = Vector2(level_width, level_height)
-		print("LevelUtils: Play area updated - position: ", play_area.position, " size: ", play_area.size)
+        if play_area:
+                Logger.log_generation("LevelUtils updating play area (width %.2f, height %.2f, offset %.2f, %.2f)" % [level_width, level_height, offset_x, offset_y])
+                play_area.position = Vector2(offset_x, offset_y)
+                play_area.size = Vector2(level_width, level_height)
+                Logger.log_generation("LevelUtils play area positioned at %s size %s" % [str(play_area.position), str(play_area.size)])
 	
 	# Update boundaries
 	if boundaries:
