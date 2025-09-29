@@ -118,7 +118,7 @@ func _advance_ghost_trail(delta: float, boost_value: float) -> void:
 		return
 
 	ghost_spawn_timer += delta
-	var interval := lerp(ghost_spawn_interval, ghost_spawn_interval_min, ratio)
+	var interval: float = float(lerp(ghost_spawn_interval, ghost_spawn_interval_min, ratio))
 	interval = max(interval, 0.01)
 	if ghost_spawn_timer >= interval:
 		ghost_spawn_timer = 0.0
@@ -141,7 +141,7 @@ func _spawn_ghost(strength_ratio: float) -> void:
 		body_clone.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var base_alpha := 0.25
-	var alpha := lerp(base_alpha, 0.8, strength_ratio)
+	var alpha: float = float(lerp(base_alpha, 0.8, strength_ratio))
 	ghost.modulate = Color(1.0, 1.0, 1.0, alpha)
 
 	var lifetime := ghost_base_lifetime + ghost_extra_lifetime * strength_ratio
