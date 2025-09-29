@@ -10,9 +10,9 @@ var coins: Array = []
 var current_level_size: float = 1.0
 
 func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, player_start: Vector2, use_full_map_coverage: bool = true, main_scene: Node = null, level: int = 1, preserved_coin_count: int = 0) -> Array:
-        Logger.log_generation("CoinSpawner: generating coins (size %.2f, level %d)" % [level_size, level])
-        current_level_size = level_size
-        clear_coins()
+		Logger.log_generation("CoinSpawner: generating coins (size %.2f, level %d)" % [level_size, level])
+		current_level_size = level_size
+		clear_coins()
 
 	# 1) Счёт монет с мягкой прогрессией
 	var base_coin_count: int = randi_range(10, 25)
@@ -27,9 +27,9 @@ func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, play
 	# Ограничим разумными рамками
 	coin_count = clamp(coin_count, 6, 40)
 
-        Logger.log_generation("CoinSpawner target count %d (mult %.2f, preserved %d)" % [coin_count, level_multiplier, preserved_coin_count])
-        if not use_full_map_coverage:
-                Logger.log_generation("CoinSpawner using centered coverage grid")
+		Logger.log_generation("CoinSpawner target count %d (mult %.2f, preserved %d)" % [coin_count, level_multiplier, preserved_coin_count])
+		if not use_full_map_coverage:
+				Logger.log_generation("CoinSpawner using centered coverage grid")
 
 	var navigation_ctx := _build_navigation_context(obstacles)
 
@@ -85,8 +85,8 @@ func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, play
 		if attempts_total >= max_attempts_total:
 			break
 
-        Logger.log_generation("CoinSpawner placed %d coins" % coins.size())
-        return coins
+		Logger.log_generation("CoinSpawner placed %d coins" % coins.size())
+		return coins
 
 func create_coin(grid_cols: int, grid_rows: int) -> Area2D:
 	var coin := Area2D.new()

@@ -48,22 +48,22 @@ func _ready():
 func _init_statistics_logging():
 	# Create logs directory if it doesn't exist
 	var logs_dir = "logs"
-        if not DirAccess.dir_exists_absolute(logs_dir):
-                DirAccess.make_dir_recursive_absolute(logs_dir)
+		if not DirAccess.dir_exists_absolute(logs_dir):
+				DirAccess.make_dir_recursive_absolute(logs_dir)
 	
 	# Create statistics log file
 	var timestamp = Time.get_datetime_string_from_system()
 	var filename = "logs/statistics_" + timestamp.replace(":", "-") + ".log"
 	statistics_file = FileAccess.open(filename, FileAccess.WRITE)
 	
-        if statistics_file:
-                statistics_file.store_line("Level,Size,MapWidth,MapHeight,CoinsTotal,CoinsCollected,TimeGiven,TimeUsed,TimeLeft,Distance,CompletionRate")
-                statistics_file.flush()
-        else:
-                Logger.log_error("Could not create statistics file", [filename])
+		if statistics_file:
+				statistics_file.store_line("Level,Size,MapWidth,MapHeight,CoinsTotal,CoinsCollected,TimeGiven,TimeUsed,TimeLeft,Distance,CompletionRate")
+				statistics_file.flush()
+		else:
+				Logger.log_error("Could not create statistics file", [filename])
 
 func _log_level_statistics():
-        if statistics_file:
+		if statistics_file:
 		var completion_time = Time.get_ticks_msec() / 1000.0 - level_start_time
 		var time_left = game_time
 		var distance = 0.0
@@ -90,16 +90,16 @@ func _log_level_statistics():
 						str(distance) + "," + \
 						str(completion_rate)
 		
-                statistics_file.store_line(stats_line)
-                statistics_file.flush()
+				statistics_file.store_line(stats_line)
+				statistics_file.flush()
 
-                # Register level result with TimerManager
-                if timer_manager:
-                        timer_manager.register_level_result(time_left)
-                else:
-                        Logger.log_error("TimerManager not found while logging statistics")
-        else:
-                Logger.log_error("Statistics file was null while logging level statistics")
+				# Register level result with TimerManager
+				if timer_manager:
+						timer_manager.register_level_result(time_left)
+				else:
+						Logger.log_error("TimerManager not found while logging statistics")
+		else:
+				Logger.log_error("Statistics file was null while logging level statistics")
 
 func _process(delta):
 	# Handle Esc key to quit to menu
@@ -121,13 +121,13 @@ func _process(delta):
 		_game_over()
 
 func generate_new_level():
-        level_initializing = true
-        # Ensure level is not > 7
-        if game_state.current_level > 7:
-                game_state.reset_to_start()
-                Logger.log_game_mode("Level exceeded cap, reset to level", [game_state.current_level])
+		level_initializing = true
+		# Ensure level is not > 7
+		if game_state.current_level > 7:
+				game_state.reset_to_start()
+				Logger.log_game_mode("Level exceeded cap, reset to level", [game_state.current_level])
 
-        Logger.log_generation("Generating level %d (size: %.2f)" % [game_state.current_level, game_state.current_level_size])
+		Logger.log_generation("Generating level %d (size: %.2f)" % [game_state.current_level, game_state.current_level_size])
 	
 	# Record level start time
 	level_start_time = Time.get_ticks_msec() / 1000.0
@@ -137,12 +137,12 @@ func generate_new_level():
 	exit_active = false
 	exit = null
 	coins = []
-        game_state.set_state(GameState.GameStateType.PLAYING)
+		game_state.set_state(GameState.GameStateType.PLAYING)
 
-        # Ensure we're in playing state
-        if game_state.current_state != GameState.GameStateType.PLAYING:
-                Logger.log_game_mode("Game state corrected to PLAYING before generation")
-                game_state.set_state(GameState.GameStateType.PLAYING)
+		# Ensure we're in playing state
+		if game_state.current_state != GameState.GameStateType.PLAYING:
+				Logger.log_game_mode("Game state corrected to PLAYING before generation")
+				game_state.set_state(GameState.GameStateType.PLAYING)
 	
 	# Stop timer if game is not in playing state
 	_handle_timer_for_game_state()
@@ -156,18 +156,18 @@ func generate_new_level():
 	# Position player within the scaled level
 	position_player_within_level()
 
-        var level_type = game_state.get_current_level_type()
-        var level_type_names = ["Obstacles+Coins", "Keys", "Maze", "Maze+Coins", "Random"]
-        var level_type_label = level_type_names[level_type] if level_type < level_type_names.size() else str(level_type)
-        Logger.log_game_mode("Preparing level type: %s" % level_type_label)
+		var level_type = game_state.get_current_level_type()
+		var level_type_names = ["Obstacles+Coins", "Keys", "Maze", "Maze+Coins", "Random"]
+		var level_type_label = level_type_names[level_type] if level_type < level_type_names.size() else str(level_type)
+		Logger.log_game_mode("Preparing level type: %s" % level_type_label)
 
-        # Generate new level and get optimal time
-        if level_generator and is_instance_valid(level_generator):
-                var generate_obstacles = game_state.generate_obstacles
-                var generate_coins = game_state.generate_coins
-                if level_type == GameState.LevelType.KEYS:
-                        generate_obstacles = false
-                        generate_coins = false
+		# Generate new level and get optimal time
+		if level_generator and is_instance_valid(level_generator):
+				var generate_obstacles = game_state.generate_obstacles
+				var generate_coins = game_state.generate_coins
+				if level_type == GameState.LevelType.KEYS:
+						generate_obstacles = false
+						generate_coins = false
 		elif level_type == GameState.LevelType.MAZE or level_type == GameState.LevelType.MAZE_COINS:
 			generate_obstacles = false
 			generate_coins = false
@@ -179,28 +179,28 @@ func generate_new_level():
 			game_state.use_full_map_coverage,
 			self,
 			game_state.current_level,
-                        previous_coin_count,
-                        player.global_position if player else LevelUtils.PLAYER_START,
-                        level_type
-                )
+						previous_coin_count,
+						player.global_position if player else LevelUtils.PLAYER_START,
+						level_type
+				)
 
-                # Get references to generated objects from LevelGenerator
-                exit = level_generator.get_generated_exit()
-                coins = level_generator.get_generated_coins()
-                var spawn_override = level_generator.get_player_spawn_override()
+				# Get references to generated objects from LevelGenerator
+				exit = level_generator.get_generated_exit()
+				coins = level_generator.get_generated_coins()
+				var spawn_override = level_generator.get_player_spawn_override()
 
-                if exit:
-                        Logger.log_generation("Exit generated at %s" % [exit.position])
-                else:
-                        Logger.log_generation("No exit generated")
-                Logger.log_generation("Coins generated: %d" % coins.size())
+				if exit:
+						Logger.log_generation("Exit generated at %s" % [exit.position])
+				else:
+						Logger.log_generation("No exit generated")
+				Logger.log_generation("Coins generated: %d" % coins.size())
 
-                # Calculate time using timer manager
-                if timer_manager:
-                        var timer_start_position = spawn_override if spawn_override != null else (player.global_position if player else LevelUtils.PLAYER_START)
-                        game_time = timer_manager.calculate_level_time(game_state.current_level, coins, exit.position if exit else Vector2(), timer_start_position)
-                else:
-                        game_time = 30.0  # Fallback
+				# Calculate time using timer manager
+				if timer_manager:
+						var timer_start_position = spawn_override if spawn_override != null else (player.global_position if player else LevelUtils.PLAYER_START)
+						game_time = timer_manager.calculate_level_time(game_state.current_level, coins, exit.position if exit else Vector2(), timer_start_position)
+				else:
+						game_time = 30.0  # Fallback
 		
 		# Connect coin signals safely
 		for coin in coins:
@@ -226,15 +226,15 @@ func generate_new_level():
 		_update_coin_display()
 		_update_exit_state()
 
-                if spawn_override != null and player and is_instance_valid(player):
-                        player.global_position = spawn_override
-                        player.position = spawn_override
-                        player.rotation = 0.0
-                Logger.log_generation("Level ready: time %.2f, coins %d" % [game_time, total_coins])
-        else:
-                Logger.log_error("LevelGenerator instance missing during generation")
+				if spawn_override != null and player and is_instance_valid(player):
+						player.global_position = spawn_override
+						player.position = spawn_override
+						player.rotation = 0.0
+				Logger.log_generation("Level ready: time %.2f, coins %d" % [game_time, total_coins])
+		else:
+				Logger.log_error("LevelGenerator instance missing during generation")
 
-        level_initializing = false
+		level_initializing = false
 
 func _update_timer_display():
 	timer_label.text = "Time: " + "%.2f" % game_time
@@ -246,15 +246,15 @@ func _update_level_progress():
 	level_progress_label.text = game_state.get_level_progress_text()
 
 func _handle_timer_for_game_state():
-        # Stop timer if game is not in playing state
-        if game_state.current_state != GameState.GameStateType.PLAYING:
-                # Disconnect timer first
-                if timer.timeout.is_connected(_on_timer_timeout):
-                        timer.timeout.disconnect(_on_timer_timeout)
-                # Force timer to stop completely
-                timer.wait_time = 999999
-                timer.stop()
-                Logger.log_game_mode("Timer halted because state is %s" % [_get_state_label(game_state.current_state)])
+		# Stop timer if game is not in playing state
+		if game_state.current_state != GameState.GameStateType.PLAYING:
+				# Disconnect timer first
+				if timer.timeout.is_connected(_on_timer_timeout):
+						timer.timeout.disconnect(_on_timer_timeout)
+				# Force timer to stop completely
+				timer.wait_time = 999999
+				timer.stop()
+				Logger.log_game_mode("Timer halted because state is %s" % [_get_state_label(game_state.current_state)])
 
 func _update_exit_state():
 	exit_active = (collected_coins >= total_coins)
@@ -282,23 +282,23 @@ func _on_coin_collected(body, coin):
 
 func _on_timer_timeout():
 	# Prevent timer timeout if game is not in playing state
-        if game_state.current_state != GameState.GameStateType.PLAYING:
-                Logger.log_game_mode("Timer timeout ignored; state is %s" % [_get_state_label(game_state.current_state)])
-                # Force stop timer completely
-                timer.stop()
-                timer.wait_time = 999999
-                # Disconnect timer to prevent further calls
-                if timer.timeout.is_connected(_on_timer_timeout):
-                        timer.timeout.disconnect(_on_timer_timeout)
-                return
+		if game_state.current_state != GameState.GameStateType.PLAYING:
+				Logger.log_game_mode("Timer timeout ignored; state is %s" % [_get_state_label(game_state.current_state)])
+				# Force stop timer completely
+				timer.stop()
+				timer.wait_time = 999999
+				# Disconnect timer to prevent further calls
+				if timer.timeout.is_connected(_on_timer_timeout):
+						timer.timeout.disconnect(_on_timer_timeout)
+				return
 
-        # Additional check to prevent multiple game over calls
-        if not game_state.is_game_active():
-                Logger.log_game_mode("Timer timeout ignored; game inactive")
-                # Force stop timer completely
-                timer.stop()
-                timer.wait_time = 999999
-                return
+		# Additional check to prevent multiple game over calls
+		if not game_state.is_game_active():
+				Logger.log_game_mode("Timer timeout ignored; game inactive")
+				# Force stop timer completely
+				timer.stop()
+				timer.wait_time = 999999
+				return
 	
 	_game_over()
 
@@ -315,8 +315,8 @@ func _game_over():
 	if prevent_game_over:
 		return
 		
-        Logger.log_game_mode("Game over on level %d (size %.2f)" % [game_state.current_level, game_state.current_level_size])
-        game_state.set_state(GameState.GameStateType.LOST)
+		Logger.log_game_mode("Game over on level %d (size %.2f)" % [game_state.current_level, game_state.current_level_size])
+		game_state.set_state(GameState.GameStateType.LOST)
 	game_over_label.visible = true
 	restart_button.visible = true
 	# Stop player movement
@@ -335,8 +335,8 @@ func _game_over():
 	# Don't reset level on loss - only reset on complete restart
 	# game_state.reset_to_start()  # REMOVED - this was causing level to reset to 1
 	
-        # Update button text
-        restart_button.text = "Restart"
+		# Update button text
+		restart_button.text = "Restart"
 	
 	# Update level progress display
 	_update_level_progress()
@@ -346,7 +346,7 @@ func _win_game():
 	if not game_state.is_game_active():
 		return
 		
-        Logger.log_game_mode("Level %d completed (size %.2f)" % [game_state.current_level, game_state.current_level_size])
+		Logger.log_game_mode("Level %d completed (size %.2f)" % [game_state.current_level, game_state.current_level_size])
 	game_state.set_state(GameState.GameStateType.WON)
 	win_label.visible = true
 	restart_button.visible = true
@@ -366,20 +366,20 @@ func _win_game():
 	if game_state.current_level >= 7:
 		# Level 7 completed - show victory message
 		restart_button.text = "Start all over again?"
-                Logger.log_game_mode("All 7 levels completed; awaiting restart")
-                # Set flag to prevent game over calls
-                prevent_game_over = true
-                # Don't advance level here - just show victory
-                return
-        else:
-                # Normal level completion
-                restart_button.text = "Continue"
-                Logger.log_game_mode("Continue to next level when ready")
+				Logger.log_game_mode("All 7 levels completed; awaiting restart")
+				# Set flag to prevent game over calls
+				prevent_game_over = true
+				# Don't advance level here - just show victory
+				return
+		else:
+				# Normal level completion
+				restart_button.text = "Continue"
+				Logger.log_game_mode("Continue to next level when ready")
 	
 	# Don't update level progress here - it will be updated after level advancement
 
 func _on_restart_pressed():
-        Logger.log_game_mode("Restart requested on level %d (size %.2f)" % [game_state.current_level, game_state.current_level_size])
+		Logger.log_game_mode("Restart requested on level %d (size %.2f)" % [game_state.current_level, game_state.current_level_size])
 	
 	# Reset game state
 	collected_coins = previous_coin_count  # Use preserved coin count
@@ -394,61 +394,61 @@ func _on_restart_pressed():
 	_handle_timer_for_game_state()
 	
 	# Check if we're starting a completely new game after completing all levels
-        if prevent_game_over and game_state.current_state == GameState.GameStateType.WON:
-                Logger.log_game_mode("Restarting fresh run after completing all levels")
-                # Reset everything for a fresh start
-                prevent_game_over = false
-                game_state.reset_to_start()
-                Logger.log_game_mode("Reset to level 1; prevent_game_over cleared")
-                # Continue to generate new level below
+		if prevent_game_over and game_state.current_state == GameState.GameStateType.WON:
+				Logger.log_game_mode("Restarting fresh run after completing all levels")
+				# Reset everything for a fresh start
+				prevent_game_over = false
+				game_state.reset_to_start()
+				Logger.log_game_mode("Reset to level 1; prevent_game_over cleared")
+				# Continue to generate new level below
 
-        # Advance level if we just won (check BEFORE resetting state)
-        elif game_state.current_state == GameState.GameStateType.WON:
-                Logger.log_game_mode("Advancing from level %d" % game_state.current_level)
-                var completed_all_levels = game_state.advance_level()
-                Logger.log_game_mode("Advanced to level %d (size %.2f)" % [game_state.current_level, game_state.current_level_size])
+		# Advance level if we just won (check BEFORE resetting state)
+		elif game_state.current_state == GameState.GameStateType.WON:
+				Logger.log_game_mode("Advancing from level %d" % game_state.current_level)
+				var completed_all_levels = game_state.advance_level()
+				Logger.log_game_mode("Advanced to level %d (size %.2f)" % [game_state.current_level, game_state.current_level_size])
 
-                # Update button text based on level
-                if completed_all_levels:
-                        restart_button.text = "Start all over again?"
-                        Logger.log_game_mode("All levels complete; waiting for full restart")
-                        # Set flag to prevent game over calls
-                        prevent_game_over = true
-                        # Completely reset the timer
-                        timer.stop()
+				# Update button text based on level
+				if completed_all_levels:
+						restart_button.text = "Start all over again?"
+						Logger.log_game_mode("All levels complete; waiting for full restart")
+						# Set flag to prevent game over calls
+						prevent_game_over = true
+						# Completely reset the timer
+						timer.stop()
 			timer.wait_time = 999999  # Set to a very long time
 			# Disconnect timer timeout to prevent further calls
-                        if timer.timeout.is_connected(_on_timer_timeout):
-                                timer.timeout.disconnect(_on_timer_timeout)
-                        # Force timer to stop completely
-                        timer.stop()
-                        # Don't generate new level when all levels are completed
-                        # Just show the button and wait for user to click "Start all over again?"
-                        return
-                else:
-                        restart_button.text = "Continue"
-                        Logger.log_game_mode("Next level %d prepared (size %.2f)" % [game_state.current_level, game_state.current_level_size])
-                        # Reset prevent_game_over flag for normal level progression
-                        prevent_game_over = false
-        elif game_state.current_state == GameState.GameStateType.LOST:
-                # If we lost, reset prevent_game_over flag
-                prevent_game_over = false
-                Logger.log_game_mode("Prevent game over flag cleared after loss")
+						if timer.timeout.is_connected(_on_timer_timeout):
+								timer.timeout.disconnect(_on_timer_timeout)
+						# Force timer to stop completely
+						timer.stop()
+						# Don't generate new level when all levels are completed
+						# Just show the button and wait for user to click "Start all over again?"
+						return
+				else:
+						restart_button.text = "Continue"
+						Logger.log_game_mode("Next level %d prepared (size %.2f)" % [game_state.current_level, game_state.current_level_size])
+						# Reset prevent_game_over flag for normal level progression
+						prevent_game_over = false
+		elif game_state.current_state == GameState.GameStateType.LOST:
+				# If we lost, reset prevent_game_over flag
+				prevent_game_over = false
+				Logger.log_game_mode("Prevent game over flag cleared after loss")
 	
 	# Reset game state to playing (after level advancement)
 	game_state.set_state(GameState.GameStateType.PLAYING)
 	
 	# Update level progress display after level advancement
-        _update_level_progress()
+		_update_level_progress()
 
-        # Stop any running timer first
-        timer.stop()
+		# Stop any running timer first
+		timer.stop()
 
-        # Reconnect timer if it was disconnected (only if not all levels completed)
-        if not prevent_game_over and not timer.timeout.is_connected(_on_timer_timeout):
-                timer.timeout.connect(_on_timer_timeout)
-        elif prevent_game_over:
-                Logger.log_game_mode("Timer left disconnected; all levels completed")
+		# Reconnect timer if it was disconnected (only if not all levels completed)
+		if not prevent_game_over and not timer.timeout.is_connected(_on_timer_timeout):
+				timer.timeout.connect(_on_timer_timeout)
+		elif prevent_game_over:
+				Logger.log_game_mode("Timer left disconnected; all levels completed")
 	
 	# Ensure timer is completely stopped before reconnecting
 	timer.stop()
@@ -472,16 +472,16 @@ func _on_restart_pressed():
 	# Wait a frame for cleanup
 	await get_tree().process_frame
 	
-        # Ensure level is properly reset before generating
-        if game_state.current_level > 7:
-                game_state.reset_to_start()
-                Logger.log_game_mode("Level exceeded cap during restart; reset to %d" % game_state.current_level)
+		# Ensure level is properly reset before generating
+		if game_state.current_level > 7:
+				game_state.reset_to_start()
+				Logger.log_game_mode("Level exceeded cap during restart; reset to %d" % game_state.current_level)
 
-        # Generate new level (only if not all levels completed)
-        if not prevent_game_over:
-                generate_new_level()
-        else:
-                Logger.log_game_mode("Generation skipped because campaign is complete")
+		# Generate new level (only if not all levels completed)
+		if not prevent_game_over:
+				generate_new_level()
+		else:
+				Logger.log_game_mode("Generation skipped because campaign is complete")
 
 func position_player_within_level():
 	# Get scaled level dimensions
@@ -500,7 +500,7 @@ func position_player_within_level():
 	player_x = max(player_x, 50)  # Minimum 50px from left
 	player_y = max(player_y, 50)  # Minimum 50px from top
 	
-        player.position = Vector2(player_x, player_y)
+		player.position = Vector2(player_x, player_y)
 
 func _find_all_timers(node: Node, timers: Array):
 	if node is Timer:
@@ -509,32 +509,32 @@ func _find_all_timers(node: Node, timers: Array):
 		_find_all_timers(child, timers)
 
 func clear_level_objects():
-        Logger.log_generation("Clearing previously generated objects")
+		Logger.log_generation("Clearing previously generated objects")
 
-        # Clear all generated objects safely
-        for child in get_children():
-                if child.name.begins_with("Obstacle") or child.name.begins_with("Coin") or child.name == "Exit" or child.name.begins_with("Door") or child.name.begins_with("Key") or child.name.begins_with("MazeWall"):
-                        if is_instance_valid(child):
-                                child.queue_free()
+		# Clear all generated objects safely
+		for child in get_children():
+				if child.name.begins_with("Obstacle") or child.name.begins_with("Coin") or child.name == "Exit" or child.name.begins_with("Door") or child.name.begins_with("Key") or child.name.begins_with("MazeWall"):
+						if is_instance_valid(child):
+								child.queue_free()
 
-        # Clear level generator objects
-        if level_generator and is_instance_valid(level_generator):
-                level_generator.clear_existing_objects()
-                Logger.log_generation("LevelGenerator cleared existing objects")
+		# Clear level generator objects
+		if level_generator and is_instance_valid(level_generator):
+				level_generator.clear_existing_objects()
+				Logger.log_generation("LevelGenerator cleared existing objects")
 	
 	# Reset references
-        exit = null
-        coins = []
-        total_coins = 0
-        collected_coins = 0
-        exit_active = false
+		exit = null
+		coins = []
+		total_coins = 0
+		collected_coins = 0
+		exit_active = false
 
 func _get_state_label(state: int) -> String:
-        match state:
-                GameState.GameStateType.PLAYING:
-                        return "PLAYING"
-                GameState.GameStateType.WON:
-                        return "WON"
-                GameState.GameStateType.LOST:
-                        return "LOST"
-        return str(state)
+		match state:
+				GameState.GameStateType.PLAYING:
+						return "PLAYING"
+				GameState.GameStateType.WON:
+						return "WON"
+				GameState.GameStateType.LOST:
+						return "LOST"
+		return str(state)

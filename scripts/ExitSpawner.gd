@@ -18,7 +18,7 @@ func generate_exit(level_size: float, obstacles: Array, min_exit_distance_ratio:
 	var level_height = dimensions.height
 	var offset_x = dimensions.offset_x
 	var offset_y = dimensions.offset_y
-	
+
 	while attempts < max_attempts:
 		# Get position using common utilities with more variety
 		var pos = LevelUtils.get_grid_position(current_level_size, 6, 4, 80, 50)
