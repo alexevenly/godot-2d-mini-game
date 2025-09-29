@@ -10,6 +10,7 @@ var current_level_size: float = 1.0
 var doors: Array = []
 var key_items: Array = []
 var maze_walls: Array = []
+var key_barriers: Array = []
 var player_spawn_override: Vector2 = Vector2.ZERO
 var has_player_spawn_override: bool = false
 
@@ -83,7 +84,9 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 
 	var max_doors = clamp(1 + int(ceil(level / 2.0)), 1, 3)
 	var door_count = randi_range(1, max_doors)
-	var door_width = 26.0
+	var door_width = 48.0
+	var max_gap_height = max(level_height - 200.0, 140.0)
+	var door_gap_height = clamp(level_height * 0.35, 140.0, max_gap_height)
 	var segment_width = level_width / float(door_count + 1)
 
 	var door_states: Array = []
@@ -124,13 +127,32 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 	for i in range(door_count):
 		var center_x = offset.x + segment_width * float(i + 1)
 		door_positions.append(center_x)
-		var door = _create_door_node(i, keys_per_door[i], not door_states[i], level_height, door_width)
-		door.position = Vector2(center_x - door_width * 0.5, offset.y)
+		var min_center_y = offset.y + door_gap_height * 0.5 + 60.0
+		var max_center_y = offset.y + level_height - door_gap_height * 0.5 - 60.0
+		if max_center_y <= min_center_y:
+			min_center_y = offset.y + level_height * 0.5
+			max_center_y = min_center_y
+		var door_center_y = randf_range(min_center_y, max_center_y)
+		var door_top = door_center_y - door_gap_height * 0.5
+		var door = _create_door_node(i, keys_per_door[i], not door_states[i], door_gap_height, door_width)
+		door.position = Vector2(center_x - door_width * 0.5, door_top)
 		doors.append(door)
-		if main_scene:
-			main_scene.call_deferred("add_child", door)
-		else:
-			call_deferred("add_child", door)
+		_add_generated_node(door, main_scene)
+
+		# Create barrier walls so the door sits within a solid structure
+		var top_segment_height = max(door_top - offset.y, 0.0)
+		if top_segment_height > 0.0:
+			var top_segment = _create_barrier_segment(door_width, top_segment_height)
+			top_segment.position = Vector2(center_x - door_width * 0.5, offset.y)
+			key_barriers.append(top_segment)
+			_add_generated_node(top_segment, main_scene)
+
+		var bottom_segment_height = max(offset.y + level_height - (door_top + door_gap_height), 0.0)
+		if bottom_segment_height > 0.0:
+			var bottom_segment = _create_barrier_segment(door_width, bottom_segment_height)
+			bottom_segment.position = Vector2(center_x - door_width * 0.5, door_top + door_gap_height)
+			key_barriers.append(bottom_segment)
+			_add_generated_node(bottom_segment, main_scene)
 
 		var keys_needed = int(keys_per_door[i])
 		if keys_needed <= 0:
@@ -167,10 +189,7 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 			key_positions.append(key_pos)
 			var key_node = _create_key_node(door, key_pos, keys_needed)
 			key_items.append(key_node)
-			if main_scene:
-				main_scene.call_deferred("add_child", key_node)
-			else:
-				call_deferred("add_child", key_node)
+			_add_generated_node(key_node, main_scene)
 
 	var exit_position = Vector2(offset.x + level_width - 120.0, offset.y + level_height * 0.5)
 	exit_spawner.create_exit_at(exit_position, main_scene)
@@ -220,6 +239,9 @@ func _generate_maze_level(include_coins: bool, main_scene, player_start_position
 func get_generated_coins():
 	return coins
 
+func get_generated_keys():
+	return key_items
+
 func get_generated_exit():
 	if exit_spawner:
 		return exit_spawner.get_exit()
@@ -239,6 +261,10 @@ func clear_existing_objects():
 		if is_instance_valid(node):
 			node.queue_free()
 	doors.clear()
+	for node in key_barriers:
+		if is_instance_valid(node):
+			node.queue_free()
+	key_barriers.clear()
 	for node in key_items:
 		if is_instance_valid(node):
 			node.queue_free()
@@ -271,6 +297,14 @@ func _set_player_spawn_override(pos: Vector2) -> void:
 	has_player_spawn_override = true
 	player_spawn_override = pos
 
+func _add_generated_node(node: Node, main_scene) -> void:
+	if node == null:
+		return
+	if main_scene:
+		main_scene.call_deferred("add_child", node)
+	else:
+		call_deferred("add_child", node)
+
 func _create_door_node(index: int, required_keys: int, initially_open: bool, height: float, width: float) -> StaticBody2D:
 	var door := StaticBody2D.new()
 	door.name = "Door%d" % index
@@ -296,13 +330,40 @@ func _create_door_node(index: int, required_keys: int, initially_open: bool, hei
 
 	return door
 
+func _create_barrier_segment(width: float, height: float) -> StaticBody2D:
+	var barrier := StaticBody2D.new()
+	barrier.name = "DoorBarrier%d" % key_barriers.size()
+
+	var body := ColorRect.new()
+	body.name = "BarrierBody"
+	body.offset_right = width
+	body.offset_bottom = height
+	body.color = Color(0.18, 0.21, 0.32, 1)
+	barrier.add_child(body)
+
+	var collision := CollisionShape2D.new()
+	collision.name = "BarrierCollision"
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(width, height)
+	collision.shape = shape
+	collision.position = Vector2(width * 0.5, height * 0.5)
+	barrier.add_child(collision)
+
+	return barrier
+
 func _create_key_node(door: StaticBody2D, spawn_position: Vector2, required_keys: int) -> Area2D:
 	var key := Area2D.new()
 	key.name = "Key%d" % key_items.size()
 	key.position = spawn_position
 	key.set_script(preload("res://scripts/Key.gd"))
-	key.door_path = door.get_path()
+	if door and door.is_inside_tree():
+		key.door_path = door.get_path()
+	else:
+		key.door_path = NodePath()
 	key.required_key_count = required_keys
+	key.door_reference = door
+	if door:
+		key.door_id = door.door_id
 
 	var body := ColorRect.new()
 	body.name = "KeyBody"

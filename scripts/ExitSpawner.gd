@@ -90,9 +90,9 @@ func create_exit_at(pos: Vector2, main_scene = null):
 
 	# Add to the main scene tree (Main node)
 	if main_scene:
-		main_scene.add_child(exit)
+		main_scene.call_deferred("add_child", exit)
 	else:
-		get_tree().current_scene.add_child(exit)
+		get_tree().current_scene.call_deferred("add_child", exit)
 
 func clear_exit():
 	if exit and is_instance_valid(exit):

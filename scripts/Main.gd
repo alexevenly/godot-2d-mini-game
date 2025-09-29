@@ -10,6 +10,9 @@ const Logger = preload("res://scripts/Logger.gd")
 @onready var game_over_label = $UI/GameOverLabel
 @onready var win_label = $UI/WinLabel
 @onready var restart_button = $UI/RestartButton
+@onready var menu_button = $UI/MenuButton
+@onready var key_container = $UI/KeyContainer
+@onready var key_status_container = $UI/KeyContainer/KeyStatus
 @onready var level_generator = $LevelGenerator
 @onready var timer_manager = $TimerManager
 @onready var play_area = $PlayArea
@@ -20,6 +23,10 @@ var game_time = 30.0
 var total_coins = 0
 var collected_coins = 0
 var previous_coin_count = 0 # Preserve coin count between levels
+var keys = []
+var total_keys = 0
+var collected_keys_count = 0
+var key_checkbox_nodes: Array = []
 var exit_active = false
 var exit = null
 var coins = []
@@ -32,6 +39,7 @@ func _ready():
 	# Connect signals
 	timer.timeout.connect(_on_timer_timeout)
 	restart_button.pressed.connect(_on_restart_pressed)
+	menu_button.pressed.connect(_on_menu_pressed)
 
 	# Initialize statistics logging
 	_init_statistics_logging()
@@ -63,6 +71,10 @@ func _init_statistics_logging():
 		Logger.log_error("Could not create statistics file", [filename])
 
 func _log_level_statistics():
+	if statistics_file == null:
+		Logger.log_error("Statistics file was null while logging level statistics")
+		return
+
 	var distance = 0.0
 	var completion_time = Time.get_ticks_msec() / 1000.0 - level_start_time
 	var time_left = game_time
@@ -72,33 +84,30 @@ func _log_level_statistics():
 		distance = player.global_position.distance_to(exit.global_position)
 
 	# Calculate completion rate (coins collected / total coins)
-	var completion_rate = 0.0
-	if coins.size() > 0:
-		completion_rate = float(collected_coins) / float(coins.size())
+	var coin_total := coins.size()
+	var completion_rate = 1.0 if coin_total == 0 else float(collected_coins) / float(max(coin_total, 1))
 
-		# Create statistics line
-		var stats_line = str(game_state.current_level) + "," + \
-			str(game_state.current_level_size) + "," + \
-			str(play_area.size.x) + "," + \
-			str(play_area.size.y) + "," + \
-			str(coins.size()) + "," + \
-			str(collected_coins) + "," + \
-			str(timer.wait_time) + "," + \
-			str(completion_time) + "," + \
-			str(time_left) + "," + \
-			str(distance) + "," + \
-			str(completion_rate)
+	# Create statistics line
+	var stats_line = str(game_state.current_level) + "," + \
+		str(game_state.current_level_size) + "," + \
+		str(play_area.size.x) + "," + \
+		str(play_area.size.y) + "," + \
+		str(coin_total) + "," + \
+		str(collected_coins) + "," + \
+		str(timer.wait_time) + "," + \
+		str(completion_time) + "," + \
+		str(time_left) + "," + \
+		str(distance) + "," + \
+		str(completion_rate)
 
-		statistics_file.store_line(stats_line)
-		statistics_file.flush()
+	statistics_file.store_line(stats_line)
+	statistics_file.flush()
 
-		# Register level result with TimerManager
-		if timer_manager:
-			timer_manager.register_level_result(time_left)
-		else:
-			Logger.log_error("TimerManager not found while logging statistics")
+	# Register level result with TimerManager
+	if timer_manager:
+		timer_manager.register_level_result(time_left)
 	else:
-		Logger.log_error("Statistics file was null while logging level statistics")
+		Logger.log_error("TimerManager not found while logging statistics")
 
 func _process(delta):
 	# Handle Esc key to quit to menu
@@ -136,6 +145,7 @@ func generate_new_level():
 	exit_active = false
 	exit = null
 	coins = []
+	keys = []
 	game_state.set_state(GameState.GameStateType.PLAYING)
 
 	# Ensure we're in playing state
@@ -190,6 +200,7 @@ func generate_new_level():
 	# Get references to generated objects from LevelGenerator
 	exit = level_generator.get_generated_exit()
 	coins = level_generator.get_generated_coins()
+	keys = level_generator.get_generated_keys()
 	var spawn_override = level_generator.get_player_spawn_override()
 
 	if exit:
@@ -197,6 +208,7 @@ func generate_new_level():
 	else:
 		Logger.log_generation("No exit generated")
 	Logger.log_generation("Coins generated: %d" % coins.size())
+	Logger.log_generation("Keys generated: %d" % keys.size())
 
 	# Calculate time using timer manager
 	if timer_manager:
@@ -213,11 +225,21 @@ func generate_new_level():
 
 	total_coins = coins.size()
 	collected_coins = 0
+	if total_coins == 0:
+		previous_coin_count = 0
 
 	# Connect exit signal safely
 	if exit and is_instance_valid(exit):
 		if not exit.body_entered.is_connected(_on_exit_entered):
 			exit.body_entered.connect(_on_exit_entered)
+
+	# Connect key signals safely
+	collected_keys_count = 0
+	total_keys = keys.size()
+	for key in keys:
+		if key and is_instance_valid(key):
+			if not key.key_collected.is_connected(_on_key_collected):
+				key.key_collected.connect(_on_key_collected)
 
 	# Start timer
 	timer.wait_time = game_time
@@ -227,6 +249,7 @@ func generate_new_level():
 
 	# Update displays
 	_update_coin_display()
+	_setup_key_ui(total_keys)
 	_update_exit_state()
 
 	if spawn_override != null and player and is_instance_valid(player):
@@ -243,7 +266,11 @@ func _update_timer_display():
 	timer_label.text = "Time: " + "%.2f" % game_time
 
 func _update_coin_display():
-	coin_label.text = "Coins: " + str(collected_coins) + "/" + str(total_coins)
+	coin_label.visible = total_coins > 0
+	if coin_label.visible:
+		coin_label.text = "Coins: " + str(collected_coins) + "/" + str(total_coins)
+	else:
+		coin_label.text = ""
 
 func _update_level_progress():
 	level_progress_label.text = game_state.get_level_progress_text()
@@ -282,6 +309,11 @@ func _on_coin_collected(body, coin):
 
 		# Check if this was the last coin - the exit collision will be handled by _on_exit_entered
 		# No need to manually check collision here since Area2D handles it via signals
+
+func _on_key_collected(_door_id):
+	collected_keys_count += 1
+	collected_keys_count = min(collected_keys_count, total_keys)
+	_update_key_status_display()
 
 func _on_timer_timeout():
 	# Prevent timer timeout if game is not in playing state
@@ -322,6 +354,7 @@ func _game_over():
 	game_state.set_state(GameState.GameStateType.LOST)
 	game_over_label.visible = true
 	restart_button.visible = true
+	menu_button.visible = true
 	# Stop player movement
 	player.set_physics_process(false)
 
@@ -353,6 +386,7 @@ func _win_game():
 	game_state.set_state(GameState.GameStateType.WON)
 	win_label.visible = true
 	restart_button.visible = true
+	menu_button.visible = true
 	# Stop player movement
 	player.set_physics_process(false)
 
@@ -392,6 +426,7 @@ func _on_restart_pressed():
 	# Hide game over/win labels
 	game_over_label.visible = false
 	win_label.visible = false
+	menu_button.visible = false
 
 	# Handle timer based on game state
 	_handle_timer_for_game_state()
@@ -427,7 +462,11 @@ func _on_restart_pressed():
 		timer.stop()
 		# Don't generate new level when all levels are completed
 		# Just show the button and wait for user to click "Start all over again?"
-		return
+		if completed_all_levels:
+			return
+		else:
+			restart_button.text = "Continue"
+			Logger.log_game_mode("Next level %d prepared (size %.2f)" % [game_state.current_level, game_state.current_level_size])
 	elif game_state.current_state == GameState.GameStateType.LOST:
 		# If we lost, reset prevent_game_over flag
 		prevent_game_over = false
@@ -467,6 +506,7 @@ func _on_restart_pressed():
 	game_over_label.visible = false
 	win_label.visible = false
 	restart_button.visible = false
+	menu_button.visible = false
 
 	# Clear existing level objects first
 	clear_level_objects()
@@ -527,9 +567,13 @@ func clear_level_objects():
 	# Reset references
 	exit = null
 	coins = []
+	keys = []
 	total_coins = 0
 	collected_coins = 0
+	total_keys = 0
+	collected_keys_count = 0
 	exit_active = false
+	_clear_key_ui()
 
 func _get_state_label(state: int) -> String:
 	match state:
@@ -540,3 +584,43 @@ func _get_state_label(state: int) -> String:
 		GameState.GameStateType.LOST:
 			return "LOST"
 	return str(state)
+
+func _clear_key_ui():
+	key_checkbox_nodes.clear()
+	if key_status_container:
+		for child in key_status_container.get_children():
+			if is_instance_valid(child):
+				child.queue_free()
+	if key_container:
+		key_container.visible = false
+
+func _setup_key_ui(key_count: int):
+	_clear_key_ui()
+	total_keys = key_count
+	collected_keys_count = 0
+	if key_count <= 0 or key_status_container == null:
+		return
+	if key_container:
+		key_container.visible = true
+	for i in range(key_count):
+		var checkbox := CheckBox.new()
+		checkbox.disabled = true
+		checkbox.focus_mode = Control.FOCUS_NONE
+		checkbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		checkbox.button_pressed = false
+		key_status_container.add_child(checkbox)
+		key_checkbox_nodes.append(checkbox)
+	_update_key_status_display()
+
+func _update_key_status_display():
+	for i in range(key_checkbox_nodes.size()):
+		var checkbox = key_checkbox_nodes[i]
+		if not is_instance_valid(checkbox):
+			continue
+		checkbox.button_pressed = i < collected_keys_count
+	if key_container:
+		key_container.visible = key_checkbox_nodes.size() > 0
+
+func _on_menu_pressed():
+	prevent_game_over = false
+	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
