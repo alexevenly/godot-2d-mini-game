@@ -22,6 +22,7 @@ var maze_walls: Array = []
 var key_barriers: Array = []
 var player_spawn_override: Vector2 = Vector2.ZERO
 var has_player_spawn_override: bool = false
+var last_maze_path_length: float = 0.0
 
 const MAZE_BASE_CELL_SIZE := 64.0
 
@@ -34,6 +35,7 @@ func generate_level(level_size := 1.0, generate_obstacles := true, generate_coin
 	Logger.log_generation("LevelGenerator starting (size %.2f, type %d)" % [level_size, level_type])
 	current_level_size = level_size
 	exit_pos = Vector2.ZERO
+	last_maze_path_length = 0.0
 	clear_existing_objects()
 	match level_type:
 		GameState.LevelType.KEYS:
@@ -234,7 +236,10 @@ func _generate_maze_level(include_coins: bool, main_scene, player_start_position
 	_carve_maze(grid, start_cell, cols, rows)
 	_spawn_maze_walls(grid, maze_offset, cell_size, main_scene)
 
-	var farthest = _find_farthest_cell(grid, start_cell, cols, rows)
+	var farthest_data = _find_farthest_cell(grid, start_cell, cols, rows)
+	var farthest: Vector2i = farthest_data["cell"]
+	var path_steps: int = farthest_data["distance"]
+	last_maze_path_length = float(max(path_steps, 1)) * cell_size
 	var exit_position = _maze_cell_to_world(farthest, maze_offset, cell_size)
 	exit_spawner.clear_exit()
 	exit_spawner.create_exit_at(exit_position, main_scene)
@@ -263,6 +268,9 @@ func get_player_spawn_override():
 	if has_player_spawn_override:
 		return player_spawn_override
 	return null
+
+func get_last_maze_path_length() -> float:
+	return last_maze_path_length
 
 func is_exit_position_valid(pos, level_width, level_height):
 	var margin = 32
@@ -483,7 +491,7 @@ func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scen
 				else:
 					call_deferred("add_child", wall)
 
-func _find_farthest_cell(grid: Array, start: Vector2i, cols: int, rows: int) -> Vector2i:
+func _find_farthest_cell(grid: Array, start: Vector2i, cols: int, rows: int) -> Dictionary:
 	var visited: Array = []
 	for y in range(rows):
 		var row := []
@@ -511,7 +519,7 @@ func _find_farthest_cell(grid: Array, start: Vector2i, cols: int, rows: int) -> 
 				continue
 			visited[next.y][next.x] = true
 			queue.append({"cell": next, "dist": dist + 1})
-	return farthest
+	return {"cell": farthest, "distance": max_dist}
 
 func _generate_maze_coins(grid: Array, start: Vector2i, exit_cell: Vector2i, offset: Vector2, cell_size: float, main_scene) -> void:
 	var rows = grid.size()
