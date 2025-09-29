@@ -1,0 +1,6 @@
+{
+  "name": "godot-2d-mini-game",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {},
+  "postCreateCommand": "./scripts/install_godot_cli.sh"
+}

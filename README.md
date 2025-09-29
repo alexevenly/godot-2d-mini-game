@@ -15,8 +15,8 @@ Mini 2D Game is a top-down arena crawler built with Godot 4. Collect coins, mana
 
 ## Controls
 
-- `W`, `A`, `S`, `D` or arrow keys – move the cube
-- `Esc` – return to the main menu
+- `W`, `A`, `S`, `D` or arrow keys â€“ move the cube
+- `Esc` â€“ return to the main menu
 
 Collecting a coin grants a temporary speed boost that now decays smoothly back to the base speed. While boosted, the cube leaves a ghost trail whose length reflects the remaining boost strength.
 
@@ -27,7 +27,7 @@ Select the desired level template in the main menu. Available options:
 | Level Type | Description |
 |------------|-------------|
 | **Obstacles + Coins** | Classic mode with random obstacles, coin placement, and an exit. |
-| **Keys** | Sequential doors guard the exit. Keys (2–6 per level) spawn in the area before the door they unlock, and at least one door starts locked. |
+| **Keys** | Sequential doors guard the exit. Keys (2â€“6 per level) spawn in the area before the door they unlock, and at least one door starts locked. |
 | **Maze** | Generates a procedural maze and places the exit at one of the farthest reachable cells from the spawn point. |
 | **Maze + Coins** | Same maze generation as above, with coins scattered along reachable corridors. |
 | **Random** | Picks one of the above templates each time a new level is generated. |
@@ -42,11 +42,11 @@ The boost granted by coins is now configurable and fades out gradually instead o
 
 Edit `config/game.cfg` to tweak these values:
 
-- `speed_boost_multiplier` – bonus applied per coin (default `1.5`).
-- `speed_boost_decay_time` – seconds for a single coin's boost to fade.
-- `speed_boost_max_stacks` – how many boosts can stack before clamping.
-- `ghost_base_lifetime` / `ghost_extra_lifetime` – minimum and extra trail lifetime.
-- `ghost_spawn_interval` / `ghost_spawn_interval_min` – spawn cadence range.
+- `speed_boost_multiplier` â€“ bonus applied per coin (default `1.5`).
+- `speed_boost_decay_time` â€“ seconds for a single coin's boost to fade.
+- `speed_boost_max_stacks` â€“ how many boosts can stack before clamping.
+- `ghost_base_lifetime` / `ghost_extra_lifetime` â€“ minimum and extra trail lifetime.
+- `ghost_spawn_interval` / `ghost_spawn_interval_min` â€“ spawn cadence range.
 
 ### Coin Placement Safety
 
@@ -66,12 +66,24 @@ Each completed or failed level appends a CSV row to `logs/statistics_*.log` capt
 
 ## Project Structure Highlights
 
-- `scripts/Main.gd` – core game loop, restart handling, and level orchestration.
-- `scripts/LevelGenerator.gd` – dispatches generation for standard, key, and maze templates.
-- `scripts/CoinSpawner.gd` – coin placement with path validation.
-- `scripts/Player.gd` – movement, boost decay, and ghost trail logic.
-- `scripts/GameState.gd` – level progression, difficulty, and level-type selection.
-- `scripts/TimerManager.gd` – adaptive timer calculations.
+
+## Installing the Godot CLI
+
+For automated testing and headless execution a Godot CLI binary is required. Run the helper script to install the 4.2.2 headless build:
+
+```bash
+./scripts/install_godot_cli.sh
+```
+
+The script downloads the official release archive, installs it under `/usr/local/lib/godot`, and symlinks it to `/usr/local/bin/godot`. It can be safely re-run; it exits early if the CLI is already available.
+
+When using the provided development container configuration the CLI is installed automatically after the container is created.
+- `scripts/Main.gd` â€“ core game loop, restart handling, and level orchestration.
+- `scripts/LevelGenerator.gd` â€“ dispatches generation for standard, key, and maze templates.
+- `scripts/CoinSpawner.gd` â€“ coin placement with path validation.
+- `scripts/Player.gd` â€“ movement, boost decay, and ghost trail logic.
+- `scripts/GameState.gd` â€“ level progression, difficulty, and level-type selection.
+- `scripts/TimerManager.gd` â€“ adaptive timer calculations.
 
 ## Contributing
 
