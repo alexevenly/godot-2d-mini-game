@@ -251,10 +251,10 @@ func clear_existing_objects():
 	if exit_spawner and is_instance_valid(exit_spawner):
 		exit_spawner.clear_exit()
 
-	for obstacle in obstacles:
-		if is_instance_valid(obstacle):
-			obstacle.queue_free()
-	opstacles.clear()
+        for obstacle in obstacles:
+                if is_instance_valid(obstacle):
+                        obstacle.queue_free()
+        obstacles.clear()
 	for coin in coins:
 		if is_instance_valid(coin):
 			coin.queue_free()
