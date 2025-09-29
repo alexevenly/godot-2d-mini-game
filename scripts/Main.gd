@@ -352,6 +352,8 @@ func _game_over():
 
 	Logger.log_game_mode("Game over on level %d (size %.2f)" % [game_state.current_level, game_state.current_level_size])
 	game_state.set_state(GameState.GameStateType.LOST)
+	game_state.drop_progress_on_loss()
+	Logger.log_game_mode("Progress reset to level 1 after loss")
 	game_over_label.visible = true
 	restart_button.visible = true
 	menu_button.visible = true
@@ -368,8 +370,7 @@ func _game_over():
 	timer.wait_time = 999999
 	timer.stop()
 
-	# Don't reset level on loss - only reset on complete restart
-	# game_state.reset_to_start()  # REMOVED - this was causing level to reset to 1
+	# Level progression is reset through GameState.drop_progress_on_loss()
 
 	# Update button text
 	restart_button.text = "Restart"
