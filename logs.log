@@ -1,0 +1,2591 @@
+Godot Engine v4.2.2.stable.official.15073afe3 - https://godotengine.org
+Vulkan API 1.4.312 - Forward+ - Using Vulkan Device #0: NVIDIA - NVIDIA GeForce RTX 3070 Ti Laptop GPU
+ 
+=== GENERATING LEVEL 1 (size: 0.75) ===
+LevelUtils: Updating play area - width: 768 height: 450 offset: 128, 75
+LevelUtils: Play area updated - position: (128, 75) size: (768, 450)
+Player positioned at: (204.8, 300) (level size: 0.75)
+Level dimensions: width=768 height=450 offset_x=128 offset_y=75
+LevelGenerator is valid, checking spawners...
+ObstacleSpawner: ObstacleSpawner:<Node2D#34376516872> (valid: true)
+CoinSpawner: CoinSpawner:<Node2D#34393294071> (valid: true)
+ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: Starting generation for size: 0.75
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: ObstacleSpawner:<Node2D#34376516872> (valid: true)
+LevelGenerator: CoinSpawner before clear: CoinSpawner:<Node2D#34393294071> (valid: true)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: ObstacleSpawner:<Node2D#34376516872> (valid: true)
+LevelGenerator: After clear - CoinSpawner: CoinSpawner:<Node2D#34393294071> (valid: true)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+ObstacleSpawner: Generating obstacles for level size: 0.75 level: 1
+ObstacleSpawner: Self valid: true
+ObstacleSpawner: Parent valid: true
+ObstacleSpawner: Target count: 35 (level multiplier: 1)
+ObstacleSpawner: Full map coverage: true
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 0 at (764.7143, 435)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 1 at (601.1429, 485)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 2 at (460.8571, 415)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 3 at (473.8571, 318)
+ObstacleSpawner: Rejected obstacle 4 at (448.8571, 321)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 5 at (237.2857, 128)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 6 at (684.4286, 151)
+ObstacleSpawner: Rejected obstacle 7 at (267.2857, 157)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 8 at (856, 385)
+ObstacleSpawner: Rejected obstacle 9 at (856, 405)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 10 at (355.5714, 136)
+ObstacleSpawner: Rejected obstacle 11 at (692.4286, 201)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 12 at (601.1429, 377)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 13 at (741.7143, 192)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 14 at (526.1429, 115)
+ObstacleSpawner: Rejected obstacle 15 at (630.4286, 373)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 16 at (265.2857, 212)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 17 at (753.7143, 343)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 18 at (201, 410)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 19 at (455.8571, 127)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 20 at (329.5714, 320)
+ObstacleSpawner: Rejected obstacle 21 at (181, 383)
+ObstacleSpawner: Rejected obstacle 22 at (189, 115)
+ObstacleSpawner: Rejected obstacle 23 at (795.7143, 369)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 24 at (358.5714, 466)
+ObstacleSpawner: Rejected obstacle 25 at (301.2857, 485)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 26 at (680.4286, 326)
+ObstacleSpawner: Rejected obstacle 27 at (333.5714, 166)
+ObstacleSpawner: Rejected obstacle 28 at (653.4286, 209)
+ObstacleSpawner: Rejected obstacle 29 at (732.7143, 115)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 30 at (168, 115)
+ObstacleSpawner: Rejected obstacle 31 at (439.8571, 129)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 32 at (839, 177)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 33 at (253.2857, 485)
+ObstacleSpawner: Rejected obstacle 34 at (729.7143, 377)
+ObstacleSpawner: Final count: 21
+LevelGenerator: Got 21 obstacles from spawner
+LevelGenerator: Got exit at (530.8, 203)
+CoinSpawner: Generating coins for level size: 0.75 level: 1
+CoinSpawner: Target count: 11 (level mult: 1.00)
+CoinSpawner: Full map coverage: true
+CoinSpawner: Final count: 11
+LevelGenerator: Got 11 coins from spawner
+Generated objects:
+- Exit: true at (530.8, 203)
+- Coins: 11
+- Total children in scene: 0
+=== LEVEL COMPLETED ===
+Completed level: 1 Size: 0.75
+Level completed! Click Continue to proceed to next level
+=== RESTART PRESSED ===
+Current level: 1 Size: 0.75
+Timer stopped due to game state: 1
+DEBUG: Advancing level from 1
+DEBUG: After advancement - level: 2 completed_all_levels: false
+DEBUG: Level size after advancement: 0.92857142857143
+Next level: 2 Size: 0.92857142857143
+DEBUG: Level progress updated - current level: 2
+Player positioned at: (132, 300) (level size: 0.92857142857143)
+Level dimensions: width=950 height=557 offset_x=37 offset_y=21.5
+Main: Clearing level objects...
+Main: LevelGenerator before clear: LevelGenerator:<Node2D#34359739659> (valid: true)
+Main: Calling level_generator.clear_existing_objects()
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: CoinSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - CoinSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+Main: After clear - LevelGenerator: LevelGenerator:<Node2D#34359739659> (valid: true)
+=== GENERATING LEVEL 2 (size: 0.92857142857143) ===
+LevelUtils: Updating play area - width: 950 height: 557 offset: 37, 21.5
+LevelUtils: Play area updated - position: (37, 21.5) size: (950, 557)
+Player positioned at: (132, 300) (level size: 0.92857142857143)
+Level dimensions: width=950 height=557 offset_x=37 offset_y=21.5
+LevelGenerator is valid, checking spawners...
+ObstacleSpawner: <Freed Object> (valid: false)
+CoinSpawner: <Freed Object> (valid: false)
+ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: Starting generation for size: 0.92857142857143
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: CoinSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - CoinSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: ObstacleSpawner is null! Recreating...
+ObstacleSpawner: Generating obstacles for level size: 0.92857142857143 level: 2
+ObstacleSpawner: Self valid: true
+ObstacleSpawner: Parent valid: true
+ObstacleSpawner: Target count: 55 (level multiplier: 1.2)
+ObstacleSpawner: Full map coverage: true
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 0 at (593.1429, 116.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 1 at (555.1429, 538.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 2 at (942, 351.7)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 3 at (454.8571, 354.7)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 4 at (77, 167.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 5 at (788.7143, 118.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 6 at (575.1429, 441.1)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 7 at (235.2857, 286.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 8 at (678.4286, 196.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 9 at (811.7143, 349.7)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 10 at (185.2857, 62.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 11 at (937, 183.9)
+ObstacleSpawner: Rejected obstacle 12 at (474.8571, 335.7)
+ObstacleSpawner: Rejected obstacle 13 at (96, 246.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 14 at (691.4286, 463.1)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 15 at (77, 534.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 16 at (861.7143, 538.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 17 at (310.5714, 179.9)
+ObstacleSpawner: Rejected obstacle 18 at (110, 148.9)
+ObstacleSpawner: Rejected obstacle 19 at (683.4286, 240.3)
+ObstacleSpawner: Rejected obstacle 20 at (321.5714, 172.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 21 at (314.5714, 461.1)
+ObstacleSpawner: Rejected obstacle 22 at (236.2857, 217.3)
+ObstacleSpawner: Rejected obstacle 23 at (554.1429, 538.5)
+ObstacleSpawner: Rejected obstacle 24 at (429.8571, 323.7)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 25 at (671.4286, 61.5)
+ObstacleSpawner: Rejected obstacle 26 at (925, 415.1)
+ObstacleSpawner: Rejected obstacle 27 at (77, 351.7)
+ObstacleSpawner: Rejected obstacle 28 at (77, 523.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 29 at (77, 423.1)
+ObstacleSpawner: Rejected obstacle 30 at (947, 221.3)
+ObstacleSpawner: Rejected obstacle 31 at (443.8571, 387.7)
+ObstacleSpawner: Rejected obstacle 32 at (580.1429, 61.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 33 at (450.8571, 438.1)
+ObstacleSpawner: Rejected obstacle 34 at (232.2857, 61.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 35 at (815.7143, 471.1)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 36 at (846.7143, 213.3)
+ObstacleSpawner: Rejected obstacle 37 at (715.4286, 61.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 38 at (718.4286, 343.7)
+ObstacleSpawner: Rejected obstacle 39 at (296.5714, 308.7)
+ObstacleSpawner: Rejected obstacle 40 at (304.5714, 118.9)
+ObstacleSpawner: Rejected obstacle 41 at (166.2857, 61.5)
+ObstacleSpawner: Rejected obstacle 42 at (163.2857, 61.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 43 at (433.8571, 538.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 44 at (487.8571, 153.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 45 at (675.4286, 273.3)
+ObstacleSpawner: Rejected obstacle 46 at (844.7143, 502.5)
+ObstacleSpawner: Rejected obstacle 47 at (577.1429, 431.1)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 48 at (355.5714, 329.7)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 49 at (550.1429, 360.7)
+ObstacleSpawner: Rejected obstacle 50 at (592.1429, 538.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 51 at (419.8571, 217.3)
+ObstacleSpawner: Rejected obstacle 52 at (797.7143, 88.5)
+ObstacleSpawner: Rejected obstacle 53 at (113, 213.3)
+ObstacleSpawner: Rejected obstacle 54 at (841.7143, 510.5)
+ObstacleSpawner: Final count: 29
+LevelGenerator: Got 29 obstacles from recreated spawner
+LevelGenerator: Got exit at (902, 276.8333)
+LevelGenerator: CoinSpawner is null! Recreating...
+CoinSpawner: Generating coins for level size: 0.92857142857143 level: 2
+CoinSpawner: Target count: 13 (level mult: 1.12)
+CoinSpawner: Full map coverage: true
+CoinSpawner: Final count: 13
+LevelGenerator: Got 13 coins from recreated spawner
+Generated objects:
+- Exit: true at (902, 276.8333)
+- Coins: 13
+- Total children in scene: 0
+=== LEVEL COMPLETED ===
+Completed level: 2 Size: 0.92857142857143
+Level completed! Click Continue to proceed to next level
+=== RESTART PRESSED ===
+Current level: 2 Size: 0.92857142857143
+Timer stopped due to game state: 1
+DEBUG: Advancing level from 2
+DEBUG: After advancement - level: 3 completed_all_levels: false
+DEBUG: Level size after advancement: 1.10714285714286
+Next level: 3 Size: 1.10714285714286
+DEBUG: Level progress updated - current level: 3
+Player positioned at: (58.8, 300) (level size: 1.10714285714286)
+Level dimensions: width=1133 height=664 offset_x=-54.5 offset_y=-32
+Main: Clearing level objects...
+Main: LevelGenerator before clear: LevelGenerator:<Node2D#34359739659> (valid: true)
+Main: Calling level_generator.clear_existing_objects()
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: ObstacleSpawner:<Node2D#46590330391> (valid: true)
+LevelGenerator: CoinSpawner before clear: CoinSpawner:<Node2D#51338282568> (valid: true)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: ObstacleSpawner:<Node2D#46590330391> (valid: true)
+LevelGenerator: After clear - CoinSpawner: CoinSpawner:<Node2D#51338282568> (valid: true)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+Main: After clear - LevelGenerator: LevelGenerator:<Node2D#34359739659> (valid: true)
+=== GENERATING LEVEL 3 (size: 1.10714285714286) ===
+LevelUtils: Updating play area - width: 1133 height: 664 offset: -54.5, -32
+LevelUtils: Play area updated - position: (-54.5, -32) size: (1133, 664)
+Player positioned at: (58.8, 300) (level size: 1.10714285714286)
+Level dimensions: width=1133 height=664 offset_x=-54.5 offset_y=-32
+LevelGenerator is valid, checking spawners...
+ObstacleSpawner: <Freed Object> (valid: false)
+CoinSpawner: <Freed Object> (valid: false)
+ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: Starting generation for size: 1.10714285714286
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: CoinSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - CoinSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: ObstacleSpawner is null! Recreating...
+ObstacleSpawner: Generating obstacles for level size: 1.10714285714286 level: 3
+ObstacleSpawner: Self valid: true
+ObstacleSpawner: Parent valid: true
+ObstacleSpawner: Target count: 86 (level multiplier: 1.4)
+ObstacleSpawner: Full map coverage: true
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 0 at (469.7857, 271.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 1 at (283.3571, 210.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 2 at (549.2143, 456.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 3 at (619.2143, 249.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 4 at (927.0714, 8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 5 at (557.2143, 114.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 6 at (271.3571, 27)
+ObstacleSpawner: Rejected obstacle 7 at (606.2143, 448.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 8 at (164.9286, 38)
+ObstacleSpawner: Rejected obstacle 9 at (559.2143, 217.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 10 at (557.2143, 23)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 11 at (-14.5, 108.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 12 at (416.7857, 330.4)
+ObstacleSpawner: Rejected obstacle 13 at (476.7857, 346.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 14 at (415.7857, 484.2)
+ObstacleSpawner: Rejected obstacle 15 at (145.9286, 8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 16 at (732.6429, 156.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 17 at (1028.5, 327.4)
+ObstacleSpawner: Rejected obstacle 18 at (170.9286, 8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 19 at (-14.5, 8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 20 at (907.0714, 513.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 21 at (112.9286, 480.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 22 at (1038.5, 8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 23 at (755.6429, 84.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 24 at (276.3571, 122.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 25 at (-14.5, 263.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 26 at (18.5, 492.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 27 at (1024.5, 235.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 28 at (-14.5, 396.4)
+ObstacleSpawner: Rejected obstacle 29 at (575.2143, 128.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 30 at (111.9286, 157.8)
+ObstacleSpawner: Rejected obstacle 31 at (423.7857, 343.4)
+ObstacleSpawner: Rejected obstacle 32 at (476.7857, 486.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 33 at (859.0714, 154.8)
+ObstacleSpawner: Rejected obstacle 34 at (1028.5, 201.6)
+ObstacleSpawner: Rejected obstacle 35 at (-14.5, 106.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 36 at (1038.5, 492.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 37 at (742.6429, 8)
+ObstacleSpawner: Rejected obstacle 38 at (711.6429, 139.8)
+ObstacleSpawner: Rejected obstacle 39 at (-14.5, 341.4)
+ObstacleSpawner: Rejected obstacle 40 at (551.2143, 8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 41 at (902.0714, 215.6)
+ObstacleSpawner: Rejected obstacle 42 at (297.3571, 157.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 43 at (258.3571, 364.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 44 at (315.3571, 279.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 45 at (925.0714, 335.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 46 at (1029.5, 592)
+ObstacleSpawner: Rejected obstacle 47 at (467.7857, 484.2)
+ObstacleSpawner: Rejected obstacle 48 at (437.7857, 463.2)
+ObstacleSpawner: Rejected obstacle 49 at (106.9286, 272.6)
+ObstacleSpawner: Rejected obstacle 50 at (103.9286, 380.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 51 at (770.6429, 444.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 52 at (469.7857, 8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 53 at (-14.5, 592)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 54 at (431.7857, 117.8)
+ObstacleSpawner: Rejected obstacle 55 at (421.7857, 8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 56 at (407.7857, 223.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 57 at (561.2143, 592)
+ObstacleSpawner: Rejected obstacle 58 at (1032.5, 487.2)
+ObstacleSpawner: Rejected obstacle 59 at (566.2143, 592)
+ObstacleSpawner: Rejected obstacle 60 at (1038.5, 258.6)
+ObstacleSpawner: Rejected obstacle 61 at (0.5, 396.4)
+ObstacleSpawner: Rejected obstacle 62 at (99.92857, 139.8)
+ObstacleSpawner: Rejected obstacle 63 at (900.0714, 559)
+ObstacleSpawner: Rejected obstacle 64 at (437.7857, 322.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 65 at (597.2143, 376.4)
+ObstacleSpawner: Rejected obstacle 66 at (167.9286, 441.2)
+ObstacleSpawner: Rejected obstacle 67 at (143.9286, 358.4)
+ObstacleSpawner: Rejected obstacle 68 at (742.6429, 33)
+ObstacleSpawner: Rejected obstacle 69 at (1014.5, 11)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 70 at (709.6429, 554)
+ObstacleSpawner: Rejected obstacle 71 at (-14.5, 267.6)
+ObstacleSpawner: Rejected obstacle 72 at (23.5, 8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 73 at (708.6429, 257.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 74 at (848.0714, 8)
+ObstacleSpawner: Rejected obstacle 75 at (1038.5, 15)
+ObstacleSpawner: Rejected obstacle 76 at (597.2143, 106.8)
+ObstacleSpawner: Rejected obstacle 77 at (122.9286, 384.4)
+ObstacleSpawner: Rejected obstacle 78 at (871.0714, 341.4)
+ObstacleSpawner: Rejected obstacle 79 at (310.3571, 18)
+ObstacleSpawner: Rejected obstacle 80 at (1038.5, 354.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 81 at (1003.5, 107.8)
+ObstacleSpawner: Rejected obstacle 82 at (880.0714, 164.8)
+ObstacleSpawner: Rejected obstacle 83 at (276.3571, 320.4)
+ObstacleSpawner: Rejected obstacle 84 at (249.3571, 245.6)
+ObstacleSpawner: Rejected obstacle 85 at (264.3571, 125.8)
+ObstacleSpawner: Final count: 44
+LevelGenerator: Got 44 obstacles from recreated spawner
+LevelGenerator: Got exit at (998.5, 406)
+LevelGenerator: CoinSpawner is null! Recreating...
+CoinSpawner: Generating coins for level size: 1.10714285714286 level: 3
+CoinSpawner: Target count: 14 (level mult: 1.24)
+CoinSpawner: Full map coverage: true
+CoinSpawner: Final count: 14
+LevelGenerator: Got 14 coins from recreated spawner
+Generated objects:
+- Exit: true at (998.5, 406)
+- Coins: 14
+- Total children in scene: 0
+=== LEVEL COMPLETED ===
+Completed level: 3 Size: 1.10714285714286
+Level completed! Click Continue to proceed to next level
+=== RESTART PRESSED ===
+Current level: 3 Size: 1.10714285714286
+Timer stopped due to game state: 1
+DEBUG: Advancing level from 3
+DEBUG: After advancement - level: 4 completed_all_levels: false
+DEBUG: Level size after advancement: 1.28571428571429
+Next level: 4 Size: 1.28571428571429
+DEBUG: Level progress updated - current level: 4
+Player positioned at: (50, 300) (level size: 1.28571428571429)
+Level dimensions: width=1316 height=771 offset_x=-146 offset_y=-85.5
+Main: Clearing level objects...
+Main: LevelGenerator before clear: LevelGenerator:<Node2D#34359739659> (valid: true)
+Main: Calling level_generator.clear_existing_objects()
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: ObstacleSpawner:<Node2D#59424901000> (valid: true)
+LevelGenerator: CoinSpawner before clear: CoinSpawner:<Node2D#66773321460> (valid: true)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: ObstacleSpawner:<Node2D#59424901000> (valid: true)
+LevelGenerator: After clear - CoinSpawner: CoinSpawner:<Node2D#66773321460> (valid: true)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+Main: After clear - LevelGenerator: LevelGenerator:<Node2D#34359739659> (valid: true)
+=== GENERATING LEVEL 4 (size: 1.28571428571429) ===
+LevelUtils: Updating play area - width: 1316 height: 771 offset: -146, -85.5
+LevelUtils: Play area updated - position: (-146, -85.5) size: (1316, 771)
+Player positioned at: (50, 300) (level size: 1.28571428571429)
+Level dimensions: width=1316 height=771 offset_x=-146 offset_y=-85.5
+LevelGenerator is valid, checking spawners...
+ObstacleSpawner: <Freed Object> (valid: false)
+CoinSpawner: <Freed Object> (valid: false)
+ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: Starting generation for size: 1.28571428571429
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: CoinSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - CoinSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: ObstacleSpawner is null! Recreating...
+ObstacleSpawner: Generating obstacles for level size: 1.28571428571429 level: 4
+ObstacleSpawner: Self valid: true
+ObstacleSpawner: Parent valid: true
+ObstacleSpawner: Target count: 117 (level multiplier: 1.6)
+ObstacleSpawner: Full map coverage: true
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 0 at (1113, 645.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 1 at (921.4286, 488.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 2 at (812.8571, 467.3)
+ObstacleSpawner: Rejected obstacle 3 at (86.57143, 339.1)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 4 at (273.1429, 645.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 5 at (966.4286, 244.9)
+ObstacleSpawner: Rejected obstacle 6 at (955.4286, 501.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 7 at (231.1429, 525.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 8 at (743.8571, -28.5)
+ObstacleSpawner: Rejected obstacle 9 at (208.1429, 500.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 10 at (408.7143, 110.7)
+ObstacleSpawner: Rejected obstacle 11 at (260.1429, 620.5)
+ObstacleSpawner: Rejected obstacle 12 at (254.1429, 621.5)
+ObstacleSpawner: Rejected obstacle 13 at (273.1429, 645.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 14 at (563.2857, 508.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 15 at (1097, 84.7)
+ObstacleSpawner: Rejected obstacle 16 at (949.4286, 527.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 17 at (749.8571, 607.5)
+ObstacleSpawner: Rejected obstacle 18 at (784.8571, 531.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 19 at (576.2857, 125.7)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 20 at (405.7143, 645.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 21 at (942.4286, -45.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 22 at (250.1429, 344.1)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 23 at (91.57143, 645.5)
+ObstacleSpawner: Rejected obstacle 24 at (759.8571, -45.5)
+ObstacleSpawner: Rejected obstacle 25 at (1130, 66.7)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 26 at (393.7143, 510.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 27 at (570.2857, -45.5)
+ObstacleSpawner: Rejected obstacle 28 at (254.1429, 375.1)
+ObstacleSpawner: Rejected obstacle 29 at (1098, 92.7)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 30 at (285.1429, 201.9)
+ObstacleSpawner: Rejected obstacle 31 at (967.4286, 260.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 32 at (640.2857, 355.1)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 33 at (421.7143, -45.5)
+ObstacleSpawner: Rejected obstacle 34 at (432.7143, 492.3)
+ObstacleSpawner: Rejected obstacle 35 at (943.4286, 214.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 36 at (-93, 223.9)
+ObstacleSpawner: Rejected obstacle 37 at (632.2857, 362.1)
+ObstacleSpawner: Rejected obstacle 38 at (410.7143, 514.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 39 at (463.7143, 238.9)
+ObstacleSpawner: Rejected obstacle 40 at (261.1429, 473.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 41 at (624.2857, 469.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 42 at (274.1429, -45.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 43 at (1105, 380.1)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 44 at (985.4286, 362.1)
+ObstacleSpawner: Rejected obstacle 45 at (627.2857, 480.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 46 at (43.57143, 61.7)
+ObstacleSpawner: Rejected obstacle 47 at (396.7143, -40.5)
+ObstacleSpawner: Rejected obstacle 48 at (425.7143, 103.7)
+ObstacleSpawner: Rejected obstacle 49 at (67.57143, 381.1)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 50 at (921.4286, 645.5)
+ObstacleSpawner: Rejected obstacle 51 at (256.1429, 511.3)
+ObstacleSpawner: Rejected obstacle 52 at (606.2857, -45.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 53 at (640.2857, 645.5)
+ObstacleSpawner: Rejected obstacle 54 at (1097, 364.1)
+ObstacleSpawner: Rejected obstacle 55 at (808.8571, 614.5)
+ObstacleSpawner: Rejected obstacle 56 at (958.4286, 630.5)
+ObstacleSpawner: Rejected obstacle 57 at (639.2857, 645.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 58 at (1104, 542.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 59 at (1107, 197.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 60 at (-106, -8.5)
+ObstacleSpawner: Rejected obstacle 61 at (627.2857, 79.7)
+ObstacleSpawner: Rejected obstacle 62 at (638.2857, 637.5)
+ObstacleSpawner: Rejected obstacle 63 at (1130, 645.5)
+ObstacleSpawner: Rejected obstacle 64 at (429.7143, 217.9)
+ObstacleSpawner: Rejected obstacle 65 at (-68, -43.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 66 at (395.7143, 378.1)
+ObstacleSpawner: Rejected obstacle 67 at (454.7143, 90.7)
+ObstacleSpawner: Rejected obstacle 68 at (772.8571, 609.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 69 at (277.1429, 75.7)
+ObstacleSpawner: Rejected obstacle 70 at (-83, 224.9)
+ObstacleSpawner: Rejected obstacle 71 at (957.4286, -45.5)
+ObstacleSpawner: Rejected obstacle 72 at (1130, 510.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 73 at (774.8571, 361.1)
+ObstacleSpawner: Rejected obstacle 74 at (-94, 223.9)
+ObstacleSpawner: Rejected obstacle 75 at (436.7143, 645.5)
+ObstacleSpawner: Rejected obstacle 76 at (-105, -45.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 77 at (807.8571, 61.7)
+ObstacleSpawner: Rejected obstacle 78 at (1130, 101.7)
+ObstacleSpawner: Rejected obstacle 79 at (438.7143, 645.5)
+ObstacleSpawner: Rejected obstacle 80 at (451.7143, 197.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 81 at (53.57143, -34.5)
+ObstacleSpawner: Rejected obstacle 82 at (770.8571, 119.7)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 83 at (72.57143, 406.1)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 84 at (1130, -45.5)
+ObstacleSpawner: Rejected obstacle 85 at (279.1429, 645.5)
+ObstacleSpawner: Rejected obstacle 86 at (84.57143, 386.1)
+ObstacleSpawner: Rejected obstacle 87 at (98.57143, 264.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 88 at (-106, 376.1)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 89 at (585.2857, 231.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 90 at (-92, 630.5)
+ObstacleSpawner: Rejected obstacle 91 at (797.8571, 360.1)
+ObstacleSpawner: Rejected obstacle 92 at (963.4286, 195.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 93 at (569.2857, 383.1)
+ObstacleSpawner: Rejected obstacle 94 at (-85, 392.1)
+ObstacleSpawner: Rejected obstacle 95 at (964.4286, 639.5)
+ObstacleSpawner: Rejected obstacle 96 at (754.8571, 469.3)
+ObstacleSpawner: Rejected obstacle 97 at (1130, -45.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 98 at (957.4286, 128.7)
+ObstacleSpawner: Rejected obstacle 99 at (1108, 645.5)
+ObstacleSpawner: Rejected obstacle 100 at (636.2857, 533.3)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 101 at (-106, 65.7)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 102 at (-74, 518.3)
+ObstacleSpawner: Rejected obstacle 103 at (1093, 488.3)
+ObstacleSpawner: Rejected obstacle 104 at (-74, 201.9)
+ObstacleSpawner: Rejected obstacle 105 at (427.7143, 128.7)
+ObstacleSpawner: Rejected obstacle 106 at (234.1429, 638.5)
+ObstacleSpawner: Rejected obstacle 107 at (422.7143, 500.3)
+ObstacleSpawner: Rejected obstacle 108 at (791.8571, 116.7)
+ObstacleSpawner: Rejected obstacle 109 at (80.57143, -45.5)
+ObstacleSpawner: Rejected obstacle 110 at (939.4286, 223.9)
+ObstacleSpawner: Rejected obstacle 111 at (953.4286, 222.9)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 112 at (615.2857, 62.7)
+ObstacleSpawner: Rejected obstacle 113 at (449.7143, 472.3)
+ObstacleSpawner: Rejected obstacle 114 at (435.7143, 354.1)
+ObstacleSpawner: Rejected obstacle 115 at (759.8571, -45.5)
+ObstacleSpawner: Rejected obstacle 116 at (563.2857, 388.1)
+ObstacleSpawner: Final count: 48
+LevelGenerator: Got 48 obstacles from recreated spawner
+LevelGenerator: Got exit at (886.8, 568.5)
+LevelGenerator: CoinSpawner is null! Recreating...
+CoinSpawner: Generating coins for level size: 1.28571428571429 level: 4
+CoinSpawner: Target count: 40 (level mult: 1.36)
+CoinSpawner: Full map coverage: true
+CoinSpawner: Final count: 39
+LevelGenerator: Got 39 coins from recreated spawner
+Generated objects:
+- Exit: true at (886.8, 568.5)
+- Coins: 39
+- Total children in scene: 0
+=== LEVEL COMPLETED ===
+Completed level: 4 Size: 1.28571428571429
+Level completed! Click Continue to proceed to next level
+=== RESTART PRESSED ===
+Current level: 4 Size: 1.28571428571429
+Timer stopped due to game state: 1
+DEBUG: Advancing level from 4
+DEBUG: After advancement - level: 5 completed_all_levels: false
+DEBUG: Level size after advancement: 1.46428571428571
+Next level: 5 Size: 1.46428571428571
+DEBUG: Level progress updated - current level: 5
+Player positioned at: (50, 300) (level size: 1.46428571428571)
+Level dimensions: width=1499 height=878 offset_x=-237.5 offset_y=-139
+Main: Clearing level objects...
+Main: LevelGenerator before clear: LevelGenerator:<Node2D#34359739659> (valid: true)
+Main: Calling level_generator.clear_existing_objects()
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: ObstacleSpawner:<Node2D#87056975604> (valid: true)
+LevelGenerator: CoinSpawner before clear: CoinSpawner:<Node2D#97005865627> (valid: true)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: ObstacleSpawner:<Node2D#87056975604> (valid: true)
+LevelGenerator: After clear - CoinSpawner: CoinSpawner:<Node2D#97005865627> (valid: true)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+Main: After clear - LevelGenerator: LevelGenerator:<Node2D#34359739659> (valid: true)
+=== GENERATING LEVEL 5 (size: 1.46428571428571) ===
+LevelUtils: Updating play area - width: 1499 height: 878 offset: -237.5, -139
+LevelUtils: Play area updated - position: (-237.5, -139) size: (1499, 878)
+Player positioned at: (50, 300) (level size: 1.46428571428571)
+Level dimensions: width=1499 height=878 offset_x=-237.5 offset_y=-139
+LevelGenerator is valid, checking spawners...
+ObstacleSpawner: <Freed Object> (valid: false)
+CoinSpawner: <Freed Object> (valid: false)
+ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: Starting generation for size: 1.46428571428571
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: CoinSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - CoinSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: ObstacleSpawner is null! Recreating...
+ObstacleSpawner: Generating obstacles for level size: 1.46428571428571 level: 5
+ObstacleSpawner: Self valid: true
+ObstacleSpawner: Parent valid: true
+ObstacleSpawner: Target count: 144 (level multiplier: 1.8)
+ObstacleSpawner: Full map coverage: true
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 0 at (632.3571, 696)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 1 at (636.3571, 348.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 2 at (1195.5, -99)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 3 at (856.0714, 683)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 4 at (1019.786, 380.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 5 at (1040.786, -99)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 6 at (777.0714, 661)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 7 at (811.0714, 529.4)
+ObstacleSpawner: Rejected obstacle 8 at (1221.5, -99)
+ObstacleSpawner: Rejected obstacle 9 at (625.3571, 415.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 10 at (1221.5, 669)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 11 at (176.9286, 699)
+ObstacleSpawner: Rejected obstacle 12 at (1025.786, 415.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 13 at (636.3571, 579.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 14 at (781.0714, 191.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 15 at (794.0714, -76)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 16 at (1214.5, 347.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 17 at (28.21428, 205.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 18 at (584.3571, 71.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 19 at (601.3571, -99)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 20 at (188.9286, 93.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 21 at (445.6429, 62.6)
+ObstacleSpawner: Rejected obstacle 22 at (1055.786, -99)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 23 at (230.9286, 555.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 24 at (415.6429, 660)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 25 at (-10.78571, -99)
+ObstacleSpawner: Rejected obstacle 26 at (449.6429, 73.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 27 at (-163.5, 699)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 28 at (215.9286, -99)
+ObstacleSpawner: Rejected obstacle 29 at (27.21428, -63)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 30 at (627.3571, 507.4)
+ObstacleSpawner: Rejected obstacle 31 at (810.0714, 509.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 32 at (576.3571, 412.8)
+ObstacleSpawner: Rejected obstacle 33 at (645.3571, -95)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 34 at (821.0714, 251.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 35 at (-189.5, -93)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 36 at (1221.5, 50.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 37 at (413.6429, 404.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 38 at (-197.5, 24.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 39 at (199.9286, 251.2)
+ObstacleSpawner: Rejected obstacle 40 at (225.9286, 55.6)
+ObstacleSpawner: Rejected obstacle 41 at (648.3571, 353.8)
+ObstacleSpawner: Rejected obstacle 42 at (1184.5, 347.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 43 at (-197.5, 219.2)
+ObstacleSpawner: Rejected obstacle 44 at (646.3571, 385.8)
+ObstacleSpawner: Rejected obstacle 45 at (-197.5, 245.2)
+ObstacleSpawner: Rejected obstacle 46 at (-181.5, -99)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 47 at (988.7857, 513.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 48 at (1221.5, 240.2)
+ObstacleSpawner: Rejected obstacle 49 at (430.6429, 669)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 50 at (397.6429, 559.4)
+ObstacleSpawner: Rejected obstacle 51 at (618.3571, 97.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 52 at (776.0714, 417.8)
+ObstacleSpawner: Rejected obstacle 53 at (-191.5, 699)
+ObstacleSpawner: Rejected obstacle 54 at (408.6429, 532.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 55 at (37.21429, 513.4)
+ObstacleSpawner: Rejected obstacle 56 at (622.3571, -88)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 57 at (793.0714, 35.6)
+ObstacleSpawner: Rejected obstacle 58 at (990.7857, 541.4)
+ObstacleSpawner: Rejected obstacle 59 at (-189.5, 699)
+ObstacleSpawner: Rejected obstacle 60 at (830.0714, 674)
+ObstacleSpawner: Rejected obstacle 61 at (588.3571, 51.6)
+ObstacleSpawner: Rejected obstacle 62 at (195.9286, -99)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 63 at (1006.786, 92.6)
+ObstacleSpawner: Rejected obstacle 64 at (1221.5, 699)
+ObstacleSpawner: Rejected obstacle 65 at (183.9286, -99)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 66 at (412.6429, 200.2)
+ObstacleSpawner: Rejected obstacle 67 at (1022.786, 342.8)
+ObstacleSpawner: Rejected obstacle 68 at (1221.5, 69.6)
+ObstacleSpawner: Rejected obstacle 69 at (644.3571, 699)
+ObstacleSpawner: Rejected obstacle 70 at (437.6429, 416.8)
+ObstacleSpawner: Rejected obstacle 71 at (778.0714, 698)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 72 at (-24.78572, 401.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 73 at (-17.78572, 44.6)
+ObstacleSpawner: Rejected obstacle 74 at (402.6429, 361.8)
+ObstacleSpawner: Rejected obstacle 75 at (792.0714, 238.2)
+ObstacleSpawner: Rejected obstacle 76 at (628.3571, 576.4)
+ObstacleSpawner: Rejected obstacle 77 at (817.0714, 685)
+ObstacleSpawner: Rejected obstacle 78 at (854.0714, 51.6)
+ObstacleSpawner: Rejected obstacle 79 at (999.7857, 500.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 80 at (1005.786, 659)
+ObstacleSpawner: Rejected obstacle 81 at (801.0714, 82.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 82 at (1202.5, 560.4)
+ObstacleSpawner: Rejected obstacle 83 at (653.3571, 699)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 84 at (214.9286, 408.8)
+ObstacleSpawner: Rejected obstacle 85 at (445.6429, 185.2)
+ObstacleSpawner: Rejected obstacle 86 at (1015.786, 358.8)
+ObstacleSpawner: Rejected obstacle 87 at (1010.786, 100.6)
+ObstacleSpawner: Rejected obstacle 88 at (815.0714, 699)
+ObstacleSpawner: Rejected obstacle 89 at (245.9286, 93.6)
+ObstacleSpawner: Rejected obstacle 90 at (586.3571, 395.8)
+ObstacleSpawner: Rejected obstacle 91 at (621.3571, 58.6)
+ObstacleSpawner: Rejected obstacle 92 at (379.6429, 541.4)
+ObstacleSpawner: Rejected obstacle 93 at (831.0714, -90)
+ObstacleSpawner: Rejected obstacle 94 at (649.3571, 501.4)
+ObstacleSpawner: Rejected obstacle 95 at (1024.786, 685)
+ObstacleSpawner: Rejected obstacle 96 at (650.3571, -99)
+ObstacleSpawner: Rejected obstacle 97 at (1221.5, -65)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 98 at (37.21429, 688)
+ObstacleSpawner: Rejected obstacle 99 at (41.21429, 216.2)
+ObstacleSpawner: Rejected obstacle 100 at (1050.786, 96.6)
+ObstacleSpawner: Rejected obstacle 101 at (-190.5, 247.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 102 at (1001.786, 221.2)
+ObstacleSpawner: Rejected obstacle 103 at (0.214286, 699)
+ObstacleSpawner: Rejected obstacle 104 at (838.0714, 216.2)
+ObstacleSpawner: Rejected obstacle 105 at (174.9286, 403.8)
+ObstacleSpawner: Rejected obstacle 106 at (-197.5, 699)
+ObstacleSpawner: Rejected obstacle 107 at (168.9286, 362.8)
+ObstacleSpawner: Rejected obstacle 108 at (432.6429, 98.6)
+ObstacleSpawner: Rejected obstacle 109 at (645.3571, 698)
+ObstacleSpawner: Rejected obstacle 110 at (979.7857, 699)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 111 at (-28.78572, 661)
+ObstacleSpawner: Rejected obstacle 112 at (396.6429, 216.2)
+ObstacleSpawner: Rejected obstacle 113 at (433.6429, 231.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 114 at (-192.5, 351.8)
+ObstacleSpawner: Rejected obstacle 115 at (220.9286, 685)
+ObstacleSpawner: Rejected obstacle 116 at (636.3571, -78)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 117 at (-192.5, 548.4)
+ObstacleSpawner: Rejected obstacle 118 at (-180.5, 70.6)
+ObstacleSpawner: Rejected obstacle 119 at (593.3571, 28.6)
+ObstacleSpawner: Rejected obstacle 120 at (387.6429, 661)
+ObstacleSpawner: Rejected obstacle 121 at (39.21429, 64.6)
+ObstacleSpawner: Rejected obstacle 122 at (-197.5, 503.4)
+ObstacleSpawner: Rejected obstacle 123 at (-181.5, 207.2)
+ObstacleSpawner: Rejected obstacle 124 at (421.6429, 95.6)
+ObstacleSpawner: Rejected obstacle 125 at (-173.5, 579.4)
+ObstacleSpawner: Rejected obstacle 126 at (1221.5, 370.8)
+ObstacleSpawner: Rejected obstacle 127 at (1038.786, 669)
+ObstacleSpawner: Rejected obstacle 128 at (1195.5, -99)
+ObstacleSpawner: Rejected obstacle 129 at (1221.5, 56.6)
+ObstacleSpawner: Rejected obstacle 130 at (650.3571, 383.8)
+ObstacleSpawner: Rejected obstacle 131 at (-161.5, 664)
+ObstacleSpawner: Rejected obstacle 132 at (435.6429, 73.6)
+ObstacleSpawner: Rejected obstacle 133 at (39.21429, 232.2)
+ObstacleSpawner: Rejected obstacle 134 at (421.6429, 395.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 135 at (196.9286, 339.8)
+ObstacleSpawner: Rejected obstacle 136 at (409.6429, 253.2)
+ObstacleSpawner: Rejected obstacle 137 at (24.21428, 393.8)
+ObstacleSpawner: Rejected obstacle 138 at (-12.78571, 412.8)
+ObstacleSpawner: Rejected obstacle 139 at (-3.785714, -90)
+ObstacleSpawner: Rejected obstacle 140 at (814.0714, 513.4)
+ObstacleSpawner: Rejected obstacle 141 at (-9.785714, 699)
+ObstacleSpawner: Rejected obstacle 142 at (43.21429, 192.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 143 at (1029.786, 570.4)
+ObstacleSpawner: Final count: 53
+LevelGenerator: Got 53 obstacles from recreated spawner
+LevelGenerator: Got exit at (1138.5, 648)
+LevelGenerator: CoinSpawner is null! Recreating...
+CoinSpawner: Generating coins for level size: 1.46428571428571 level: 5
+CoinSpawner: Target count: 40 (level mult: 1.48)
+CoinSpawner: Full map coverage: true
+CoinSpawner: Final count: 32
+LevelGenerator: Got 32 coins from recreated spawner
+Generated objects:
+- Exit: true at (1138.5, 648)
+- Coins: 32
+- Total children in scene: 0
+=== LEVEL COMPLETED ===
+Completed level: 5 Size: 1.46428571428571
+Level completed! Click Continue to proceed to next level
+=== RESTART PRESSED ===
+Current level: 5 Size: 1.46428571428571
+Timer stopped due to game state: 1
+DEBUG: Advancing level from 5
+DEBUG: After advancement - level: 6 completed_all_levels: false
+DEBUG: Level size after advancement: 1.64285714285714
+Next level: 6 Size: 1.64285714285714
+DEBUG: Level progress updated - current level: 6
+Player positioned at: (50, 300) (level size: 1.64285714285714)
+Level dimensions: width=1682 height=985 offset_x=-329 offset_y=-192.5
+Main: Clearing level objects...
+Main: LevelGenerator before clear: LevelGenerator:<Node2D#34359739659> (valid: true)
+Main: Calling level_generator.clear_existing_objects()
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: ObstacleSpawner:<Node2D#222499443858> (valid: true)
+LevelGenerator: CoinSpawner before clear: CoinSpawner:<Node2D#234713260953> (valid: true)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: ObstacleSpawner:<Node2D#222499443858> (valid: true)
+LevelGenerator: After clear - CoinSpawner: CoinSpawner:<Node2D#234713260953> (valid: true)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+Main: After clear - LevelGenerator: LevelGenerator:<Node2D#34359739659> (valid: true)
+=== GENERATING LEVEL 6 (size: 1.64285714285714) ===
+LevelUtils: Updating play area - width: 1682 height: 985 offset: -329, -192.5
+LevelUtils: Play area updated - position: (-329, -192.5) size: (1682, 985)
+Player positioned at: (50, 300) (level size: 1.64285714285714)
+Level dimensions: width=1682 height=985 offset_x=-329 offset_y=-192.5
+LevelGenerator is valid, checking spawners...
+ObstacleSpawner: <Freed Object> (valid: false)
+CoinSpawner: <Freed Object> (valid: false)
+ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: Starting generation for size: 1.64285714285714
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: CoinSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - CoinSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: ObstacleSpawner is null! Recreating...
+ObstacleSpawner: Generating obstacles for level size: 1.64285714285714 level: 6
+ObstacleSpawner: Self valid: true
+ObstacleSpawner: Parent valid: true
+ObstacleSpawner: Target count: 180 (level multiplier: 2)
+ObstacleSpawner: Full map coverage: true
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 0 at (-97.14286, -152.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 1 at (1288, 57.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 2 at (1313, -130.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 3 at (198.7143, -133.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 4 at (622.4286, 363.5)
+ObstacleSpawner: Rejected obstacle 5 at (1292, -133.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 6 at (427.5714, 567.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 7 at (139.7143, 752.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 8 at (381.5714, 237.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 9 at (179.7143, 586.5)
+ObstacleSpawner: Rejected obstacle 10 at (1313, -116.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 11 at (845.2857, 172.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 12 at (874.2857, 563.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 13 at (1114.143, 714.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 14 at (1299, 177.5)
+ObstacleSpawner: Rejected obstacle 15 at (202.7143, 736.5)
+ObstacleSpawner: Rejected obstacle 16 at (821.2857, 232.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 17 at (1057.143, 386.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 18 at (192.7143, -4.5)
+ObstacleSpawner: Rejected obstacle 19 at (151.7143, 752.5)
+ObstacleSpawner: Rejected obstacle 20 at (149.7143, 752.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 21 at (-288, 752.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 22 at (-58.14286, 208.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 23 at (632.4286, 752.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 24 at (403.5714, 428.5)
+ObstacleSpawner: Rejected obstacle 25 at (860.2857, 571.5)
+ObstacleSpawner: Rejected obstacle 26 at (131.7143, 389.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 27 at (-289, 171.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 28 at (415.5714, -147.5)
+ObstacleSpawner: Rejected obstacle 29 at (1273, 57.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 30 at (1275, 393.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 31 at (1094.143, -152.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 32 at (183.7143, 65.5)
+ObstacleSpawner: Rejected obstacle 33 at (1309, 367.5)
+ObstacleSpawner: Rejected obstacle 34 at (133.7143, 43.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 35 at (-59.14286, 748.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 36 at (-47.14286, 589.5)
+ObstacleSpawner: Rejected obstacle 37 at (1313, 3.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 38 at (890.2857, 353.5)
+ObstacleSpawner: Rejected obstacle 39 at (1080.143, -152.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 40 at (367.5714, 752.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 41 at (820.2857, -120.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 42 at (647.4286, 191.5)
+ObstacleSpawner: Rejected obstacle 43 at (195.7143, -146.5)
+ObstacleSpawner: Rejected obstacle 44 at (412.5714, 752.5)
+ObstacleSpawner: Rejected obstacle 45 at (-53.14286, 738.5)
+ObstacleSpawner: Rejected obstacle 46 at (-269, 217.5)
+ObstacleSpawner: Rejected obstacle 47 at (-37.14286, 752.5)
+ObstacleSpawner: Rejected obstacle 48 at (1274, 352.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 49 at (189.7143, 169.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 50 at (865.2857, 752.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 51 at (1096.143, 534.5)
+ObstacleSpawner: Rejected obstacle 52 at (1114.143, 379.5)
+ObstacleSpawner: Rejected obstacle 53 at (-251, 752.5)
+ObstacleSpawner: Rejected obstacle 54 at (201.7143, 752.5)
+ObstacleSpawner: Rejected obstacle 55 at (377.5714, 240.5)
+ObstacleSpawner: Rejected obstacle 56 at (822.2857, 752.5)
+ObstacleSpawner: Rejected obstacle 57 at (1055.143, 407.5)
+ObstacleSpawner: Rejected obstacle 58 at (871.2857, 736.5)
+ObstacleSpawner: Rejected obstacle 59 at (624.4286, 226.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 60 at (1305, 593.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 61 at (882.2857, 423.5)
+ObstacleSpawner: Rejected obstacle 62 at (-289, 171.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 63 at (605.4286, 570.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 64 at (641.4286, -132.5)
+ObstacleSpawner: Rejected obstacle 65 at (-45.14286, 534.5)
+ObstacleSpawner: Rejected obstacle 66 at (645.4286, 415.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 67 at (1313, 752.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 68 at (-282, -129.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 69 at (-289, 408.5)
+ObstacleSpawner: Rejected obstacle 70 at (1313, 554.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 71 at (1083.143, 233.5)
+ObstacleSpawner: Rejected obstacle 72 at (826.2857, 407.5)
+ObstacleSpawner: Rejected obstacle 73 at (830.2857, -152.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 74 at (-275, 31.5)
+ObstacleSpawner: Rejected obstacle 75 at (-285, 752.5)
+ObstacleSpawner: Rejected obstacle 76 at (135.7143, 212.5)
+ObstacleSpawner: Rejected obstacle 77 at (1060.143, -112.5)
+ObstacleSpawner: Rejected obstacle 78 at (384.5714, 589.5)
+ObstacleSpawner: Rejected obstacle 79 at (-87.14286, 752.5)
+ObstacleSpawner: Rejected obstacle 80 at (593.4286, 195.5)
+ObstacleSpawner: Rejected obstacle 81 at (427.5714, 575.5)
+ObstacleSpawner: Rejected obstacle 82 at (1052.143, 586.5)
+ObstacleSpawner: Rejected obstacle 83 at (-266, 408.5)
+ObstacleSpawner: Rejected obstacle 84 at (1047.143, -146.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 85 at (-20.14286, 350.5)
+ObstacleSpawner: Rejected obstacle 86 at (-287, 24.5)
+ObstacleSpawner: Rejected obstacle 87 at (419.5714, 752.5)
+ObstacleSpawner: Rejected obstacle 88 at (1120.143, 752.5)
+ObstacleSpawner: Rejected obstacle 89 at (403.5714, 388.5)
+ObstacleSpawner: Rejected obstacle 90 at (643.4286, 532.5)
+ObstacleSpawner: Rejected obstacle 91 at (1106.143, 736.5)
+ObstacleSpawner: Rejected obstacle 92 at (645.4286, -152.5)
+ObstacleSpawner: Rejected obstacle 93 at (871.2857, -118.5)
+ObstacleSpawner: Rejected obstacle 94 at (397.5714, 726.5)
+ObstacleSpawner: Rejected obstacle 95 at (1300, 752.5)
+ObstacleSpawner: Rejected obstacle 96 at (-53.14286, -138.5)
+ObstacleSpawner: Rejected obstacle 97 at (603.4286, -152.5)
+ObstacleSpawner: Rejected obstacle 98 at (842.2857, 372.5)
+ObstacleSpawner: Rejected obstacle 99 at (-93.14286, 564.5)
+ObstacleSpawner: Rejected obstacle 100 at (1103.143, 216.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 101 at (657.4286, 425.5)
+ObstacleSpawner: Rejected obstacle 102 at (840.2857, 573.5)
+ObstacleSpawner: Rejected obstacle 103 at (-289, 15.5)
+ObstacleSpawner: Rejected obstacle 104 at (1282, 594.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 105 at (-259, 544.5)
+ObstacleSpawner: Rejected obstacle 106 at (379.5714, -146.5)
+ObstacleSpawner: Rejected obstacle 107 at (878.2857, 569.5)
+ObstacleSpawner: Rejected obstacle 108 at (-251, 712.5)
+ObstacleSpawner: Rejected obstacle 109 at (647.4286, 191.5)
+ObstacleSpawner: Rejected obstacle 110 at (1086.143, -127.5)
+ObstacleSpawner: Rejected obstacle 111 at (185.7143, 31.5)
+ObstacleSpawner: Rejected obstacle 112 at (1313, 207.5)
+ObstacleSpawner: Rejected obstacle 113 at (373.5714, 605.5)
+ObstacleSpawner: Rejected obstacle 114 at (1281, 219.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 115 at (189.7143, 419.5)
+ObstacleSpawner: Rejected obstacle 116 at (-289, -152.5)
+ObstacleSpawner: Rejected obstacle 117 at (-68.14286, 557.5)
+ObstacleSpawner: Rejected obstacle 118 at (618.4286, 544.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 119 at (-100.1429, 59.5)
+ObstacleSpawner: Rejected obstacle 120 at (605.4286, 425.5)
+ObstacleSpawner: Rejected obstacle 121 at (-53.14286, 224.5)
+ObstacleSpawner: Rejected obstacle 122 at (629.4286, 600.5)
+ObstacleSpawner: Rejected obstacle 123 at (878.2857, 561.5)
+ObstacleSpawner: Rejected obstacle 124 at (601.4286, 740.5)
+ObstacleSpawner: Rejected obstacle 125 at (406.5714, -112.5)
+ObstacleSpawner: Rejected obstacle 126 at (406.5714, -152.5)
+ObstacleSpawner: Rejected obstacle 127 at (1084.143, 243.5)
+ObstacleSpawner: Rejected obstacle 128 at (186.7143, 400.5)
+ObstacleSpawner: Rejected obstacle 129 at (659.4286, 568.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 130 at (894.2857, 230.5)
+ObstacleSpawner: Rejected obstacle 131 at (-77.14286, 386.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 132 at (635.4286, 31.5)
+ObstacleSpawner: Rejected obstacle 133 at (832.2857, 208.5)
+ObstacleSpawner: Rejected obstacle 134 at (1308, -126.5)
+ObstacleSpawner: Rejected obstacle 135 at (1081.143, 742.5)
+ObstacleSpawner: Rejected obstacle 136 at (653.4286, -7.5)
+ObstacleSpawner: Rejected obstacle 137 at (-81.14286, -146.5)
+ObstacleSpawner: Rejected obstacle 138 at (-56.14286, 64.5)
+ObstacleSpawner: Rejected obstacle 139 at (-79.14286, 31.5)
+ObstacleSpawner: Rejected obstacle 140 at (143.7143, 750.5)
+ObstacleSpawner: Rejected obstacle 141 at (607.4286, 355.5)
+ObstacleSpawner: Rejected obstacle 142 at (877.2857, 391.5)
+ObstacleSpawner: Rejected obstacle 143 at (-270, 66.5)
+ObstacleSpawner: Rejected obstacle 144 at (-289, 747.5)
+ObstacleSpawner: Rejected obstacle 145 at (1067.143, 198.5)
+ObstacleSpawner: Rejected obstacle 146 at (-258, 741.5)
+ObstacleSpawner: Rejected obstacle 147 at (1273, 548.5)
+ObstacleSpawner: Rejected obstacle 148 at (607.4286, 240.5)
+ObstacleSpawner: Rejected obstacle 149 at (404.5714, 549.5)
+ObstacleSpawner: Rejected obstacle 150 at (654.4286, 68.5)
+ObstacleSpawner: Rejected obstacle 151 at (152.7143, 736.5)
+ObstacleSpawner: Rejected obstacle 152 at (-289, -2.5)
+ObstacleSpawner: Rejected obstacle 153 at (1071.143, -152.5)
+ObstacleSpawner: Rejected obstacle 154 at (622.4286, 223.5)
+ObstacleSpawner: Rejected obstacle 155 at (-49.14286, 735.5)
+ObstacleSpawner: Rejected obstacle 156 at (641.4286, -138.5)
+ObstacleSpawner: Rejected obstacle 157 at (129.7143, 752.5)
+ObstacleSpawner: Rejected obstacle 158 at (189.7143, 381.5)
+ObstacleSpawner: Rejected obstacle 159 at (1066.143, 405.5)
+ObstacleSpawner: Rejected obstacle 160 at (-58.14286, 602.5)
+ObstacleSpawner: Rejected obstacle 161 at (867.2857, 249.5)
+ObstacleSpawner: Rejected obstacle 162 at (604.4286, -152.5)
+ObstacleSpawner: Rejected obstacle 163 at (375.5714, -152.5)
+ObstacleSpawner: Rejected obstacle 164 at (-285, 354.5)
+ObstacleSpawner: Rejected obstacle 165 at (-48.14286, -152.5)
+ObstacleSpawner: Rejected obstacle 166 at (636.4286, 752.5)
+ObstacleSpawner: Rejected obstacle 167 at (1311, 53.5)
+ObstacleSpawner: Rejected obstacle 168 at (-62.14286, -152.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 169 at (1106.143, 68.5)
+ObstacleSpawner: Rejected obstacle 170 at (137.7143, 752.5)
+ObstacleSpawner: Rejected obstacle 171 at (429.5714, 746.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 172 at (-20.14286, 32.5)
+ObstacleSpawner: Rejected obstacle 173 at (587.4286, 37.5)
+ObstacleSpawner: Rejected obstacle 174 at (1095.143, 556.5)
+ObstacleSpawner: Rejected obstacle 175 at (1071.143, 20.5)
+ObstacleSpawner: Rejected obstacle 176 at (653.4286, 181.5)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 177 at (839.2857, 14.5)
+ObstacleSpawner: Rejected obstacle 178 at (818.2857, 570.5)
+ObstacleSpawner: Rejected obstacle 179 at (833.2857, 199.5)
+ObstacleSpawner: Final count: 52
+LevelGenerator: Got 52 obstacles from recreated spawner
+LevelGenerator: Got exit at (983.6, 211.5)
+LevelGenerator: CoinSpawner is null! Recreating...
+CoinSpawner: Generating coins for level size: 1.64285714285714 level: 6
+CoinSpawner: Target count: 40 (level mult: 1.60)
+CoinSpawner: Full map coverage: true
+CoinSpawner: Final count: 36
+LevelGenerator: Got 36 coins from recreated spawner
+Generated objects:
+- Exit: true at (983.6, 211.5)
+- Coins: 36
+- Total children in scene: 0
+=== LEVEL COMPLETED ===
+Completed level: 6 Size: 1.64285714285714
+Level completed! Click Continue to proceed to next level
+=== RESTART PRESSED ===
+Current level: 6 Size: 1.64285714285714
+Timer stopped due to game state: 1
+DEBUG: Advancing level from 6
+DEBUG: After advancement - level: 7 completed_all_levels: false
+DEBUG: Level size after advancement: 1.82142857142857
+Next level: 7 Size: 1.82142857142857
+DEBUG: Level progress updated - current level: 7
+Player positioned at: (50, 300) (level size: 1.82142857142857)
+Level dimensions: width=1865 height=1092 offset_x=-420.5 offset_y=-246
+Main: Clearing level objects...
+Main: LevelGenerator before clear: LevelGenerator:<Node2D#34359739659> (valid: true)
+Main: Calling level_generator.clear_existing_objects()
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: ObstacleSpawner:<Node2D#418138558992> (valid: true)
+LevelGenerator: CoinSpawner before clear: CoinSpawner:<Node2D#433372279289> (valid: true)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: ObstacleSpawner:<Node2D#418138558992> (valid: true)
+LevelGenerator: After clear - CoinSpawner: CoinSpawner:<Node2D#433372279289> (valid: true)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+Main: After clear - LevelGenerator: LevelGenerator:<Node2D#34359739659> (valid: true)
+=== GENERATING LEVEL 7 (size: 1.82142857142857) ===
+LevelUtils: Updating play area - width: 1865 height: 1092 offset: -420.5, -246
+LevelUtils: Play area updated - position: (-420.5, -246) size: (1865, 1092)
+Player positioned at: (50, 300) (level size: 1.82142857142857)
+Level dimensions: width=1865 height=1092 offset_x=-420.5 offset_y=-246
+LevelGenerator is valid, checking spawners...
+ObstacleSpawner: <Freed Object> (valid: false)
+CoinSpawner: <Freed Object> (valid: false)
+ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: Starting generation for size: 1.82142857142857
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: CoinSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - CoinSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: ObstacleSpawner is null! Recreating...
+ObstacleSpawner: Generating obstacles for level size: 1.82142857142857 level: 7
+ObstacleSpawner: Self valid: true
+ObstacleSpawner: Parent valid: true
+ObstacleSpawner: Target count: 192 (level multiplier: 2.2)
+ObstacleSpawner: Full map coverage: true
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 0 at (-380.5, 214.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 1 at (871.5, 235.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 2 at (621.5, 225.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 3 at (894.5, 564.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 4 at (-92.5, 373.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 5 at (-85.5, -203)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 6 at (375.5, 642.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 7 at (888.5, 774)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 8 at (129.5, 176.8)
+ObstacleSpawner: Rejected obstacle 9 at (-158.5, 380.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 10 at (1404.5, 34.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 11 at (155.5, -206)
+ObstacleSpawner: Rejected obstacle 12 at (111.5, -206)
+ObstacleSpawner: Rejected obstacle 13 at (890.5, 583.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 14 at (1136.5, 230.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 15 at (644.5, 806)
+ObstacleSpawner: Rejected obstacle 16 at (-133.5, -199)
+ObstacleSpawner: Rejected obstacle 17 at (626.5, 806)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 18 at (-116.5, 609.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 19 at (383.5, 403.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 20 at (91.5, -29.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 21 at (1404.5, 182.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 22 at (609.5, -204)
+ObstacleSpawner: Rejected obstacle 23 at (1180.5, 227.8)
+ObstacleSpawner: Rejected obstacle 24 at (631.5, 779)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 25 at (-350.5, 775)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 26 at (1121.5, -206)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 27 at (1404.5, -206)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 28 at (1127.5, 594.6)
+ObstacleSpawner: Rejected obstacle 29 at (1163.5, 625.6)
+ObstacleSpawner: Rejected obstacle 30 at (666.5, -187)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 31 at (1404.5, 806)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 32 at (606.5, 594.6)
+ObstacleSpawner: Rejected obstacle 33 at (908.5, 806)
+ObstacleSpawner: Rejected obstacle 34 at (1169.5, 604.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 35 at (870.5, -25.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 36 at (677.5, 599.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 37 at (1373.5, -38.6)
+ObstacleSpawner: Rejected obstacle 38 at (666.5, -168)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 39 at (-157.5, 14.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 40 at (604.5, 30.4)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 41 at (1403.5, 419.2)
+ObstacleSpawner: Rejected obstacle 42 at (900.5, -31.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 43 at (-352.5, 365.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 44 at (1381.5, 634.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 45 at (1163.5, 806)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 46 at (156.5, 630.6)
+ObstacleSpawner: Rejected obstacle 47 at (923.5, 564.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 48 at (-380.5, 574.6)
+ObstacleSpawner: Rejected obstacle 49 at (632.5, 218.8)
+ObstacleSpawner: Rejected obstacle 50 at (166.5, 238.8)
+ObstacleSpawner: Rejected obstacle 51 at (1404.5, 187.8)
+ObstacleSpawner: Rejected obstacle 52 at (1120.5, -167)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 53 at (899.5, -206)
+ObstacleSpawner: Rejected obstacle 54 at (604.5, 199.8)
+ObstacleSpawner: Rejected obstacle 55 at (1152.5, -206)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 56 at (113.5, 406.2)
+ObstacleSpawner: Rejected obstacle 57 at (1153.5, 186.8)
+ObstacleSpawner: Rejected obstacle 58 at (857.5, 771)
+ObstacleSpawner: Rejected obstacle 59 at (1404.5, 800)
+ObstacleSpawner: Rejected obstacle 60 at (-85.5, 637.6)
+ObstacleSpawner: Rejected obstacle 61 at (-126.5, 612.6)
+ObstacleSpawner: Rejected obstacle 62 at (1392.5, 235.8)
+ObstacleSpawner: Rejected obstacle 63 at (1188.5, 218.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 64 at (406.5, 170.8)
+ObstacleSpawner: Rejected obstacle 65 at (1147.5, -206)
+ObstacleSpawner: Rejected obstacle 66 at (-365.5, 806)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 67 at (-150.5, 222.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 68 at (916.5, 405.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 69 at (1183.5, 31.4)
+ObstacleSpawner: Rejected obstacle 70 at (1404.5, -181)
+ObstacleSpawner: Rejected obstacle 71 at (1404.5, 237.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 72 at (351.5, 806)
+ObstacleSpawner: Rejected obstacle 73 at (912.5, -206)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 74 at (-157.5, -193)
+ObstacleSpawner: Rejected obstacle 75 at (-122.5, -24.6)
+ObstacleSpawner: Rejected obstacle 76 at (-355.5, 228.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 77 at (1138.5, 383.2)
+ObstacleSpawner: Rejected obstacle 78 at (666.5, -173)
+ObstacleSpawner: Rejected obstacle 79 at (657.5, 20.4)
+ObstacleSpawner: Rejected obstacle 80 at (380.5, 803)
+ObstacleSpawner: Rejected obstacle 81 at (898.5, 790)
+ObstacleSpawner: Rejected obstacle 82 at (661.5, -8.6)
+ObstacleSpawner: Rejected obstacle 83 at (927.5, 806)
+ObstacleSpawner: Rejected obstacle 84 at (855.5, -22.6)
+ObstacleSpawner: Rejected obstacle 85 at (623.5, 598.6)
+ObstacleSpawner: Rejected obstacle 86 at (-135.5, 420.2)
+ObstacleSpawner: Rejected obstacle 87 at (1140.5, 624.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 88 at (-360.5, -206)
+ObstacleSpawner: Rejected obstacle 89 at (859.5, -19.6)
+ObstacleSpawner: Rejected obstacle 90 at (1404.5, 599.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 91 at (669.5, -20.6)
+ObstacleSpawner: Rejected obstacle 92 at (1404.5, 29.4)
+ObstacleSpawner: Rejected obstacle 93 at (889.5, 376.2)
+ObstacleSpawner: Rejected obstacle 94 at (-140.5, 405.2)
+ObstacleSpawner: Rejected obstacle 95 at (-366.5, 171.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 96 at (-97.5, 806)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 97 at (406.5, -206)
+ObstacleSpawner: Rejected obstacle 98 at (130.5, 593.6)
+ObstacleSpawner: Rejected obstacle 99 at (-349.5, 590.6)
+ObstacleSpawner: Rejected obstacle 100 at (926.5, -196)
+ObstacleSpawner: Rejected obstacle 101 at (402.5, -206)
+ObstacleSpawner: Rejected obstacle 102 at (-380.5, 182.8)
+ObstacleSpawner: Rejected obstacle 103 at (1364.5, 408.2)
+ObstacleSpawner: Rejected obstacle 104 at (-357.5, 806)
+ObstacleSpawner: Rejected obstacle 105 at (-153.5, 806)
+ObstacleSpawner: Rejected obstacle 106 at (405.5, 803)
+ObstacleSpawner: Rejected obstacle 107 at (677.5, 2.4)
+ObstacleSpawner: Rejected obstacle 108 at (1138.5, 167.8)
+ObstacleSpawner: Rejected obstacle 109 at (662.5, 36.4)
+ObstacleSpawner: Rejected obstacle 110 at (915.5, 571.6)
+ObstacleSpawner: Rejected obstacle 111 at (-356.5, 606.6)
+ObstacleSpawner: Rejected obstacle 112 at (362.5, 176.8)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 113 at (154.5, 17.4)
+ObstacleSpawner: Rejected obstacle 114 at (-380.5, -206)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 115 at (140.5, 806)
+ObstacleSpawner: Rejected obstacle 116 at (133.5, 214.8)
+ObstacleSpawner: Rejected obstacle 117 at (389.5, 227.8)
+ObstacleSpawner: Rejected obstacle 118 at (-102.5, -5.6)
+ObstacleSpawner: Rejected obstacle 119 at (1402.5, -39.6)
+ObstacleSpawner: Rejected obstacle 120 at (112.5, 176.8)
+ObstacleSpawner: Rejected obstacle 121 at (-135.5, 220.8)
+ObstacleSpawner: Rejected obstacle 122 at (-110.5, 390.2)
+ObstacleSpawner: Rejected obstacle 123 at (620.5, 588.6)
+ObstacleSpawner: Rejected obstacle 124 at (1111.5, -206)
+ObstacleSpawner: Rejected obstacle 125 at (102.5, -203)
+ObstacleSpawner: Rejected obstacle 126 at (1400.5, -206)
+ObstacleSpawner: Rejected obstacle 127 at (1130.5, 225.8)
+ObstacleSpawner: Rejected obstacle 128 at (1123.5, -204)
+ObstacleSpawner: Rejected obstacle 129 at (869.5, 201.8)
+ObstacleSpawner: Rejected obstacle 130 at (418.5, 610.6)
+ObstacleSpawner: Rejected obstacle 131 at (-380.5, 806)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 132 at (423.5, 30.4)
+ObstacleSpawner: Rejected obstacle 133 at (168.5, 158.8)
+ObstacleSpawner: Rejected obstacle 134 at (344.5, -182)
+ObstacleSpawner: Rejected obstacle 135 at (116.5, 419.2)
+ObstacleSpawner: Rejected obstacle 136 at (1404.5, 806)
+ObstacleSpawner: Rejected obstacle 137 at (-372.5, 409.2)
+ObstacleSpawner: Rejected obstacle 138 at (-153.5, -15.6)
+ObstacleSpawner: Rejected obstacle 139 at (-380.5, -182)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 140 at (919.5, 169.8)
+ObstacleSpawner: Rejected obstacle 141 at (1388.5, -34.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 142 at (-380.5, 12.4)
+ObstacleSpawner: Rejected obstacle 143 at (892.5, 229.8)
+ObstacleSpawner: Rejected obstacle 144 at (622.5, -202)
+ObstacleSpawner: Rejected obstacle 145 at (-348.5, 601.6)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 146 at (-102.5, -36.6)
+ObstacleSpawner: Rejected obstacle 147 at (392.5, 216.8)
+ObstacleSpawner: Rejected obstacle 148 at (399.5, 161.8)
+ObstacleSpawner: Rejected obstacle 149 at (929.5, 439.2)
+ObstacleSpawner: Rejected obstacle 150 at (161.5, 424.2)
+ObstacleSpawner: Rejected obstacle 151 at (166.5, 806)
+ObstacleSpawner: Rejected obstacle 152 at (923.5, 364.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 153 at (677.5, 388.2)
+ObstacleSpawner: Rejected obstacle 154 at (403.5, -206)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 155 at (1180.5, -43.6)
+ObstacleSpawner: Rejected obstacle 156 at (115.5, 806)
+ObstacleSpawner: Rejected obstacle 157 at (128.5, 806)
+ObstacleSpawner: Rejected obstacle 158 at (-380.5, 806)
+ObstacleSpawner: Rejected obstacle 159 at (1365.5, -206)
+ObstacleSpawner: Rejected obstacle 160 at (1386.5, 383.2)
+ObstacleSpawner: Rejected obstacle 161 at (-107.5, 776)
+ObstacleSpawner: Rejected obstacle 162 at (1131.5, 7.4)
+ObstacleSpawner: Rejected obstacle 163 at (137.5, 415.2)
+ObstacleSpawner: Rejected obstacle 164 at (932.5, -186)
+ObstacleSpawner: Rejected obstacle 165 at (1366.5, 380.2)
+ObstacleSpawner: Rejected obstacle 166 at (1127.5, 364.2)
+ObstacleSpawner: Rejected obstacle 167 at (-363.5, 229.8)
+ObstacleSpawner: Rejected obstacle 168 at (653.5, 806)
+ObstacleSpawner: Rejected obstacle 169 at (161.5, 584.6)
+ObstacleSpawner: Rejected obstacle 170 at (1127.5, 806)
+ObstacleSpawner: Rejected obstacle 171 at (1128.5, 806)
+ObstacleSpawner: Rejected obstacle 172 at (150.5, 14.4)
+ObstacleSpawner: Rejected obstacle 173 at (407.5, 417.2)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 174 at (599.5, 390.2)
+ObstacleSpawner: Rejected obstacle 175 at (-380.5, 606.6)
+ObstacleSpawner: Rejected obstacle 176 at (109.5, 413.2)
+ObstacleSpawner: Rejected obstacle 177 at (1404.5, 405.2)
+ObstacleSpawner: Rejected obstacle 178 at (-375.5, 599.6)
+ObstacleSpawner: Rejected obstacle 179 at (1381.5, 766)
+ObstacleSpawner: Rejected obstacle 180 at (-138.5, -206)
+ObstacleSpawner: Rejected obstacle 181 at (1404.5, -171)
+ObstacleSpawner: Rejected obstacle 182 at (-356.5, -206)
+ObstacleSpawner: Rejected obstacle 183 at (671.5, 393.2)
+ObstacleSpawner: Rejected obstacle 184 at (358.5, 584.6)
+ObstacleSpawner: Rejected obstacle 185 at (112.5, 642.6)
+ObstacleSpawner: Rejected obstacle 186 at (653.5, 776)
+ObstacleSpawner: Rejected obstacle 187 at (-124.5, 0.4)
+ObstacleSpawner: Rejected obstacle 188 at (403.5, -201)
+ObstacleSpawner: Rejected obstacle 189 at (-111.5, -206)
+ObstacleSpawner: Rejected obstacle 190 at (1404.5, 434.2)
+ObstacleSpawner: Rejected obstacle 191 at (1404.5, -31.6)
+ObstacleSpawner: Final count: 57
+LevelGenerator: Got 57 obstacles from recreated spawner
+LevelGenerator: Got exit at (988.5, 469.3333)
+LevelGenerator: CoinSpawner is null! Recreating...
+CoinSpawner: Generating coins for level size: 1.82142857142857 level: 7
+CoinSpawner: Target count: 39 (level mult: 1.72)
+CoinSpawner: Full map coverage: true
+CoinSpawner: Final count: 34
+LevelGenerator: Got 34 coins from recreated spawner
+Generated objects:
+- Exit: true at (988.5, 469.3333)
+- Coins: 34
+- Total children in scene: 0
+=== LEVEL COMPLETED ===
+Completed level: 7 Size: 1.82142857142857
+Level completed! Click Continue to proceed to next level
+=== RESTART PRESSED ===
+Current level: 7 Size: 1.82142857142857
+Timer stopped due to game state: 1
+DEBUG: Advancing level from 7
+DEBUG: After advancement - level: 1 completed_all_levels: true
+DEBUG: Level size after advancement: 0.75
+All 7 levels completed! Starting over from level 1
+Timer stopped after level 7 completion
+=== RESTART PRESSED ===
+Current level: 1 Size: 0.75
+DEBUG: Level progress updated - current level: 1
+Player positioned at: (204.8, 300) (level size: 0.75)
+Level dimensions: width=768 height=450 offset_x=128 offset_y=75
+Main: Clearing level objects...
+Main: LevelGenerator before clear: LevelGenerator:<Node2D#34359739659> (valid: true)
+Main: Calling level_generator.clear_existing_objects()
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: ObstacleSpawner:<Node2D#581548640360> (valid: true)
+LevelGenerator: CoinSpawner before clear: CoinSpawner:<Node2D#597788990368> (valid: true)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: ObstacleSpawner:<Node2D#581548640360> (valid: true)
+LevelGenerator: After clear - CoinSpawner: CoinSpawner:<Node2D#597788990368> (valid: true)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+Main: After clear - LevelGenerator: LevelGenerator:<Node2D#34359739659> (valid: true)
+=== GENERATING LEVEL 1 (size: 0.75) ===
+LevelUtils: Updating play area - width: 768 height: 450 offset: 128, 75
+LevelUtils: Play area updated - position: (128, 75) size: (768, 450)
+Player positioned at: (204.8, 300) (level size: 0.75)
+Level dimensions: width=768 height=450 offset_x=128 offset_y=75
+LevelGenerator is valid, checking spawners...
+ObstacleSpawner: <Freed Object> (valid: false)
+CoinSpawner: <Freed Object> (valid: false)
+ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: Starting generation for size: 0.75
+LevelGenerator: Clearing existing objects...
+LevelGenerator: ObstacleSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: CoinSpawner before clear: <Freed Object> (valid: false)
+LevelGenerator: ExitSpawner before clear: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: After clear - ObstacleSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - CoinSpawner: <Freed Object> (valid: false)
+LevelGenerator: After clear - ExitSpawner: ExitSpawner:<Node2D#34410071305> (valid: true)
+LevelGenerator: ObstacleSpawner is null! Recreating...
+ObstacleSpawner: Generating obstacles for level size: 0.75 level: 1
+ObstacleSpawner: Self valid: true
+ObstacleSpawner: Parent valid: true
+ObstacleSpawner: Target count: 33 (level multiplier: 1)
+ObstacleSpawner: Full map coverage: true
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 0 at (600.1429, 414)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 1 at (168, 150)
+ObstacleSpawner: Rejected obstacle 2 at (170, 126)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 3 at (521.1429, 115)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 4 at (758.7143, 169)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 5 at (856, 184)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 6 at (448.8571, 336)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 7 at (490.8571, 268)
+ObstacleSpawner: Rejected obstacle 8 at (838, 139)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 9 at (249.2857, 155)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 10 at (856, 295)
+ObstacleSpawner: Rejected obstacle 11 at (255.2857, 143)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 12 at (685.4286, 188)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 13 at (467.8571, 464)
+ObstacleSpawner: Rejected obstacle 14 at (572.1429, 153)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 15 at (856, 481)
+ObstacleSpawner: Rejected obstacle 16 at (791.7143, 315)
+ObstacleSpawner: Rejected obstacle 17 at (551.1429, 414)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 18 at (836, 115)
+ObstacleSpawner: Rejected obstacle 19 at (260.2857, 118)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 20 at (356.5714, 485)
+ObstacleSpawner: Rejected obstacle 21 at (856, 124)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 22 at (683.4286, 381)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 23 at (429.8571, 187)
+ObstacleSpawner: Rejected obstacle 24 at (650.4286, 149)
+ObstacleSpawner: Rejected obstacle 25 at (600.1429, 440)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 26 at (168, 475)
+ObstacleSpawner: Rejected obstacle 27 at (168, 313)
+ObstacleSpawner: Before add_child - Self valid: true
+ObstacleSpawner: Before add_child - Parent valid: true
+ObstacleSpawner: After add_child - Self valid: true
+ObstacleSpawner: After add_child - Parent valid: true
+ObstacleSpawner: Added obstacle 28 at (260.2857, 485)
+ObstacleSpawner: Rejected obstacle 29 at (841, 228)
+ObstacleSpawner: Rejected obstacle 30 at (773.7143, 115)
+ObstacleSpawner: Rejected obstacle 31 at (192, 194)
+ObstacleSpawner: Rejected obstacle 32 at (372.5714, 181)
+ObstacleSpawner: Final count: 18
+LevelGenerator: Got 18 obstacles from recreated spawner
+LevelGenerator: Got exit at (584.8, 186)
+LevelGenerator: CoinSpawner is null! Recreating...
+CoinSpawner: Generating coins for level size: 0.75 level: 1
+CoinSpawner: Target count: 13 (level mult: 1.00)
+CoinSpawner: Full map coverage: true
+CoinSpawner: Final count: 13
+LevelGenerator: Got 13 coins from recreated spawner
+Generated objects:
+- Exit: true at (584.8, 186)
+- Coins: 13
+- Total children in scene: 0
+--- Debugging process stopped ---
