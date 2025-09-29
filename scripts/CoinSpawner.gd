@@ -10,9 +10,9 @@ var coins: Array = []
 var current_level_size: float = 1.0
 
 func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, player_start: Vector2, use_full_map_coverage: bool = true, main_scene: Node = null, level: int = 1, preserved_coin_count: int = 0) -> Array:
-		Logger.log_generation("CoinSpawner: generating coins (size %.2f, level %d)" % [level_size, level])
-		current_level_size = level_size
-		clear_coins()
+	Logger.log_generation("CoinSpawner: generating coins (size %.2f, level %d)" % [level_size, level])
+	current_level_size = level_size
+	clear_coins()
 
 	# 1) Счёт монет с мягкой прогрессией
 	var base_coin_count: int = randi_range(10, 25)
@@ -27,9 +27,9 @@ func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, play
 	# Ограничим разумными рамками
 	coin_count = clamp(coin_count, 6, 40)
 
-		Logger.log_generation("CoinSpawner target count %d (mult %.2f, preserved %d)" % [coin_count, level_multiplier, preserved_coin_count])
-		if not use_full_map_coverage:
-				Logger.log_generation("CoinSpawner using centered coverage grid")
+	Logger.log_generation("CoinSpawner target count %d (mult %.2f, preserved %d)" % [coin_count, level_multiplier, preserved_coin_count])
+	if not use_full_map_coverage:
+		Logger.log_generation("CoinSpawner using centered coverage grid")
 
 	var navigation_ctx := _build_navigation_context(obstacles)
 
@@ -52,23 +52,23 @@ func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, play
 		var coin_attempts := 0
 
 		while not placed and coin_attempts < 80: # было 20
-			# коэффициент «расслабления» ограничений от 0.0 до 1.0
-			var relax: float = clamp(float(coin_attempts) / 60.0, 0.0, 1.0)
+		# коэффициент «расслабления» ограничений от 0.0 до 1.0
+		var relax: float = clamp(float(coin_attempts) / 60.0, 0.0, 1.0)
 
-			var coin := create_coin(grid_cols, grid_rows)
-			if is_valid_coin_position_relaxed(coin.position, obstacles, exit_pos, relax) and _has_clear_path(navigation_ctx, player_start, coin.position):
-				coins.append(coin)
-				if main_scene:
-					main_scene.call_deferred("add_child", coin)
-				else:
-					get_tree().current_scene.call_deferred("add_child", coin)
-				placed = true
+		var coin := create_coin(grid_cols, grid_rows)
+		if is_valid_coin_position_relaxed(coin.position, obstacles, exit_pos, relax) and _has_clear_path(navigation_ctx, player_start, coin.position):
+			coins.append(coin)
+			if main_scene:
+				main_scene.call_deferred("add_child", coin)
 			else:
-				coin.queue_free()
-				coin_attempts += 1
-				attempts_total += 1
-				if attempts_total >= max_attempts_total:
-					break
+				get_tree().current_scene.call_deferred("add_child", coin)
+			placed = true
+		else:
+			coin.queue_free()
+			coin_attempts += 1
+			attempts_total += 1
+			if attempts_total >= max_attempts_total:
+				break
 
 		if not placed:
 			# Последний шанс: ослабляем максимально, но всё ещё избегаем жёстких пересечений

@@ -24,21 +24,21 @@ func _ready():
 	exit_button.pressed.connect(_on_exit_pressed)
 	difficulty_slider.value_changed.connect(_on_difficulty_changed)
 	level_type_option.item_selected.connect(_on_level_type_changed)
-	
+
 	# Setup difficulty slider
 	difficulty_slider.min_value = 0
 	difficulty_slider.max_value = difficulty_names.size() - 1
 	difficulty_slider.step = 1
 	difficulty_slider.value = current_difficulty_index
 	difficulty_slider.ticks_on_borders = true
-	
+
 	for i in range(level_type_options.size()):
 		var option = level_type_options[i]
 		level_type_option.add_item(option["name"], i)
 		level_type_option.set_item_metadata(i, option["type"])
 	level_type_option.selected = current_level_type_index
 	_update_level_type_label()
-	
+
 	# Update difficulty label
 	_update_difficulty_label()
 
@@ -55,7 +55,7 @@ func _on_start_pressed():
 	Engine.set_meta("level_type_selection", metadata)
 	if game_state:
 		game_state.set_level_type(metadata)
-	
+
 	# Switch to game scene
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")
 

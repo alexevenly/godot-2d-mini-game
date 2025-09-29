@@ -45,15 +45,15 @@ func advance_level():
 	if current_level >= 7:
 		reset_to_start()
 		return true  # Indicates we've completed all levels
-	
+
 	current_level += 1
 	victories += 1
-	
+
 	# Update level size
 	current_level_size = 0.75 + (victories * level_size_increment)
 	current_level_size = min(current_level_size, max_level_size)
 	_refresh_level_type(true)
-	
+
 	return false
 
 func get_level_progress_text() -> String:
@@ -74,39 +74,39 @@ func get_state() -> GameStateType:
 	return current_state
 
 func set_level_type(new_type: LevelType):
-		selected_level_type = new_type
-		_refresh_level_type(true)
-		Logger.log_game_mode("Level type selection updated to %s" % _get_level_type_label(selected_level_type))
+	selected_level_type = new_type
+	_refresh_level_type(true)
+	Logger.log_game_mode("Level type selection updated to %s" % _get_level_type_label(selected_level_type))
 
 func get_current_level_type() -> LevelType:
 	return current_level_type
 
 func _refresh_level_type(force_new: bool = false):
-		var previous_type = current_level_type
-		if selected_level_type == LevelType.RANDOM:
-				if force_new or current_level_type == LevelType.RANDOM:
-						current_level_type = _pick_random_level_type()
-		else:
-				current_level_type = selected_level_type
-		if previous_type != current_level_type:
-				Logger.log_game_mode("Current level type set to %s" % _get_level_type_label(current_level_type))
+	var previous_type = current_level_type
+	if selected_level_type == LevelType.RANDOM:
+		if force_new or current_level_type == LevelType.RANDOM:
+			current_level_type = _pick_random_level_type()
+	else:
+		current_level_type = selected_level_type
+	if previous_type != current_level_type:
+		Logger.log_game_mode("Current level type set to %s" % _get_level_type_label(current_level_type))
 
 func _pick_random_level_type() -> LevelType:
-		var options: Array = [LevelType.OBSTACLES_COINS, LevelType.KEYS, LevelType.MAZE, LevelType.MAZE_COINS]
-		if options.is_empty():
-				return LevelType.OBSTACLES_COINS
-		return options[randi() % options.size()]
+	var options: Array = [LevelType.OBSTACLES_COINS, LevelType.KEYS, LevelType.MAZE, LevelType.MAZE_COINS]
+	if options.is_empty():
+		return LevelType.OBSTACLES_COINS
+	return options[randi() % options.size()]
 
 func _get_level_type_label(level_type: LevelType) -> String:
-		match level_type:
-				LevelType.OBSTACLES_COINS:
-						return "Obstacles + Coins"
-				LevelType.KEYS:
-						return "Keys"
-				LevelType.MAZE:
-						return "Maze"
-				LevelType.MAZE_COINS:
-						return "Maze + Coins"
-				LevelType.RANDOM:
-						return "Random"
-		return str(level_type)
+	match level_type:
+		LevelType.OBSTACLES_COINS:
+			return "Obstacles + Coins"
+		LevelType.KEYS:
+			return "Keys"
+		LevelType.MAZE:
+			return "Maze"
+		LevelType.MAZE_COINS:
+			return "Maze + Coins"
+		LevelType.RANDOM:
+			return "Random"
+	return str(level_type)
