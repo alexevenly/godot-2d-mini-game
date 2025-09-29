@@ -213,7 +213,15 @@ func generate_new_level():
 	# Calculate time using timer manager
 	if timer_manager:
 		var timer_start_position = spawn_override if spawn_override != null else (player.global_position if player else LevelUtils.PLAYER_START)
-		game_time = timer_manager.calculate_level_time(game_state.current_level, coins, exit.position if exit else Vector2(), timer_start_position)
+		var maze_path_length = level_generator.get_last_maze_path_length() if level_generator else 0.0
+		game_time = timer_manager.calculate_level_time(
+			game_state.current_level,
+			coins,
+			exit.position if exit else Vector2(),
+			timer_start_position,
+			level_type,
+			maze_path_length
+		)
 	else:
 		game_time = 30.0 # Fallback
 
