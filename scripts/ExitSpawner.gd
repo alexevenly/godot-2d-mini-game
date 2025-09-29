@@ -1,6 +1,6 @@
 extends Node2D
 
-const MIN_EXIT_DISTANCE = 0.4  # 40% of level diagonal (more reasonable for small levels)
+const MIN_EXIT_DISTANCE = 0.4 # 40% of level diagonal (more reasonable for small levels)
 
 var exit = null
 var current_level_size = 1.0
@@ -31,9 +31,9 @@ func generate_exit(level_size: float, obstacles: Array, min_exit_distance_ratio:
 			# Check distance from obstacles
 			var valid = true
 			for obstacle in obstacles:
-				if pos.distance_to(obstacle.position) < 80:  # Increased margin for exit
-				valid = false
-				break
+				if pos.distance_to(obstacle.position) < 80: # Increased margin for exit
+					valid = false
+					break
 
 			# Check that exit is not over boundaries (64x64 exit size)
 			if valid and is_exit_position_valid(pos, level_width, level_height):
@@ -51,7 +51,7 @@ func generate_exit(level_size: float, obstacles: Array, min_exit_distance_ratio:
 
 func is_exit_position_valid(pos: Vector2, level_width: int, level_height: int) -> bool:
 	# Check that exit (64x64) is fully within the level boundaries
-	var margin = 32  # Half of exit size
+	var margin = 32 # Half of exit size
 	return LevelUtils.is_position_within_bounds(pos, level_width, level_height, margin)
 
 func create_exit_at(pos: Vector2, main_scene = null):
@@ -64,7 +64,7 @@ func create_exit_at(pos: Vector2, main_scene = null):
 	body.name = "ExitBody"
 	body.offset_right = 64
 	body.offset_bottom = 64
-	body.color = Color(0.4, 0.4, 0.4, 1)  # Start gray (inactive)
+	body.color = Color(0.4, 0.4, 0.4, 1) # Start gray (inactive)
 	exit.add_child(body)
 
 	# Create collision

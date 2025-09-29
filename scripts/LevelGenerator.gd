@@ -20,7 +20,7 @@ const MAZE_BASE_CELL_SIZE := 64.0
 @onready var coin_spawner = $CoinSpawner
 @onready var exit_spawner = $ExitSpawner
 
-func generate_level(level_size := 1.0, generate_obstacles := true, generate_coins := true, min_exit_distance_ratio := 0.4, use_full_map_coverage := true, main_scene := null, level := 1, preserved_coin_count := 0, player_start_position: Vector2 = LevelUtils.PLAYER_START, level_type: int = GameState.LevelType.OBSTACLES_COINS):
+func generate_level(level_size := 1.0, generate_obstacles := true, generate_coins := true, min_exit_distance_ratio := 0.4, use_full_map_coverage := true, main_scene: Node = null, level := 1, preserved_coin_count := 0, player_start_position: Vector2 = LevelUtils.PLAYER_START, level_type: int = GameState.LevelType.OBSTACLES_COINS):
 	Logger.log_generation("LevelGenerator starting (size %.2f, type %d)" % [level_size, level_type])
 	current_level_size = level_size
 	exit_pos = Vector2.ZERO
@@ -58,8 +58,8 @@ func _generate_standard_level(level_size: float, generate_obstacles: bool, gener
 			exit_pos = exit_node.position
 		else:
 			Logger.log_error("ExitSpawner failed to create exit")
-		else:
-			Logger.log_error("ExitSpawner reference missing")
+	else:
+		Logger.log_error("ExitSpawner reference missing")
 
 	# Step 3: Generate coins
 	if generate_coins_flag:
@@ -472,3 +472,4 @@ func _ensure_odd_cell(cell: Vector2i, cols: int, rows: int) -> Vector2i:
 	if result.y % 2 == 0:
 		result.y += 1 if (result.y + 1 < rows) else -1
 	return result
+

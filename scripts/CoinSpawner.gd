@@ -16,7 +16,7 @@ func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, play
 
 	# 1) Счёт монет с мягкой прогрессией
 	var base_coin_count: int = randi_range(10, 25)
-	var level_multiplier: float = 1.0 + (level - 1) * 0.12  # было 0.15
+	var level_multiplier: float = 1.0 + (level - 1) * 0.12 # было 0.15
 	var coin_count: int = int(base_coin_count * current_level_size * level_multiplier)
 
 	if level == 1:
@@ -52,41 +52,41 @@ func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, play
 		var coin_attempts := 0
 
 		while not placed and coin_attempts < 80: # было 20
-		# коэффициент «расслабления» ограничений от 0.0 до 1.0
-		var relax: float = clamp(float(coin_attempts) / 60.0, 0.0, 1.0)
+			# коэффициент «расслабления» ограничений от 0.0 до 1.0
+			var relax: float = clamp(float(coin_attempts) / 60.0, 0.0, 1.0)
 
-		var coin := create_coin(grid_cols, grid_rows)
-		if is_valid_coin_position_relaxed(coin.position, obstacles, exit_pos, relax) and _has_clear_path(navigation_ctx, player_start, coin.position):
-			coins.append(coin)
-			if main_scene:
-				main_scene.call_deferred("add_child", coin)
-			else:
-				get_tree().current_scene.call_deferred("add_child", coin)
-			placed = true
-		else:
-			coin.queue_free()
-			coin_attempts += 1
-			attempts_total += 1
-			if attempts_total >= max_attempts_total:
-				break
-
-		if not placed:
-			# Последний шанс: ослабляем максимально, но всё ещё избегаем жёстких пересечений
-			var coin_fallback := create_coin(grid_cols, grid_rows)
-			if is_valid_coin_position_relaxed(coin_fallback.position, obstacles, exit_pos, 1.0) and _has_clear_path(navigation_ctx, player_start, coin_fallback.position):
-				coins.append(coin_fallback)
+			var coin := create_coin(grid_cols, grid_rows)
+			if is_valid_coin_position_relaxed(coin.position, obstacles, exit_pos, relax) and _has_clear_path(navigation_ctx, player_start, coin.position):
+				coins.append(coin)
 				if main_scene:
-					main_scene.call_deferred("add_child", coin_fallback)
+					main_scene.call_deferred("add_child", coin)
 				else:
-					get_tree().current_scene.call_deferred("add_child", coin_fallback)
+					get_tree().current_scene.call_deferred("add_child", coin)
+				placed = true
 			else:
-				coin_fallback.queue_free()
+				coin.queue_free()
+				coin_attempts += 1
+				attempts_total += 1
+				if attempts_total >= max_attempts_total:
+					break
+
+			if not placed:
+				# Последний шанс: ослабляем максимально, но всё ещё избегаем жёстких пересечений
+				var coin_fallback := create_coin(grid_cols, grid_rows)
+				if is_valid_coin_position_relaxed(coin_fallback.position, obstacles, exit_pos, 1.0) and _has_clear_path(navigation_ctx, player_start, coin_fallback.position):
+					coins.append(coin_fallback)
+					if main_scene:
+						main_scene.call_deferred("add_child", coin_fallback)
+					else:
+						get_tree().current_scene.call_deferred("add_child", coin_fallback)
+				else:
+					coin_fallback.queue_free()
 
 		if attempts_total >= max_attempts_total:
 			break
 
-		Logger.log_generation("CoinSpawner placed %d coins" % coins.size())
-		return coins
+	Logger.log_generation("CoinSpawner placed %d coins" % coins.size())
+	return coins
 
 func create_coin(grid_cols: int, grid_rows: int) -> Area2D:
 	var coin := Area2D.new()
@@ -116,7 +116,7 @@ func create_coin(grid_cols: int, grid_rows: int) -> Area2D:
 # relax = 0.0 (строго) … 1.0 (мягко)
 func is_valid_coin_position_relaxed(p: Vector2, obstacles: Array, exit_pos: Vector2, relax: float) -> bool:
 	# Базовые радиусы
-	var player_margin_strict: float = 24.0  # строгий запас
+	var player_margin_strict: float = 24.0 # строгий запас
 	var player_margin_relaxed: float = 10.0 # мягкий запас
 
 	var coin_radius: float = 10.0
@@ -229,8 +229,8 @@ func _has_clear_path(navigation_ctx: Dictionary, start: Vector2, goal: Vector2) 
 	if blocked[start_cell.y][start_cell.x]:
 		blocked[start_cell.y][start_cell.x] = false
 
-	var rows := navigation_ctx["rows"]
-	var cols := navigation_ctx["cols"]
+	var rows: int = navigation_ctx["rows"]
+	var cols: int = navigation_ctx["cols"]
 	var visited: Array = []
 	for y in range(rows):
 		var row := []

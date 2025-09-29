@@ -37,5 +37,7 @@ static func _log(category: Category, message: String, extra: Array) -> void:
 	var parts: Array = [message]
 	for value in extra:
 		parts.append(str(value))
-	var content := PackedStringArray(parts).join(" ")
+	var content := " ".join(parts)
 	print("[%s] %s" % [_labels.get(category, str(category)), content])
+
+

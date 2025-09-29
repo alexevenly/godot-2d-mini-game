@@ -63,10 +63,9 @@ func _init_statistics_logging():
 		Logger.log_error("Could not create statistics file", [filename])
 
 func _log_level_statistics():
-	if statistics_file:
-		var completion_time = Time.get_ticks_msec() / 1000.0 - level_start_time
-		var time_left = game_time
-		var distance = 0.0
+	var distance = 0.0
+	var completion_time = Time.get_ticks_msec() / 1000.0 - level_start_time
+	var time_left = game_time
 
 	# Calculate distance from player to exit
 	if player and exit:
@@ -161,16 +160,20 @@ func generate_new_level():
 	var level_type_label = level_type_names[level_type] if level_type < level_type_names.size() else str(level_type)
 	Logger.log_game_mode("Preparing level type: %s" % level_type_label)
 
+	var generate_obstacles = true
+	var generate_coins = true
+
 	# Generate new level and get optimal time
 	if level_generator and is_instance_valid(level_generator):
-		var generate_obstacles = game_state.generate_obstacles
-		var generate_coins = game_state.generate_coins
+		generate_obstacles = game_state.generate_obstacles
+		generate_coins = game_state.generate_coins
 		if level_type == GameState.LevelType.KEYS:
 			generate_obstacles = false
 			generate_coins = false
 	elif level_type == GameState.LevelType.MAZE or level_type == GameState.LevelType.MAZE_COINS:
 		generate_obstacles = false
 		generate_coins = false
+
 	level_generator.generate_level(
 		game_state.current_level_size,
 		generate_obstacles,
@@ -184,23 +187,23 @@ func generate_new_level():
 		level_type
 		)
 
-		# Get references to generated objects from LevelGenerator
-		exit = level_generator.get_generated_exit()
-		coins = level_generator.get_generated_coins()
-		var spawn_override = level_generator.get_player_spawn_override()
+	# Get references to generated objects from LevelGenerator
+	exit = level_generator.get_generated_exit()
+	coins = level_generator.get_generated_coins()
+	var spawn_override = level_generator.get_player_spawn_override()
 
-		if exit:
-			Logger.log_generation("Exit generated at %s" % [exit.position])
-		else:
-			Logger.log_generation("No exit generated")
-		Logger.log_generation("Coins generated: %d" % coins.size())
+	if exit:
+		Logger.log_generation("Exit generated at %s" % [exit.position])
+	else:
+		Logger.log_generation("No exit generated")
+	Logger.log_generation("Coins generated: %d" % coins.size())
 
-		# Calculate time using timer manager
-		if timer_manager:
-			var timer_start_position = spawn_override if spawn_override != null else (player.global_position if player else LevelUtils.PLAYER_START)
-			game_time = timer_manager.calculate_level_time(game_state.current_level, coins, exit.position if exit else Vector2(), timer_start_position)
-		else:
-			game_time = 30.0 # Fallback
+	# Calculate time using timer manager
+	if timer_manager:
+		var timer_start_position = spawn_override if spawn_override != null else (player.global_position if player else LevelUtils.PLAYER_START)
+		game_time = timer_manager.calculate_level_time(game_state.current_level, coins, exit.position if exit else Vector2(), timer_start_position)
+	else:
+		game_time = 30.0 # Fallback
 
 	# Connect coin signals safely
 	for coin in coins:
@@ -230,7 +233,7 @@ func generate_new_level():
 		player.global_position = spawn_override
 		player.position = spawn_override
 		player.rotation = 0.0
-	Logger.log_generation("Level ready: time %.2f, coins %d" % [game_time, total_coins])
+		Logger.log_generation("Level ready: time %.2f, coins %d" % [game_time, total_coins])
 	else:
 		Logger.log_error("LevelGenerator instance missing during generation")
 
@@ -371,10 +374,10 @@ func _win_game():
 		prevent_game_over = true
 		# Don't advance level here - just show victory
 		return
-		else:
-			# Normal level completion
-			restart_button.text = "Continue"
-			Logger.log_game_mode("Continue to next level when ready")
+	else:
+		# Normal level completion
+		restart_button.text = "Continue"
+		Logger.log_game_mode("Continue to next level when ready")
 
 	# Don't update level progress here - it will be updated after level advancement
 
@@ -425,16 +428,15 @@ func _on_restart_pressed():
 		# Don't generate new level when all levels are completed
 		# Just show the button and wait for user to click "Start all over again?"
 		return
-		else:
-			restart_button.text = "Continue"
-			Logger.log_game_mode("Next level %d prepared (size %.2f)" % [game_state.current_level, game_state.current_level_size])
-			# Reset prevent_game_over flag for normal level progression
-			prevent_game_over = false
 	elif game_state.current_state == GameState.GameStateType.LOST:
 		# If we lost, reset prevent_game_over flag
 		prevent_game_over = false
 		Logger.log_game_mode("Prevent game over flag cleared after loss")
-
+	else:
+		restart_button.text = "Continue"
+		Logger.log_game_mode("Next level %d prepared (size %.2f)" % [game_state.current_level, game_state.current_level_size])
+		# Reset prevent_game_over flag for normal level progression
+		prevent_game_over = false
 	# Reset game state to playing (after level advancement)
 	game_state.set_state(GameState.GameStateType.PLAYING)
 

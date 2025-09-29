@@ -145,7 +145,11 @@ func _spawn_ghost(strength_ratio: float) -> void:
 	ghost.modulate = Color(1.0, 1.0, 1.0, alpha)
 
 	var lifetime := ghost_base_lifetime + ghost_extra_lifetime * strength_ratio
-	var tween := ghost.create_tween()
+	var tween := get_tree().create_tween()
+	if tween == null:
+		ghost.queue_free()
+		return
+	tween.bind_node(ghost)
 	tween.tween_property(ghost, "modulate:a", 0.0, max(lifetime, 0.05)).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tween.tween_callback(Callable(ghost, "queue_free"))
 

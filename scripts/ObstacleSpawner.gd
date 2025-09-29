@@ -5,14 +5,14 @@ const Logger = preload("res://scripts/Logger.gd")
 var obstacles = []
 var current_level_size = 1.0
 
-func generate_obstacles(level_size: float, use_full_map_coverage: bool = true, main_scene = null, level: int = 1) -> Array:
+func generate_obstacles(level_size: float, use_full_map_coverage: bool = true, main_scene: Node = null, level: int = 1) -> Array:
 	Logger.log_generation("ObstacleSpawner: generating obstacles (size %.2f, level %d)" % [level_size, level])
 	current_level_size = level_size
 	clear_obstacles()
 
 	# Generate obstacles based on level size and level number (progressive scaling)
-	var base_obstacle_count = randi_range(40, 60)  #
-	var level_multiplier = 1.0 + (level - 1) * 0.2  # +20% per level
+	var base_obstacle_count = randi_range(40, 60) #
+	var level_multiplier = 1.0 + (level - 1) * 0.2 # +20% per level
 	var obstacle_count = int(base_obstacle_count * current_level_size * level_multiplier)
 	Logger.log_generation("ObstacleSpawner target count %d (mult %.2f)" % [obstacle_count, level_multiplier])
 	if not use_full_map_coverage:
@@ -67,7 +67,7 @@ func create_obstacle(use_full_map_coverage: bool = true):
 	var shape = RectangleShape2D.new()
 	shape.size = Vector2(width, height)
 	collision.shape = shape
-	collision.position = Vector2(width/2.0, height/2.0)
+	collision.position = Vector2(width / 2.0, height / 2.0)
 	obstacle.add_child(collision)
 
 	return obstacle
@@ -80,8 +80,8 @@ func is_valid_obstacle_position(obstacle) -> bool:
 	# Check overlap with existing obstacles (ensure player can pass between them)
 	# Player size is ~32px, so we need at least 32 + 5% = ~34px gap
 	for existing in obstacles:
-		if obstacle.position.distance_to(existing.position) < 70:  # Increased from 60 to 70
-		return false
+		if obstacle.position.distance_to(existing.position) < 70: # Increased from 60 to 70
+			return false
 
 	return true
 
