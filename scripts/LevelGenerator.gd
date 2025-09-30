@@ -130,14 +130,9 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 		keys_per_door[idx] += 1
 		remaining -= 1
 
-	exit_spawner.clear_exit()
-	coins.clear()
-	var door_positions: Array = []
-	var key_positions: Array = []
-	var door_group_colors: Array = []
+	var door_layouts: Array = []
 	for i in range(door_count):
 		var center_x = offset.x + segment_width * float(i + 1)
-		door_positions.append(center_x)
 		var min_center_y = offset.y + door_gap_height * 0.5 + 60.0
 		var max_center_y = offset.y + level_height - door_gap_height * 0.5 - 60.0
 		if max_center_y <= min_center_y:
@@ -145,14 +140,40 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 			max_center_y = min_center_y
 		var door_center_y = randf_range(min_center_y, max_center_y)
 		var door_top = door_center_y - door_gap_height * 0.5
-		var group_color = _get_group_color(i)
+		var layout := {
+			"index": i,
+			"center_x": center_x,
+			"door_top": door_top,
+			"door_bottom": door_top + door_gap_height,
+			"keys_needed": int(keys_per_door[i]),
+			"initially_open": not door_states[i],
+			"color": _get_group_color(i)
+		}
+		door_layouts.append(layout)
+
+	var spawn_y = clamp(player_start_position.y, offset.y + 80.0, offset.y + level_height - 80.0)
+	var spawn_override = Vector2(offset.x + 80.0, spawn_y)
+	_generate_key_level_obstacles(current_level_size, main_scene, level, offset, level_width, level_height, door_layouts, door_width, spawn_override)
+
+	exit_spawner.clear_exit()
+	coins.clear()
+	var door_positions: Array = []
+	var key_positions: Array = []
+	var door_group_colors: Array = []
+	for layout in door_layouts:
+		var i = int(layout.get("index", 0))
+		var center_x = float(layout.get("center_x", offset.x))
+		door_positions.append(center_x)
+		var door_top = float(layout.get("door_top", offset.y))
+		var door_bottom = float(layout.get("door_bottom", door_top + door_gap_height))
+		var group_color: Color = layout.get("color", _get_group_color(i))
 		door_group_colors.append(group_color)
-		var door = _create_door_node(i, keys_per_door[i], not door_states[i], door_gap_height, door_width, group_color)
+		var initially_open = layout.get("initially_open", false)
+		var door = _create_door_node(i, int(layout.get("keys_needed", 0)), initially_open, door_gap_height, door_width, group_color)
 		door.position = Vector2(center_x - door_width * 0.5, door_top)
 		doors.append(door)
 		_add_generated_node(door, main_scene)
 
-		# Create barrier walls so the door sits within a solid structure
 		var top_segment_height = max(door_top - offset.y, 0.0)
 		if top_segment_height > 0.0:
 			var top_segment = _create_barrier_segment(door_width, top_segment_height)
@@ -160,14 +181,14 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 			key_barriers.append(top_segment)
 			_add_generated_node(top_segment, main_scene)
 
-		var bottom_segment_height = max(offset.y + level_height - (door_top + door_gap_height), 0.0)
+		var bottom_segment_height = max(offset.y + level_height - door_bottom, 0.0)
 		if bottom_segment_height > 0.0:
 			var bottom_segment = _create_barrier_segment(door_width, bottom_segment_height)
-			bottom_segment.position = Vector2(center_x - door_width * 0.5, door_top + door_gap_height)
+			bottom_segment.position = Vector2(center_x - door_width * 0.5, door_bottom)
 			key_barriers.append(bottom_segment)
 			_add_generated_node(bottom_segment, main_scene)
 
-		var keys_needed = int(keys_per_door[i])
+		var keys_needed = int(layout.get("keys_needed", 0))
 		if keys_needed <= 0:
 			continue
 
@@ -205,14 +226,16 @@ func _generate_keys_level(main_scene, level: int, player_start_position: Vector2
 			key_items.append(key_node)
 			_add_generated_node(key_node, main_scene)
 
+	_clear_obstacles_near_points(key_positions, 70.0)
+
 	var exit_position = Vector2(offset.x + level_width - 120.0, offset.y + level_height * 0.5)
 	exit_spawner.create_exit_at(exit_position, main_scene)
 	var exit_node = exit_spawner.get_exit()
 	if exit_node:
 		exit_pos = exit_node.position
+		_clear_obstacles_around_position(exit_pos, 100.0)
 
-	var spawn_y = clamp(player_start_position.y, offset.y + 80.0, offset.y + level_height - 80.0)
-	_set_player_spawn_override(Vector2(offset.x + 80.0, spawn_y))
+	_set_player_spawn_override(spawn_override)
 
 func _generate_maze_level(include_coins: bool, main_scene, player_start_position: Vector2) -> void:
 	var dims = LevelUtils.get_scaled_level_dimensions(current_level_size)
@@ -405,6 +428,94 @@ func _create_key_node(door: StaticBody2D, spawn_position: Vector2, required_keys
 	key.add_child(collision)
 
 	return key
+
+func _generate_key_level_obstacles(level_size: float, main_scene, level: int, offset: Vector2, level_width: float, level_height: float, door_layouts: Array, door_width: float, spawn_override: Vector2) -> void:
+	if obstacle_spawner == null or not is_instance_valid(obstacle_spawner):
+		Logger.log_error("ObstacleSpawner unavailable for key level")
+		return
+
+	obstacles = obstacle_spawner.generate_obstacles(level_size, true, main_scene, level)
+	if obstacles.is_empty():
+		return
+
+	var door_margin = 60.0
+	var clearance_rects: Array = []
+	for layout in door_layouts:
+		if typeof(layout) != TYPE_DICTIONARY:
+			continue
+		var center_x = float(layout.get("center_x", offset.x))
+		var rect_position = Vector2(center_x - (door_width * 0.5 + door_margin), offset.y)
+		var rect_size = Vector2(door_width + door_margin * 2.0, level_height)
+		clearance_rects.append(Rect2(rect_position, rect_size))
+
+	if not clearance_rects.is_empty():
+		_clear_obstacles_in_rects(clearance_rects)
+
+	if spawn_override != Vector2.ZERO:
+		_clear_obstacles_around_position(spawn_override, 140.0)
+
+func _clear_obstacles_in_rects(rects: Array) -> void:
+	if obstacles.is_empty():
+		return
+
+	var to_remove: Array = []
+	for obstacle in obstacles:
+		if not is_instance_valid(obstacle):
+			if not to_remove.has(obstacle):
+				to_remove.append(obstacle)
+			continue
+		var obstacle_rect = LevelUtils.get_obstacle_rect(obstacle)
+		for rect in rects:
+			if rect is Rect2 and obstacle_rect.intersects(rect):
+				if not to_remove.has(obstacle):
+					to_remove.append(obstacle)
+				break
+
+	_remove_obstacles(to_remove)
+
+func _clear_obstacles_near_points(points: Array, radius: float) -> void:
+	if obstacles.is_empty() or points.is_empty() or radius <= 0.0:
+		return
+
+	var radius_sq = radius * radius
+	var to_remove: Array = []
+	for obstacle in obstacles:
+		if not is_instance_valid(obstacle):
+			if not to_remove.has(obstacle):
+				to_remove.append(obstacle)
+			continue
+		for point in points:
+			if typeof(point) != TYPE_VECTOR2:
+				continue
+			if obstacle.position.distance_squared_to(point) <= radius_sq:
+				if not to_remove.has(obstacle):
+					to_remove.append(obstacle)
+				break
+
+	_remove_obstacles(to_remove)
+
+func _clear_obstacles_around_position(position: Vector2, radius: float) -> void:
+	if radius <= 0.0:
+		return
+	_clear_obstacles_near_points([position], radius)
+
+func _remove_obstacles(obstacles_to_remove: Array) -> void:
+	if obstacles_to_remove.is_empty():
+		return
+
+	var spawner_obstacles: Array = []
+	if obstacle_spawner and is_instance_valid(obstacle_spawner):
+		spawner_obstacles = obstacle_spawner.get_obstacles()
+
+	for obstacle in obstacles_to_remove:
+		if obstacle == null:
+			continue
+		if obstacles.has(obstacle):
+			obstacles.erase(obstacle)
+		if spawner_obstacles and spawner_obstacles.has(obstacle):
+			spawner_obstacles.erase(obstacle)
+		if is_instance_valid(obstacle):
+			obstacle.queue_free()
 
 func _get_group_color(index: int) -> Color:
 	if DOOR_GROUP_COLORS.is_empty():
