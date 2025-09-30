@@ -15,8 +15,8 @@ Mini 2D Game is a top-down arena crawler built with Godot 4. Collect coins, mana
 
 ## Controls
 
-- `W`, `A`, `S`, `D` or arrow keys – move the cube
-- `Esc` – return to the main menu
+- `W`, `A`, `S`, `D` or arrow keys Â– move the cube
+- `Esc` Â– return to the main menu
 
 Collecting a coin grants a temporary speed boost that now decays smoothly back to the base speed. While boosted, the cube leaves a ghost trail whose length reflects the remaining boost strength.
 
@@ -27,10 +27,11 @@ Select the desired level template in the main menu. Available options:
 | Level Type | Description |
 |------------|-------------|
 | **Obstacles + Coins** | Classic mode with random obstacles, coin placement, and an exit. |
-| **Keys** | Sequential doors guard the exit. Keys (2–6 per level) spawn in the area before the door they unlock, and at least one door starts locked. |
+| **Keys** | Sequential, color-coded doors guard the exit. Obstacles populate each zone but clear around doorways and spawn, and keys appear before the door they unlock. |
 | **Maze** | Generates a procedural maze and places the exit at one of the farthest reachable cells from the spawn point. |
 | **Maze + Coins** | Same maze generation as above, with coins scattered along reachable corridors. |
-| **Random** | Picks one of the above templates each time a new level is generated. |
+| **Maze + Keys** | Maze layout with a locked door near the exit. Collect the matching keys along the solution path to clear the door and finish. |
+| **Random** | Picks one of the above templates (including Maze + Keys) each time a new level is generated. |
 
 When you restart a failed level, the same template is reused. Advancing to the next level rerolls a template if **Random** is selected.
 
@@ -42,11 +43,11 @@ The boost granted by coins is now configurable and fades out gradually instead o
 
 Edit `config/game.cfg` to tweak these values:
 
-- `speed_boost_multiplier` – bonus applied per coin (default `1.5`).
-- `speed_boost_decay_time` – seconds for a single coin's boost to fade.
-- `speed_boost_max_stacks` – how many boosts can stack before clamping.
-- `ghost_base_lifetime` / `ghost_extra_lifetime` – minimum and extra trail lifetime.
-- `ghost_spawn_interval` / `ghost_spawn_interval_min` – spawn cadence range.
+- `speed_boost_multiplier` Â– bonus applied per coin (default `1.5`).
+- `speed_boost_decay_time` Â– seconds for a single coin's boost to fade.
+- `speed_boost_max_stacks` Â– how many boosts can stack before clamping.
+- `ghost_base_lifetime` / `ghost_extra_lifetime` Â– minimum and extra trail lifetime.
+- `ghost_spawn_interval` / `ghost_spawn_interval_min` Â– spawn cadence range.
 
 ### Coin Placement Safety
 
@@ -54,24 +55,32 @@ Coins spawned by the standard generator are validated with a pathfinder to guara
 
 ### Keys & Doors
 
-Key levels place doors across the arena. Locked doors require their assigned keys; each key is guaranteed to be reachable before the door it unlocks. Doors illuminate and disable their collision when all of their keys are collected, revealing the path toward the exit behind the final door.
+Key levels place doors across the arena. Locked doors require their assigned keys; each key is guaranteed to be reachable before the door it unlocks. Doors and keys now share matching colors to signal which collectibles unlock which barrier. Each door tracks how many keys remain, clears nearby obstacles for a smooth approach, and illuminates (disabling its collision) once its keys are collected to reveal the path toward the exit.
+
+Key levels also sprinkle obstacles throughout each gated segment to keep movement interesting while carving safe corridors near doors, spawn points, and recently placed keys.
 
 ### Maze Generation
 
 Maze levels carve a depth-first search maze over the scaled play area, centre the grid, and ensure the player spawns inside a walkable cell. The exit is positioned on one of the farthest cells from that spawn. In the `Maze + Coins` variant, coins are distributed across distant open cells while avoiding the spawn and exit.
 
+The new `Maze + Keys` mode keeps the same procedural layout but locks the final stretch behind a color-coded door. Keys are seeded along the optimal route so that unlocking the door requires exploring the maze rather than hugging the start area.
+
 ### Statistics Logging
 
 Each completed or failed level appends a CSV row to `logs/statistics_*.log` capturing size, coin totals, timing, and completion metrics, making it easy to analyze difficulty tweaks.
 
+### Adaptive Timer Balancing
+
+Timer calculations have been retuned for every difficulty and level archetype. The system now blends route length, collectible detours, maze path data, and recent player surplus time to set a fair but tightening countdown as you advance.
+
 ## Project Structure Highlights
 
-- `scripts/Main.gd` – core game loop, restart handling, and level orchestration.
-- `scripts/LevelGenerator.gd` – dispatches generation for standard, key, and maze templates.
-- `scripts/CoinSpawner.gd` – coin placement with path validation.
-- `scripts/Player.gd` – movement, boost decay, and ghost trail logic.
-- `scripts/GameState.gd` – level progression, difficulty, and level-type selection.
-- `scripts/TimerManager.gd` – adaptive timer calculations.
+- `scripts/Main.gd` Â– core game loop, restart handling, and level orchestration.
+- `scripts/LevelGenerator.gd` Â– dispatches generation for standard, key, and maze templates.
+- `scripts/CoinSpawner.gd` Â– coin placement with path validation.
+- `scripts/Player.gd` Â– movement, boost decay, and ghost trail logic.
+- `scripts/GameState.gd` Â– level progression, difficulty, and level-type selection.
+- `scripts/TimerManager.gd` Â– adaptive timer calculations.
 
 ## Contributing
 
