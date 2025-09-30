@@ -5,7 +5,7 @@ const Logger = preload("res://scripts/Logger.gd")
 
 # Game state management
 enum GameStateType { PLAYING, WON, LOST }
-enum LevelType { OBSTACLES_COINS, KEYS, MAZE, MAZE_COINS, RANDOM }
+enum LevelType { OBSTACLES_COINS, KEYS, MAZE, MAZE_COINS, MAZE_KEYS, RANDOM }
 var current_state = GameStateType.PLAYING
 
 # Progressive level scaling
@@ -98,7 +98,7 @@ func _refresh_level_type(force_new: bool = false):
 		Logger.log_game_mode("Current level type set to %s" % _get_level_type_label(current_level_type))
 
 func _pick_random_level_type() -> LevelType:
-	var options: Array = [LevelType.OBSTACLES_COINS, LevelType.KEYS, LevelType.MAZE, LevelType.MAZE_COINS]
+	var options: Array = [LevelType.OBSTACLES_COINS, LevelType.KEYS, LevelType.MAZE, LevelType.MAZE_COINS, LevelType.MAZE_KEYS]
 	if options.is_empty():
 		return LevelType.OBSTACLES_COINS
 	return options[randi() % options.size()]
@@ -113,6 +113,8 @@ func _get_level_type_label(level_type: LevelType) -> String:
 			return "Maze"
 		LevelType.MAZE_COINS:
 			return "Maze + Coins"
+		LevelType.MAZE_KEYS:
+			return "Maze + Keys"
 		LevelType.RANDOM:
 			return "Random"
 	return str(level_type)

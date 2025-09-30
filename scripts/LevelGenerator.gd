@@ -44,6 +44,8 @@ func generate_level(level_size := 1.0, generate_obstacles := true, generate_coin
 			_generate_maze_level(false, main_scene, player_start_position)
 		GameState.LevelType.MAZE_COINS:
 			_generate_maze_level(true, main_scene, player_start_position)
+		GameState.LevelType.MAZE_KEYS:
+			_generate_maze_keys_level(main_scene, level, player_start_position)
 		_:
 			_generate_standard_level(level_size, generate_obstacles, generate_coins, min_exit_distance_ratio, use_full_map_coverage, main_scene, level, preserved_coin_count, player_start_position)
 	return 0
@@ -252,6 +254,98 @@ func _generate_maze_level(include_coins: bool, main_scene, player_start_position
 	coins.clear()
 	if include_coins:
 		_generate_maze_coins(grid, start_cell, farthest, maze_offset, cell_size, main_scene)
+
+func _generate_maze_keys_level(main_scene, level: int, player_start_position: Vector2) -> void:
+	var dims = LevelUtils.get_scaled_level_dimensions(current_level_size)
+	var level_width: float = float(dims.width)
+	var level_height: float = float(dims.height)
+	var offset = Vector2(dims.offset_x, dims.offset_y)
+
+	var cell_size = MAZE_BASE_CELL_SIZE
+	var cols = int(floor(level_width / cell_size))
+	var rows = int(floor(level_height / cell_size))
+	cols = max(cols | 1, 5)
+	rows = max(rows | 1, 5)
+	var maze_width = cols * cell_size
+	var maze_height = rows * cell_size
+	var maze_offset = offset + Vector2((level_width - maze_width) * 0.5, (level_height - maze_height) * 0.5)
+
+	var start_cell = _world_to_maze_cell(player_start_position, maze_offset, cell_size)
+	start_cell = _ensure_odd_cell(start_cell, cols, rows)
+
+	var grid = _init_maze_grid(cols, rows)
+	_carve_maze(grid, start_cell, cols, rows)
+	_spawn_maze_walls(grid, maze_offset, cell_size, main_scene)
+
+	var farthest_data = _find_farthest_cell(grid, start_cell, cols, rows)
+	var exit_cell: Vector2i = farthest_data["cell"]
+	var path_steps: int = farthest_data["distance"]
+	last_maze_path_length = float(max(path_steps, 1)) * cell_size
+
+	var path: Array = _reconstruct_maze_path(grid, start_cell, exit_cell, cols, rows)
+
+	coins.clear()
+	exit_spawner.clear_exit()
+
+	var exit_position = _maze_cell_to_world(exit_cell, maze_offset, cell_size)
+	exit_spawner.create_exit_at(exit_position, main_scene)
+	var exit_node = exit_spawner.get_exit()
+	if exit_node:
+		exit_pos = exit_node.position
+
+	var door_cell = exit_cell
+	if path.size() >= 2:
+		door_cell = path[path.size() - 2]
+	if door_cell == exit_cell and path.size() >= 3:
+		door_cell = path[path.size() - 3]
+
+	var desired_keys = clamp(2 + int(floor(level / 2.0)), 2, 6)
+	var key_cells: Array = _pick_maze_key_cells(grid, path, start_cell, door_cell, exit_cell, desired_keys)
+	var actual_keys = key_cells.size()
+	var door_required = actual_keys
+	var door_color = _get_group_color(0)
+	var door_initially_open = door_required <= 0
+
+	var door = _create_door_node(0, door_required, door_initially_open, cell_size, cell_size, door_color)
+	door.position = maze_offset + Vector2(door_cell.x * cell_size, door_cell.y * cell_size)
+	doors.append(door)
+	_add_generated_node(door, main_scene)
+
+	if actual_keys > 0:
+		for cell in key_cells:
+			var key_pos = _maze_cell_to_world(cell, maze_offset, cell_size)
+			var key_node = _create_key_node(door, key_pos, door_required, door_color)
+			key_items.append(key_node)
+			_add_generated_node(key_node, main_scene)
+
+	Logger.log_generation("Maze+Keys door at %s with %d keys" % [str(door_cell), actual_keys])
+	_set_player_spawn_override(_maze_cell_to_world(start_cell, maze_offset, cell_size))
+
+func _generate_maze_coins(grid: Array, start: Vector2i, exit_cell: Vector2i, offset: Vector2, cell_size: float, main_scene) -> void:
+	var rows = grid.size()
+	var cols = grid[0].size()
+	var candidates: Array = []
+	for y in range(rows):
+		for x in range(cols):
+			if grid[y][x]:
+				continue
+			var cell = Vector2i(x, y)
+			if cell == start or cell == exit_cell:
+				continue
+			if (abs(cell.x - start.x) + abs(cell.y - start.y)) < 3:
+				continue
+			candidates.append(cell)
+	candidates.shuffle()
+	var desired = clamp(int(candidates.size() / 8.0), 5, 20)
+	for i in range(min(desired, candidates.size())):
+		var cell = candidates[i]
+		var world_pos = _maze_cell_to_world(cell, offset, cell_size)
+		var coin = _create_coin_node(world_pos)
+		coins.append(coin)
+		if main_scene:
+			main_scene.call_deferred("add_child", coin)
+		else:
+			call_deferred("add_child", coin)
 
 func get_generated_coins():
 	return coins
@@ -521,31 +615,79 @@ func _find_farthest_cell(grid: Array, start: Vector2i, cols: int, rows: int) -> 
 			queue.append({"cell": next, "dist": dist + 1})
 	return {"cell": farthest, "distance": max_dist}
 
-func _generate_maze_coins(grid: Array, start: Vector2i, exit_cell: Vector2i, offset: Vector2, cell_size: float, main_scene) -> void:
+func _reconstruct_maze_path(grid: Array, start: Vector2i, goal: Vector2i, cols: int, rows: int) -> Array:
+	var visited: Dictionary = {}
+	var parents: Dictionary = {}
+	var queue: Array = []
+	queue.append(start)
+	visited[start] = true
+	while not queue.is_empty():
+		var cell: Vector2i = queue.pop_front()
+		if cell == goal:
+			break
+		for dir in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+			var next = cell + dir
+			if next.x < 0 or next.x >= cols or next.y < 0 or next.y >= rows:
+				continue
+			if grid[next.y][next.x] or visited.has(next):
+				continue
+			visited[next] = true
+			parents[next] = cell
+			queue.append(next)
+	var path: Array = []
+	if not visited.has(goal):
+		path.append(start)
+		return path
+	var current = goal
+	while true:
+		path.push_front(current)
+		if current == start:
+			break
+		if not parents.has(current):
+			break
+		current = parents[current]
+	return path
+
+func _pick_maze_key_cells(grid: Array, path: Array, start_cell: Vector2i, door_cell: Vector2i, exit_cell: Vector2i, desired: int) -> Array:
+	var result: Array = []
+	if desired <= 0:
+		return result
+	var path_candidates: Array = []
+	for cell_variant in path:
+		var cell: Vector2i = cell_variant
+		if cell == start_cell or cell == door_cell or cell == exit_cell:
+			continue
+		if path_candidates.has(cell):
+			continue
+		path_candidates.append(cell)
+	path_candidates.shuffle()
+	for cell in path_candidates:
+		if result.size() >= desired:
+			break
+		result.append(cell)
+	if result.size() >= desired:
+		return result
 	var rows = grid.size()
-	var cols = grid[0].size()
-	var candidates: Array = []
+	if rows <= 0:
+		return result
+	var cols = grid[0].size() if rows > 0 else 0
+	var extras: Array = []
 	for y in range(rows):
 		for x in range(cols):
 			if grid[y][x]:
 				continue
-			var cell = Vector2i(x, y)
-			if cell == start or cell == exit_cell:
+			var candidate = Vector2i(x, y)
+			if candidate == start_cell or candidate == door_cell or candidate == exit_cell:
 				continue
-			if (abs(cell.x - start.x) + abs(cell.y - start.y)) < 3:
+			if result.has(candidate):
 				continue
-			candidates.append(cell)
-	candidates.shuffle()
-	var desired = clamp(int(candidates.size() / 8.0), 5, 20)
-	for i in range(min(desired, candidates.size())):
-		var cell = candidates[i]
-		var world_pos = _maze_cell_to_world(cell, offset, cell_size)
-		var coin = _create_coin_node(world_pos)
-		coins.append(coin)
-		if main_scene:
-			main_scene.call_deferred("add_child", coin)
-		else:
-			call_deferred("add_child", coin)
+			extras.append(candidate)
+	extras.shuffle()
+	for cell in extras:
+		if result.size() >= desired:
+			break
+		result.append(cell)
+	return result
 
 func _maze_cell_to_world(cell: Vector2i, offset: Vector2, cell_size: float) -> Vector2:
 	return offset + Vector2(cell.x * cell_size + cell_size * 0.5, cell.y * cell_size + cell_size * 0.5)
