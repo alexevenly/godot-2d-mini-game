@@ -3,9 +3,15 @@
 This folder contains all gameplay scripts for the 2D mini game. The modules below are grouped by their responsibilities and include the most important signal flows and dependencies to help you navigate the code base quickly.
 
 ## Core Gameplay Orchestration
-- **`Main.gd`** – Root scene controller that wires together the player, UI labels, timers, and spawners. It calls `generate_new_level()` on start and whenever the player advances, connects run-time signals (coin pickups, exit activation, restart/menu buttons), keeps track of collected resources, and logs per-level statistics before delegating to `GameState` for state changes and to `TimerManager` for time budgeting.
+- **`Main.gd`** – Root scene controller that wires together the player, UI labels, timers, and spawners. It instantiates the dedicated controllers under `scripts/main/` to manage UI, level lifecycle, game flow, and statistics logging. The scene triggers `generate_new_level()` on start or after wins, connects run-time signals (coin pickups, exit activation, restart/menu buttons), and keeps authoritative counters for coins, keys, and timers while coordinating with `GameState` and `TimerManager`.
 - **`GameState.gd`** – Authoritative store for game progression. It tracks the current level, chosen level type, state (playing / won / lost), and tuning flags (obstacle & coin toggles, exit distance, coverage). `Main.gd` reads these values when preparing each level and updates them when the player wins or loses.
 - **`TimerManager.gd`** – Central difficulty balancer. After every generation `Main.gd` calls `calculate_level_time()` to compute the allowed time based on difficulty presets, distance to coins and exit, recent player surplus, and level-type heuristics. It also records time left at level completion through `register_level_result()` for future adjustments.
+
+### Main Scene Controllers (`scripts/main/`)
+- **`LevelController.gd`** – Generates new levels via `LevelGenerator`, wires coin/key/exit signals, positions the player, and synchronizes UI state such as coins, keys, and exit activation. It also clears previously spawned content when restarting.
+- **`UIController.gd`** – Owns HUD updates (timer, coin counts, level progress) and manages dynamic key indicators plus endgame buttons/labels. The controller exposes helpers for showing win/lose states and toggling restart/menu buttons.
+- **`GameFlowController.gd`** – Orchestrates transitions between playing, win, and loss states. It controls timer behavior, advances or resets `GameState`, pauses/resumes the player, and invokes level generation through `LevelController`.
+- **`StatisticsLogger.gd`** – Creates timestamped log files, records per-level metrics (size, coins, timings, player/exit distance), and notifies `TimerManager` about remaining time for balancing feedback loops.
 
 ## Level Generation Pipeline
 - **`LevelGenerator.gd`** – Facade for all procedural content. It coordinates `ObstacleSpawner`, `CoinSpawner`, and `ExitSpawner` for standard levels, and delegates to the specialized generators under `level_generators/` for key puzzles and mazes. It keeps references to generated nodes (coins, doors, keys, maze walls), exposes getters that `Main.gd` uses for wiring signals, and remembers spawn overrides or maze path lengths for `TimerManager` calculations.
@@ -31,7 +37,7 @@ This folder contains all gameplay scripts for the 2D mini game. The modules belo
 
 ## UI & Entry Points
 - **`MainMenu.gd`** – Front-end menu that sets the difficulty on `TimerManager`, persists the preferred level type via `Engine` metadata, and transitions into the main scene.
-- **HUD nodes in `Main.gd`** – Labels and buttons updated directly by `Main.gd` to reflect timer, coin totals, key status, level progress, and win/lose states.
+- **HUD nodes managed by `UIController.gd`** – Labels, buttons, and key indicators updated through the controller to reflect timer countdowns, coin totals, key status, level progress, and win/lose states.
 
 ## State, Timing, and Metrics Flow
 1. `Main.gd` asks `GameState` for the current level settings and delegates level creation to `LevelGenerator`.
@@ -41,7 +47,7 @@ This folder contains all gameplay scripts for the 2D mini game. The modules belo
 
 ## Logging and Statistics
 - **`Logger.gd`** – Lightweight category-based logging utility used across generators and state managers for consistent console output.
-- **Statistics file handling in `Main.gd`** – Each playthrough creates a timestamped entry in `/logs` containing level dimensions, coin counts, completion time, and remaining time, providing a trail for balancing tweaks.
+- **`StatisticsLogger.gd`** – Initializes timestamped log files under `/logs`, writes per-level metrics (dimensions, coins, completion time, remaining time, player-to-exit distance, completion rate), and forwards remaining-time data to `TimerManager` for balancing tweaks.
 
 ### Extending the System
 - Add new level archetypes by creating a generator that mirrors the `MazeGenerator`/`KeyLevelGenerator` pattern and exposing it through `GameState.LevelType` and `LevelGenerator.generate_level()`.

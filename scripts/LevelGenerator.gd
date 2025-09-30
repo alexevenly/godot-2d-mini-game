@@ -1,3 +1,4 @@
+class_name LevelGenerator
 extends Node2D
 
 const Logger = preload("res://scripts/Logger.gd")
