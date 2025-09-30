@@ -1,4 +1,4 @@
-extends UnitTestSuite
+extends "res://tests/unit/test_utils.gd"
 
 const LevelUtils = preload("res://scripts/LevelUtils.gd")
 
@@ -25,10 +25,10 @@ func test_get_grid_position_stays_within_bounds() -> void:
 	var margin := 40
 	var pos := LevelUtils.get_grid_position(level_size, 4, 3, margin, 5)
 	var dims := LevelUtils.get_scaled_level_dimensions(level_size)
-	var level_width := dims["width"]
-	var level_height := dims["height"]
-	var offset_x := dims["offset_x"]
-	var offset_y := dims["offset_y"]
+	var level_width = dims["width"]
+	var level_height = dims["height"]
+	var offset_x = dims["offset_x"]
+	var offset_y = dims["offset_y"]
 	assert_true(pos.x >= margin + offset_x)
 	assert_true(pos.x <= level_width - margin + offset_x)
 	assert_true(pos.y >= margin + offset_y)
@@ -51,14 +51,15 @@ func test_get_obstacle_rect_prefers_custom_body() -> void:
 	assert_near(rect.position.y, 150 - body.offset_bottom / 2.0, 0.0001)
 	assert_near(rect.size.x, body.offset_right, 0.0001)
 	assert_near(rect.size.y, body.offset_bottom, 0.0001)
+	obstacle.free()
 
 func test_update_level_boundaries_adjusts_nodes() -> void:
 	var play_area := ColorRect.new()
 	var boundaries := Node2D.new()
 	_boundaries_add_wall(boundaries, "TopWall")
 	_boundaries_add_wall(boundaries, "BottomWall")
-	_boundaries_add_wall(boundaries, "LeftWall", horizontal := false)
-	_boundaries_add_wall(boundaries, "RightWall", horizontal := false)
+	_boundaries_add_wall(boundaries, "LeftWall", false)
+	_boundaries_add_wall(boundaries, "RightWall", false)
 	LevelUtils.update_level_boundaries(0.8, play_area, boundaries)
 	var dims := LevelUtils.get_scaled_level_dimensions(0.8)
 	assert_vector_near(play_area.position, Vector2(dims["offset_x"], dims["offset_y"]), 0.001)
@@ -73,6 +74,8 @@ func test_update_level_boundaries_adjusts_nodes() -> void:
 	var right_collision := right_wall.get_node("RightWallCollision")
 	assert_near(right_collision.shape.size.x, 40, 0.001)
 	assert_near(right_collision.shape.size.y, dims["height"], 0.001)
+	boundaries.free()
+	play_area.free()
 
 func _boundaries_add_wall(parent: Node2D, name: String, horizontal := true) -> void:
 	var wall := Node2D.new()

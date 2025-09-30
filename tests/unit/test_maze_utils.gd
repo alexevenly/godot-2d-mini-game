@@ -1,4 +1,4 @@
-extends UnitTestSuite
+extends "res://tests/unit/test_utils.gd"
 
 const MazeUtils = preload("res://scripts/level_generators/MazeUtils.gd")
 
