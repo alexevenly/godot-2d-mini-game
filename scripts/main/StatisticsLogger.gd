@@ -7,7 +7,7 @@ var main: Main = null
 var timer_manager: TimerManager = null
 var statistics_file: FileAccess = null
 
-func _init(main_ref: Main, timer_manager_ref: TimerManager) -> void:
+func setup(main_ref: Main, timer_manager_ref: TimerManager) -> void:
 	main = main_ref
 	timer_manager = timer_manager_ref
 

@@ -14,7 +14,7 @@ var key_status_container: Control = null
 var key_checkbox_nodes: Array[CheckBox] = []
 var key_colors: Array[Color] = []
 
-func _init(
+func setup(
 	main_ref: Main,
 	timer_label_ref: Label,
 	coin_label_ref: Label,

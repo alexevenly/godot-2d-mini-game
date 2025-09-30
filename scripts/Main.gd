@@ -46,10 +46,14 @@ var statistics_logger: StatisticsLogger = null
 var game_flow_controller: GameFlowController = null
 
 func _ready() -> void:
-	ui_controller = UIController.new(self, timer_label, coin_label, level_progress_label, game_over_label, win_label, restart_button, menu_button, key_container, key_status_container)
-	level_controller = LevelController.new(self, ui_controller)
-	statistics_logger = StatisticsLogger.new(self, timer_manager)
-	game_flow_controller = GameFlowController.new(self, ui_controller, level_controller, statistics_logger)
+	ui_controller = UIController.new()
+	ui_controller.setup(self, timer_label, coin_label, level_progress_label, game_over_label, win_label, restart_button, menu_button, key_container, key_status_container)
+	level_controller = LevelController.new()
+	level_controller.setup(self, ui_controller)
+	statistics_logger = StatisticsLogger.new()
+	statistics_logger.setup(self, timer_manager)
+	game_flow_controller = GameFlowController.new()
+	game_flow_controller.setup(self, ui_controller, level_controller, statistics_logger)
 	level_controller.set_game_flow_controller(game_flow_controller)
 	timer.timeout.connect(_on_timer_timeout)
 	restart_button.pressed.connect(_on_restart_pressed)
