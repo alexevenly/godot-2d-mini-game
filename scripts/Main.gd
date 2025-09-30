@@ -30,12 +30,10 @@ var game_time: float = 30.0
 var total_coins: int = 0
 var collected_coins: int = 0
 var previous_coin_count: int = 0
-var keys: Array[Area2D] = []
 var total_keys: int = 0
 var collected_keys_count: int = 0
 var exit_active: bool = false
 var exit: Area2D = null
-var coins: Array[Area2D] = []
 var prevent_game_over: bool = false
 var level_start_time: float = 0.0
 var level_initializing: bool = false
@@ -51,7 +49,7 @@ func _ready() -> void:
 	level_controller = LevelController.new()
 	level_controller.setup(self, ui_controller)
 	statistics_logger = StatisticsLogger.new()
-	statistics_logger.setup(self, timer_manager)
+	statistics_logger.setup(self, timer_manager, level_controller)
 	game_flow_controller = GameFlowController.new()
 	game_flow_controller.setup(self, ui_controller, level_controller, statistics_logger)
 	level_controller.set_game_flow_controller(game_flow_controller)

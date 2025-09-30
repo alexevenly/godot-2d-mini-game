@@ -7,6 +7,8 @@ const LevelUtils = preload("res://scripts/LevelUtils.gd")
 var main: Main = null
 var ui_controller: UIController = null
 var game_flow_controller: GameFlowController = null
+var coins: Array[Area2D] = []
+var keys: Array[Area2D] = []
 
 func setup(main_ref: Main, ui_controller_ref: UIController) -> void:
 	main = main_ref
@@ -25,8 +27,8 @@ func generate_new_level() -> void:
 	main.collected_coins = main.previous_coin_count
 	main.exit_active = false
 	main.exit = null
-	main.coins = [] as Array[Area2D]
-	main.keys = [] as Array[Area2D]
+	coins = [] as Array[Area2D]
+	keys = [] as Array[Area2D]
 	main.game_state.set_state(GameState.GameStateType.PLAYING)
 	if main.game_state.current_state != GameState.GameStateType.PLAYING:
 		Logger.log_game_mode("Game state corrected to PLAYING before generation")
@@ -68,8 +70,8 @@ func generate_new_level() -> void:
 		level_type
 	)
 	main.exit = main.level_generator.get_generated_exit()
-	main.coins = main.level_generator.get_generated_coins() as Array[Area2D]
-	main.keys = main.level_generator.get_generated_keys() as Array[Area2D]
+	coins = main.level_generator.get_generated_coins() as Array[Area2D]
+	keys = main.level_generator.get_generated_keys() as Array[Area2D]
 	var spawn_override_variant: Variant = main.level_generator.get_player_spawn_override()
 	var has_spawn_override: bool = typeof(spawn_override_variant) == TYPE_VECTOR2
 	var spawn_override: Vector2 = spawn_override_variant if has_spawn_override else Vector2.ZERO
@@ -77,14 +79,14 @@ func generate_new_level() -> void:
 		Logger.log_generation("Exit generated at %s" % [main.exit.position])
 	else:
 		Logger.log_generation("No exit generated")
-	Logger.log_generation("Coins generated: %d" % main.coins.size())
-	Logger.log_generation("Keys generated: %d" % main.keys.size())
+	Logger.log_generation("Coins generated: %d" % coins.size())
+	Logger.log_generation("Keys generated: %d" % keys.size())
 	if main.timer_manager:
 		var timer_start_position: Vector2 = spawn_override if has_spawn_override else (main.player.global_position if main.player else LevelUtils.PLAYER_START)
 		var maze_path_length: float = main.level_generator.get_last_maze_path_length() if main.level_generator else 0.0
 		main.game_time = main.timer_manager.calculate_level_time(
 			main.game_state.current_level,
-			main.coins,
+			coins,
 			main.exit.position if main.exit else Vector2(),
 			timer_start_position,
 			level_type,
@@ -92,13 +94,13 @@ func generate_new_level() -> void:
 		)
 	else:
 		main.game_time = 30.0
-	for coin in main.coins:
+	for coin in coins:
 		var coin_area: Area2D = coin
 		if coin_area and is_instance_valid(coin_area):
 			var coin_callable: Callable = Callable(main, "_on_coin_collected").bind(coin_area)
 			if not coin_area.body_entered.is_connected(coin_callable):
 				coin_area.body_entered.connect(coin_callable)
-	main.total_coins = main.coins.size()
+	main.total_coins = coins.size()
 	main.collected_coins = 0
 	if main.total_coins == 0:
 		main.previous_coin_count = 0
@@ -107,8 +109,8 @@ func generate_new_level() -> void:
 		if not main.exit.body_entered.is_connected(exit_callable):
 			main.exit.body_entered.connect(exit_callable)
 	main.collected_keys_count = 0
-	main.total_keys = main.keys.size()
-	for key in main.keys:
+	main.total_keys = keys.size()
+	for key in keys:
 		var key_node: Area2D = key
 		if key_node and is_instance_valid(key_node) and key_node.has_signal("key_collected"):
 			var key_callable: Callable = Callable(main, "_on_key_collected")
@@ -118,7 +120,7 @@ func generate_new_level() -> void:
 	main.timer.stop()
 	main.timer.start()
 	ui_controller.update_coin_display(main.total_coins, main.collected_coins)
-	ui_controller.setup_key_ui(main.keys)
+	ui_controller.setup_key_ui(keys)
 	main.exit_active = main.collected_coins >= main.total_coins
 	ui_controller.update_exit_state(main.exit_active, main.exit)
 	ui_controller.update_timer_display(main.game_time)
@@ -153,7 +155,7 @@ func handle_coin_collected(body: Node, coin: Area2D) -> void:
 			if main.player.has_method("apply_speed_boost"):
 				main.player.apply_speed_boost()
 		coin.queue_free()
-		main.coins.erase(coin)
+		coins.erase(coin)
 	main.exit_active = main.collected_coins >= main.total_coins
 	ui_controller.update_coin_display(main.total_coins, main.collected_coins)
 	ui_controller.update_exit_state(main.exit_active, main.exit)
@@ -175,11 +177,14 @@ func clear_level_objects() -> void:
 		main.level_generator.clear_existing_objects()
 		Logger.log_generation("LevelGenerator cleared existing objects")
 	main.exit = null
-	main.coins = [] as Array[Area2D]
-	main.keys = [] as Array[Area2D]
+	coins = [] as Array[Area2D]
+	keys = [] as Array[Area2D]
 	main.total_coins = 0
 	main.collected_coins = 0
 	main.total_keys = 0
 	main.collected_keys_count = 0
 	main.exit_active = false
 	ui_controller.clear_key_ui()
+
+func get_active_coins() -> Array[Area2D]:
+	return coins
