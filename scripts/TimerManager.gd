@@ -1,6 +1,8 @@
+class_name TimerManager
 extends Node2D
 
 const GameState = preload("res://scripts/GameState.gd")
+const LevelUtils = preload("res://scripts/LevelUtils.gd")
 
 # ---- ПРЕСЕТЫ (ужаты под твои данные) ----
 const DIFFICULTY_PRESETS := {
@@ -154,15 +156,15 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 	total_distance += current_pos.distance_to(exit_pos)
 
 	var speed: float = float(p["speed"])
-	var type_profile := _get_type_profile(level_type)
-	var maze_overhead := _maze_overhead(level_type, maze_path_length, player_start, exit_pos, speed)
+	var type_profile = _get_type_profile(level_type)
+	var maze_overhead = _maze_overhead(level_type, maze_path_length, player_start, exit_pos, speed)
 	var base_path: float = float(maze_overhead.get("base_path", 0.0))
 	if base_path > 0.0:
 		total_distance = max(total_distance, base_path)
 	if level_type == GameState.LevelType.OBSTACLES_COINS and level > 2:
-		var trim := clamp(float(type_profile.get("route_trim", 1.0)), 0.5, 1.0)
-		var ramp := max(float(type_profile.get("trim_ramp", 3.0)), 0.001)
-		var trim_t := clamp((float(level) - 2.0) / ramp, 0.0, 1.0)
+		var trim = clamp(float(type_profile.get("route_trim", 1.0)), 0.5, 1.0)
+		var ramp = max(float(type_profile.get("trim_ramp", 3.0)), 0.001)
+		var trim_t = clamp((float(level) - 2.0) / ramp, 0.0, 1.0)
 		total_distance *= lerp(1.0, trim, trim_t)
 	total_distance *= float(maze_overhead["factor"])
 
@@ -186,18 +188,22 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 	planned += float(type_profile.get("flat_bonus", 0.0))
 	planned += float(maze_overhead.get("slack", 0.0))
 
-	var type_scale := _level_type_scale(level_type, level)
+	var type_scale = _level_type_scale(level_type, level)
 	planned *= type_scale
 
-	var avg_surplus := _avg_surplus()
+	var avg_surplus = _avg_surplus()
 	if avg_surplus > 0.0:
-		var target := _target_surplus_sec(level)
+		var target = _target_surplus_sec(level)
 		var over: float = max(avg_surplus - target, 0.0)
 		var max_cut: float = max(0.4 * planned, cap_sec * 1.5)
 		var cut: float = clamp(over * SURPLUS_GAIN, 0.0, max_cut)
 		planned = max(planned - cut, min_time)
 
-	return max(planned, min_time)
+	var result: float = max(planned, min_time)
+	if result <= min_time + 0.0001:
+		var distance_time: float = total_distance / max(speed, 0.0001)
+		result = min_time + distance_time + pickup_time
+	return result
 
 func get_time_for_level(level: int, level_type: int = GameState.LevelType.OBSTACLES_COINS) -> float:
 	var p := _get_preset()
@@ -205,19 +211,19 @@ func get_time_for_level(level: int, level_type: int = GameState.LevelType.OBSTAC
 	var preset_scale: float = float(p["global_scale"])
 	var min_time: float = float(p["min_time"])
 	var approx: float = BASE_TIME_PER_LEVEL * mult * preset_scale * _level_type_scale(level_type, level)
-	var avg_surplus := _avg_surplus()
+	var avg_surplus = _avg_surplus()
 	if avg_surplus > 0.0:
-		var target := _target_surplus_sec(level)
+		var target = _target_surplus_sec(level)
 		var over: float = max(avg_surplus - target, 0.0)
 		var cut: float = clamp(over * 0.5, 0.0, 0.4 * approx)
 		approx = max(approx - cut, min_time)
 	return max(approx, min_time)
 
 func _level_type_scale(level_type: int, level: int) -> float:
-	var profile := _get_type_profile(level_type)
+	var profile = _get_type_profile(level_type)
 	var start: float = float(profile.get("scale_start", 1.0))
 	var endv: float = float(profile.get("scale_end", start))
-	var t := clamp((float(level) - 1.0) / 8.0, 0.0, 1.0)
+	var t = clamp((float(level) - 1.0) / 8.0, 0.0, 1.0)
 	return lerp(start, endv, t)
 
 func _get_type_profile(level_type: int) -> Dictionary:
@@ -231,11 +237,11 @@ func _get_type_profile(level_type: int) -> Dictionary:
 	}
 
 func _maze_overhead(level_type: int, maze_path_length: float, player_start: Vector2, exit_pos: Vector2, speed: float) -> Dictionary:
-	var is_maze := level_type == GameState.LevelType.MAZE or level_type == GameState.LevelType.MAZE_COINS or level_type == GameState.LevelType.MAZE_KEYS
+	var is_maze = level_type == GameState.LevelType.MAZE or level_type == GameState.LevelType.MAZE_COINS or level_type == GameState.LevelType.MAZE_KEYS
 	if not is_maze:
 		return {"factor": 1.0, "slack": 0.0, "base_path": 0.0}
 	var straight: float = player_start.distance_to(exit_pos)
-	var profile := _get_type_profile(level_type)
+	var profile = _get_type_profile(level_type)
 	var fallback_factor: float = float(profile.get("maze_fallback_factor", 1.35))
 	var base_path: float = 0.0
 	if straight > 0.0:
@@ -243,18 +249,18 @@ func _maze_overhead(level_type: int, maze_path_length: float, player_start: Vect
 	if maze_path_length > 0.0:
 		var floor_scale: float = float(profile.get("maze_path_floor", 1.0))
 		base_path = max(maze_path_length, straight * floor_scale)
-		var ratio := clamp(maze_path_length / max(straight, 1.0), 1.0, 4.5)
+		var ratio = clamp(maze_path_length / max(straight, 1.0), 1.0, 4.5)
 		var base_scale: float = float(profile.get("maze_base_scale", 0.6))
-		var factor := 1.0 + (ratio - 1.0) * base_scale
+		var factor = 1.0 + (ratio - 1.0) * base_scale
 		var ratio_span: float = max(float(profile.get("maze_ratio_span", 2.5)), 0.5)
-		var ratio_t := clamp((ratio - 1.0) / ratio_span, 0.0, 1.0)
+		var ratio_t = clamp((ratio - 1.0) / ratio_span, 0.0, 1.0)
 		var slack_curve: Vector2 = profile.get("maze_slack_curve", Vector2.ZERO)
-		var slack := 0.0
+		var slack = 0.0
 		if slack_curve != Vector2.ZERO:
 			slack += lerp(slack_curve.x, slack_curve.y, ratio_t)
 		var path_scale: float = float(profile.get("maze_path_scale", 0.8))
 		var path_cap: float = float(profile.get("maze_path_cap", 8.0))
-		var path_bonus := clamp((maze_path_length - straight) / max(speed, 1.0), 0.0, path_cap)
+		var path_bonus = clamp((maze_path_length - straight) / max(speed, 1.0), 0.0, path_cap)
 		slack += path_bonus * path_scale
 		return {"factor": factor, "slack": slack, "base_path": base_path}
 	var fallback_slack: float = float(profile.get("maze_fallback_slack", 5.0))
