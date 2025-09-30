@@ -10,7 +10,7 @@ const NAV_CELL_SIZE := 16.0
 const PLAYER_DIAMETER := 32.0
 const PATH_WIDTH_SCALE := 1.05
 
-var coins: Array = []
+var coins: Array[Area2D] = []
 var current_level_size: float = 1.0
 
 func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, player_start: Vector2, use_full_map_coverage: bool = true, main_scene: Node = null, level: int = 1, preserved_coin_count: int = 0) -> Array:
@@ -35,8 +35,8 @@ func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, play
 
 	var navigation_ctx := CoinNavigation.build_navigation_context(current_level_size, obstacles, NAV_CELL_SIZE, PLAYER_DIAMETER, PATH_WIDTH_SCALE)
 
-	var grid_cols: int = use_full_map_coverage ? 8 : 6
-	var grid_rows: int = use_full_map_coverage ? 6 : 5
+	var grid_cols: int = 8 if use_full_map_coverage else 6
+	var grid_rows: int = 6 if use_full_map_coverage else 5
 
 	var max_attempts_total: int = coin_count * 60
 	var attempts_total: int = 0

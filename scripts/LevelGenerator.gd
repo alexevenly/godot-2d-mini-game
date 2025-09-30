@@ -21,12 +21,12 @@ const MAZE_BASE_CELL_SIZE := 64.0
 const MAZE_WALL_SIZE_RATIO := 0.5
 
 var obstacles: Array = []
-var coins: Array = []
+var coins: Array[Area2D] = []
 var exit_pos: Vector2 = Vector2.ZERO
 var current_level_size: float = 1.0
 
 var doors: Array = []
-var key_items: Array = []
+var key_items: Array[Area2D] = []
 var maze_walls: Array = []
 var key_barriers: Array = []
 var player_spawn_override: Vector2 = Vector2.ZERO

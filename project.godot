@@ -21,6 +21,25 @@ window/size/viewport_width=1024
 window/size/viewport_height=600
 window/size/resizable=false
 
+[global_script_class_icons]
+
+UnitTestSuite=""
+TimerManager=""
+
+[global_script_classes]
+
+classes=[{
+"base": "RefCounted",
+"class": "UnitTestSuite",
+"language": "GDScript",
+"path": "res://tests/unit/test_utils.gd"
+}, {
+"base": "Node2D",
+"class": "TimerManager",
+"language": "GDScript",
+"path": "res://scripts/TimerManager.gd"
+}]
+
 [input]
 
 move_left={
@@ -51,22 +70,3 @@ move_down={
 [physics]
 
 2d/default_gravity=0
-
-[global_script_classes]
-
-classes=[{
-	"base": "RefCounted",
-	"class": "UnitTestSuite",
-	"language": "GDScript",
-	"path": "res://tests/unit/test_utils.gd"
-}, {
-	"base": "Node2D",
-	"class": "TimerManager",
-	"language": "GDScript",
-	"path": "res://scripts/TimerManager.gd"
-}]
-
-[global_script_class_icons]
-
-UnitTestSuite=""
-TimerManager=""

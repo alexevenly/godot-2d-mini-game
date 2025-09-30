@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_0h8x7"]
 [ext_resource type="Script" path="res://scripts/Player.gd" id="2_1i9y8"]
+[ext_resource type="Script" path="res://scripts/LevelGenerator.gd" id="3_2j9z8"]
+[ext_resource type="Script" path="res://scripts/SmoothCamera.gd" id="4_3k0a9"]
 [ext_resource type="Script" path="res://scripts/ObstacleSpawner.gd" id="5_4l1b0"]
 [ext_resource type="Script" path="res://scripts/CoinSpawner.gd" id="6_5m2c1"]
 [ext_resource type="Script" path="res://scripts/ExitSpawner.gd" id="7_6o4e3"]
-[ext_resource type="Script" path="res://scripts/LevelGenerator.gd" id="3_2j9z8"]
-[ext_resource type="Script" path="res://scripts/SmoothCamera.gd" id="4_3k0a9"]
 [ext_resource type="Script" path="res://scripts/TimerManager.gd" id="8_7p5f4"]
 [ext_resource type="Script" path="res://scripts/GameState.gd" id="9_8q6g5"]
 
@@ -168,13 +168,14 @@ offset_right = 260.0
 offset_bottom = -160.0
 
 [node name="KeyLabel" type="Label" parent="UI/KeyContainer"]
+layout_mode = 2
 text = "Keys:"
 vertical_alignment = 1
 
 [node name="KeyStatus" type="HBoxContainer" parent="UI/KeyContainer"]
-size_flags_horizontal = 3
 custom_minimum_size = Vector2(140, 0)
-alignment = 0
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="LevelProgressLabel" type="Label" parent="UI"]
 anchors_preset = 2

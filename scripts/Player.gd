@@ -64,7 +64,8 @@ func _setup_ghost_container():
 			ghost_container = Node2D.new()
 			ghost_container.name = "PlayerGhosts"
 			ghost_container.z_index = max(z_index - 1, 0)
-			parent.add_child(ghost_container)
+			# КЛЮЧЕВОЕ:
+			parent.call_deferred("add_child", ghost_container)
 
 func _physics_process(delta):
 	_update_boost(delta)
@@ -107,7 +108,7 @@ func _update_boost(delta: float) -> void:
 	_advance_ghost_trail(delta, current_boost_value)
 
 func _advance_ghost_trail(delta: float, boost_value: float) -> void:
-	if not ghost_trail_enabled or ghost_container == null:
+	if not ghost_trail_enabled or ghost_container == null or not is_instance_valid(ghost_container) or not ghost_container.is_inside_tree():
 		return
 
 	var ratio := 0.0
@@ -125,7 +126,7 @@ func _advance_ghost_trail(delta: float, boost_value: float) -> void:
 		_spawn_ghost(ratio)
 
 func _spawn_ghost(strength_ratio: float) -> void:
-	if player_body == null:
+	if player_body == null or ghost_container == null or not ghost_container.is_inside_tree():
 		return
 	if not is_inside_tree():
 		return
