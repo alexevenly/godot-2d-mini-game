@@ -17,6 +17,3 @@ mono_crash.*.json
 
 # Logs
 logs/
-
-# Local tooling
-bin/
