@@ -8,7 +8,7 @@ var main: Main = null
 var ui_controller: UIController = null
 var game_flow_controller: GameFlowController = null
 
-func _init(main_ref: Main, ui_controller_ref: UIController) -> void:
+func setup(main_ref: Main, ui_controller_ref: UIController) -> void:
 	main = main_ref
 	ui_controller = ui_controller_ref
 

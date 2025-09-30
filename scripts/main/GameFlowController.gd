@@ -8,7 +8,7 @@ var ui_controller: UIController = null
 var level_controller: LevelController = null
 var statistics_logger: StatisticsLogger = null
 
-func _init(
+func setup(
 	main_ref: Main,
 	ui_controller_ref: UIController,
 	level_controller_ref: LevelController,
