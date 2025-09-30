@@ -5,11 +5,13 @@ const Logger = preload("res://scripts/Logger.gd")
 
 var main: Main = null
 var timer_manager: TimerManager = null
+var level_controller: LevelController = null
 var statistics_file: FileAccess = null
 
-func setup(main_ref: Main, timer_manager_ref: TimerManager) -> void:
+func setup(main_ref: Main, timer_manager_ref: TimerManager, level_controller_ref: LevelController) -> void:
 	main = main_ref
 	timer_manager = timer_manager_ref
+	level_controller = level_controller_ref
 
 func init_logging() -> void:
 	var logs_dir: String = "logs"
@@ -33,7 +35,8 @@ func log_level_statistics() -> void:
 	var time_left: float = main.game_time
 	if main.player and main.exit:
 		distance = main.player.global_position.distance_to(main.exit.global_position)
-	var coin_total: int = main.coins.size()
+	var coins: Array[Area2D] = level_controller.get_active_coins() if level_controller else []
+	var coin_total: int = coins.size()
 	var completion_rate: float = 1.0 if coin_total == 0 else float(main.collected_coins) / float(max(coin_total, 1))
 	var stats_parts: Array[String] = [
 		str(main.game_state.current_level),
