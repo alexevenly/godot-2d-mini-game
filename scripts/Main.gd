@@ -5,6 +5,9 @@ const LevelController = preload("res://scripts/main/LevelController.gd")
 const UIController = preload("res://scripts/main/UIController.gd")
 const StatisticsLogger = preload("res://scripts/main/StatisticsLogger.gd")
 const GameFlowController = preload("res://scripts/main/GameFlowController.gd")
+const LevelGenerator = preload("res://scripts/LevelGenerator.gd")
+const TimerManager = preload("res://scripts/TimerManager.gd")
+const GameState = preload("res://scripts/GameState.gd")
 
 @onready var player: CharacterBody2D = $Player
 @onready var timer: Timer = $Timer
