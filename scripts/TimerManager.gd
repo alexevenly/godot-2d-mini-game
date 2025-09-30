@@ -64,6 +64,20 @@ const LEVEL_TYPE_TUNING := {
 		"maze_path_floor": 1.12,
 		"maze_fallback_factor": 1.50
 	},
+	GameState.LevelType.MAZE_KEYS: {
+		"scale_start": 1.88,
+		"scale_end": 1.52,
+		"buffer_bias": 0.42,
+		"flat_bonus": 4.8,
+		"maze_slack_curve": Vector2(8.0, 16.0),
+		"maze_path_scale": 1.22,
+		"maze_path_cap": 13.5,
+		"maze_base_scale": 0.82,
+		"maze_fallback_slack": 9.0,
+		"maze_ratio_span": 3.6,
+		"maze_path_floor": 1.15,
+		"maze_fallback_factor": 1.55
+	},
 	GameState.LevelType.KEYS: {
 		"scale_start": 1.08,
 		"scale_end": 0.96,
@@ -217,7 +231,7 @@ func _get_type_profile(level_type: int) -> Dictionary:
 	}
 
 func _maze_overhead(level_type: int, maze_path_length: float, player_start: Vector2, exit_pos: Vector2, speed: float) -> Dictionary:
-	var is_maze := level_type == GameState.LevelType.MAZE or level_type == GameState.LevelType.MAZE_COINS
+	var is_maze := level_type == GameState.LevelType.MAZE or level_type == GameState.LevelType.MAZE_COINS or level_type == GameState.LevelType.MAZE_KEYS
 	if not is_maze:
 		return {"factor": 1.0, "slack": 0.0, "base_path": 0.0}
 	var straight: float = player_start.distance_to(exit_pos)

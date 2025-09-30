@@ -14,6 +14,7 @@ var level_type_options = [
 	{"name": "Keys", "type": GameState.LevelType.KEYS},
 	{"name": "Maze", "type": GameState.LevelType.MAZE},
 	{"name": "Maze + Coins", "type": GameState.LevelType.MAZE_COINS},
+	{"name": "Maze + Keys", "type": GameState.LevelType.MAZE_KEYS},
 	{"name": "Random", "type": GameState.LevelType.RANDOM},
 ]
 var current_level_type_index = 0

@@ -167,7 +167,7 @@ func generate_new_level():
 	position_player_within_level()
 
 	var level_type = game_state.get_current_level_type()
-	var level_type_names = ["Obstacles+Coins", "Keys", "Maze", "Maze+Coins", "Random"]
+	var level_type_names = ["Obstacles+Coins", "Keys", "Maze", "Maze+Coins", "Maze+Keys", "Random"]
 	var level_type_label = level_type_names[level_type] if level_type < level_type_names.size() else str(level_type)
 	Logger.log_game_mode("Preparing level type: %s" % level_type_label)
 
@@ -181,7 +181,10 @@ func generate_new_level():
 		if level_type == GameState.LevelType.KEYS:
 			generate_obstacles = false
 			generate_coins = false
-	elif level_type == GameState.LevelType.MAZE or level_type == GameState.LevelType.MAZE_COINS:
+		elif level_type == GameState.LevelType.MAZE or level_type == GameState.LevelType.MAZE_COINS or level_type == GameState.LevelType.MAZE_KEYS:
+			generate_obstacles = false
+			generate_coins = false
+	elif level_type == GameState.LevelType.MAZE or level_type == GameState.LevelType.MAZE_COINS or level_type == GameState.LevelType.MAZE_KEYS:
 		generate_obstacles = false
 		generate_coins = false
 
