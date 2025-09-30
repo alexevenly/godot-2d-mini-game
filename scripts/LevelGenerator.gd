@@ -25,6 +25,7 @@ var has_player_spawn_override: bool = false
 var last_maze_path_length: float = 0.0
 
 const MAZE_BASE_CELL_SIZE := 64.0
+const MAZE_WALL_SIZE_RATIO := 0.5
 
 # Spawner nodes
 @onready var obstacle_spawner = $ObstacleSpawner
@@ -642,17 +643,22 @@ func _create_maze_wall(cell_size: float) -> StaticBody2D:
 	var wall := StaticBody2D.new()
 	wall.name = "MazeWall" + str(maze_walls.size())
 
+	var thickness := cell_size * MAZE_WALL_SIZE_RATIO
+	var inset := (cell_size - thickness) * 0.5
+
 	var body := ColorRect.new()
 	body.name = "WallBody"
-	body.offset_right = cell_size
-	body.offset_bottom = cell_size
+	body.offset_left = inset
+	body.offset_top = inset
+	body.offset_right = inset + thickness
+	body.offset_bottom = inset + thickness
 	body.color = Color(0.15, 0.18, 0.28, 1)
 	wall.add_child(body)
 
 	var collision := CollisionShape2D.new()
 	collision.name = "WallCollision"
 	var shape := RectangleShape2D.new()
-	shape.size = Vector2(cell_size, cell_size)
+	shape.size = Vector2(thickness, thickness)
 	collision.shape = shape
 	collision.position = Vector2(cell_size * 0.5, cell_size * 0.5)
 	wall.add_child(collision)
