@@ -9,6 +9,7 @@ const LevelNodeFactory = preload("res://scripts/level_generators/LevelNodeFactor
 const WALL_COLOR := Color(0.15, 0.18, 0.28, 1)
 
 var context
+
 func _init(level_context, _obstacle_helper):
 	context = level_context
 
@@ -222,58 +223,35 @@ func _select_maze_door_cells(path: Array, start_cell: Vector2i, exit_cell: Vecto
 					break
 			if keep:
 				filtered.append(cell)
-		if filtered.is_empty() and min_spacing > cell_size * 1.2:
-			min_spacing *= 0.8
-			filtered = []
-			for cell in candidates:
-				if selected.has(cell):
-					continue
-				filtered.append(cell)
 		candidates = filtered
 		attempts += 1
 	return selected
 
-func _maze_spread_score(cell: Vector2i, existing: Array, start_cell: Vector2i, exit_cell: Vector2i, offset: Vector2, cell_size: float) -> float:
-	var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
-	var start_world = MazeUtils.maze_cell_to_world(start_cell, offset, cell_size)
-	var exit_world = MazeUtils.maze_cell_to_world(exit_cell, offset, cell_size)
-	var score = min(world.distance_to(start_world), world.distance_to(exit_world))
-	for chosen in existing:
-		var chosen_world = MazeUtils.maze_cell_to_world(chosen, offset, cell_size)
-		score = min(score, world.distance_to(chosen_world))
-	return score
-
 func _collect_reachable_cells_before_door(grid: Array, start_cell: Vector2i, blocked_cells: Array) -> Array:
-	var rows = grid.size()
-	if rows <= 0:
-		return []
-	var cols = grid[0].size()
-	var queue: Array = []
-	var visited := {}
 	var reachable: Array = []
-	queue.append(start_cell)
+	var visited := {}
+	var queue: Array = [start_cell]
 	visited[start_cell] = true
-	reachable.append(start_cell)
 	while not queue.is_empty():
 		var cell: Vector2i = queue.pop_front()
-		for dir in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
-			var next = cell + dir
-			if next.x < 0 or next.x >= cols or next.y < 0 or next.y >= rows:
+		reachable.append(cell)
+		for direction in MazeUtils.CARDINAL_DIRS:
+			var neighbor = cell + direction
+			if not MazeUtils.is_cell_within_bounds(neighbor, grid):
 				continue
-			if grid[next.y][next.x]:
+			if blocked_cells.has(neighbor):
 				continue
-			if blocked_cells.has(next):
+			if visited.has(neighbor):
 				continue
-			if visited.has(next):
+			if MazeUtils.is_wall_between(cell, neighbor, grid):
 				continue
-			visited[next] = true
-			reachable.append(next)
-			queue.append(next)
+			visited[neighbor] = true
+			queue.append(neighbor)
 	return reachable
 
 func _select_maze_key_cells(
 	reachable_cells: Array,
-	desired: int,
+	target_count: int,
 	offset: Vector2,
 	cell_size: float,
 	door_cell: Vector2i,
@@ -288,98 +266,99 @@ func _select_maze_key_cells(
 	var candidates: Array = []
 	for variant in reachable_cells:
 		var cell: Vector2i = variant
-		if cell == start_cell or cell == exit_cell or cell == door_cell:
+		if cell == start_cell or cell == door_cell:
 			continue
 		if taken_cells.has(cell):
 			continue
+		if MazeUtils.is_adjacent(cell, door_cell) or MazeUtils.is_adjacent(cell, start_cell) or MazeUtils.is_adjacent(cell, exit_cell):
+			continue
 		candidates.append(cell)
-	if candidates.is_empty() or desired <= 0:
+	if candidates.is_empty():
 		return []
-	var result: Array = []
-	var min_spacing: float = cell_size * 2.0
-	var door_world = MazeUtils.maze_cell_to_world(door_cell, offset, cell_size)
+
+	var selected: Array = []
 	var attempts: int = 0
-	while result.size() < desired and attempts < 80 and not candidates.is_empty():
+	var min_spacing: float = cell_size * 2.5
+	while selected.size() < min(target_count, candidates.size()) and attempts < 60:
 		var best_cell: Vector2i = candidates[0]
 		var best_score: float = -INF
 		for cell in candidates:
-			var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
-			var score = min(world.distance_to(door_world), world.distance_to(start_world))
-			score = min(score, world.distance_to(exit_world))
-			for door_world_other in door_worlds:
-				if door_world_other == door_world:
-					continue
-				score = min(score, world.distance_to(door_world_other))
-			for existing_world in key_world_positions:
-				score = min(score, world.distance_to(existing_world))
+			if selected.has(cell):
+				continue
+			var score = _maze_key_score(cell, door_cell, start_cell, exit_cell, offset, cell_size, door_worlds, key_world_positions, start_world, exit_world)
 			if score > best_score:
 				best_score = score
 				best_cell = cell
-		result.append(best_cell)
-		var best_world = MazeUtils.maze_cell_to_world(best_cell, offset, cell_size)
-		key_world_positions.append(best_world)
-		taken_cells.append(best_cell)
+		selected.append(best_cell)
+		if selected.size() >= target_count:
+			break
 		var filtered: Array = []
 		for cell in candidates:
-			if cell == best_cell:
+			if selected.has(cell):
 				continue
+			var keep := true
 			var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
-			if best_world.distance_to(world) >= min_spacing and world.distance_to(door_world) >= cell_size * 1.6:
+			for chosen in selected:
+				var chosen_world = MazeUtils.maze_cell_to_world(chosen, offset, cell_size)
+				if chosen_world.distance_to(world) < min_spacing:
+					keep = false
+					break
+			if keep:
 				filtered.append(cell)
 		candidates = filtered
-		if candidates.is_empty() and result.size() < desired and min_spacing > cell_size * 0.9:
-			min_spacing *= 0.85
-			for cell in reachable_cells:
-				if result.has(cell):
-					continue
-				if taken_cells.has(cell):
-					continue
-				if cell == start_cell or cell == exit_cell or cell == door_cell:
-					continue
-				var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
-				if world.distance_to(door_world) < cell_size * 1.4:
-					continue
-				var too_close := false
-				for existing_world in key_world_positions:
-					if existing_world.distance_to(world) < min_spacing:
-						too_close = true
-						break
-				if too_close:
-					continue
-				candidates.append(cell)
 		attempts += 1
-	return result
+	return selected
 
-func _generate_maze_coins(grid: Array, start: Vector2i, exit_cell: Vector2i, offset: Vector2, cell_size: float, main_scene) -> void:
-	var rows = grid.size()
-	var cols = grid[0].size()
-	var candidates: Array = []
-	for y in range(rows):
-		for x in range(cols):
-			if grid[y][x]:
-				continue
-			var cell = Vector2i(x, y)
-			if cell == start or cell == exit_cell:
-				continue
-			if (abs(cell.x - start.x) + abs(cell.y - start.y)) < 3:
-				continue
-			candidates.append(cell)
-	candidates.shuffle()
-	var desired = clamp(int(candidates.size() / 8.0), 5, 20)
-	for i in range(min(desired, candidates.size())):
-		var cell = candidates[i]
-		var world_pos = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
-		var coin = LevelNodeFactory.create_coin_node(context.coins.size(), world_pos)
+func _maze_spread_score(cell: Vector2i, selected: Array, start_cell: Vector2i, exit_cell: Vector2i, offset: Vector2, cell_size: float) -> float:
+	var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
+	var score = min(world.distance_to(MazeUtils.maze_cell_to_world(start_cell, offset, cell_size)), world.distance_to(MazeUtils.maze_cell_to_world(exit_cell, offset, cell_size)))
+	for chosen in selected:
+		var chosen_world = MazeUtils.maze_cell_to_world(chosen, offset, cell_size)
+		score = min(score, world.distance_to(chosen_world))
+	return score
+
+func _maze_key_score(
+	cell: Vector2i,
+	door_cell: Vector2i,
+	start_cell: Vector2i,
+	exit_cell: Vector2i,
+	offset: Vector2,
+	cell_size: float,
+	door_worlds: Array,
+	key_world_positions: Array,
+	start_world: Vector2,
+	exit_world: Vector2
+) -> float:
+	var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
+	var score = min(world.distance_to(start_world), world.distance_to(exit_world))
+	var door_world = MazeUtils.maze_cell_to_world(door_cell, offset, cell_size)
+	score = min(score, world.distance_to(door_world))
+	for existing_world in door_worlds:
+		score = min(score, world.distance_to(existing_world))
+	for existing in key_world_positions:
+		score = min(score, world.distance_to(existing))
+	return score
+
+func _spawn_maze_walls(grid: Array, maze_offset: Vector2, cell_size: float, main_scene) -> void:
+	context.maze_walls.clear()
+	for entry in MazeUtils.enumerate_maze_walls(grid):
+		var cell: Vector2i = entry["cell"]
+		var orientation: int = entry["orientation"]
+		var wall_length: float = float(entry["length"]) * cell_size
+		var wall = LevelNodeFactory.create_maze_wall_node(context.maze_walls.size(), wall_length, cell_size, WALL_COLOR)
+		var world_pos = MazeUtils.maze_cell_to_world(cell, maze_offset, cell_size)
+		if orientation == MazeUtils.WallOrientation.HORIZONTAL:
+			world_pos.y += cell_size * 0.5
+		else:
+			world_pos.x += cell_size * 0.5
+		wall.position = world_pos
+		context.maze_walls.append(wall)
+		context.add_generated_node(wall, main_scene)
+
+func _generate_maze_coins(grid: Array, start_cell: Vector2i, farthest: Vector2i, maze_offset: Vector2, cell_size: float, main_scene) -> void:
+	var coin_cells: Array = MazeUtils.sample_maze_coin_cells(grid, start_cell, farthest)
+	for cell in coin_cells:
+		var position = MazeUtils.maze_cell_to_world(cell, maze_offset, cell_size)
+		var coin = LevelNodeFactory.create_coin_node(context.coins.size(), position)
 		context.coins.append(coin)
 		context.add_generated_node(coin, main_scene)
-
-func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scene) -> void:
-	var rows = grid.size()
-	var cols = grid[0].size()
-	for y in range(rows):
-		for x in range(cols):
-			if grid[y][x]:
-				var wall = LevelNodeFactory.create_maze_wall(context.maze_walls.size(), cell_size, WALL_COLOR, context.MAZE_WALL_SIZE_RATIO)
-				wall.position = offset + Vector2(x * cell_size, y * cell_size)
-				context.maze_walls.append(wall)
-				context.add_generated_node(wall, main_scene)

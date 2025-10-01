@@ -5,9 +5,9 @@ const CONFIG_PATH := "res://config/game.cfg"
 
 # Configurable speed boost settings
 @export var speed_boost_enabled := true
-@export var speed_boost_multiplier := 1.05
-@export var boost_decay_time := 2.4
-@export var max_boost_stacks := 6.0
+@export var speed_boost_multiplier := 1.2
+@export var boost_decay_time := 2.0
+@export var max_boost_stacks := 5.0
 @export var ghost_trail_enabled := true
 
 @onready var player_body: Control = $PlayerBody

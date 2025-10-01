@@ -132,7 +132,6 @@ func generate(main_scene, level: int, player_start_position: Vector2) -> void:
 
 	context.set_player_spawn_override(spawn_override)
 
-
 func _generate_key_level_obstacles(level_size: float, main_scene, level: int, offset: Vector2, level_width: float, level_height: float, door_layouts: Array, spawn_override: Vector2) -> void:
 	if context.obstacle_spawner == null or not is_instance_valid(context.obstacle_spawner):
 		Logger.log_error("ObstacleSpawner unavailable for key level")
