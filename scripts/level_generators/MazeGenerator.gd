@@ -133,7 +133,7 @@ func generate_maze_keys_level(main_scene, level: int, player_start_position: Vec
 		)
 		if key_cells.is_empty() and keys_target > 0:
 			var fallback_cell: Vector2i = door_cell
-			var fallback_score: float = - INF
+			var fallback_score: float = -INF
 			var door_world = door_worlds[i]
 			for variant in reachable_cells:
 				var candidate: Vector2i = variant
@@ -198,7 +198,7 @@ func _select_maze_door_cells(path: Array, start_cell: Vector2i, exit_cell: Vecto
 	var attempts: int = 0
 	while selected.size() < min(desired, candidates.size()) and attempts < 40:
 		var best_cell: Vector2i = candidates[0]
-		var best_score: float = - INF
+		var best_score: float = -INF
 		for cell in candidates:
 			if selected.has(cell):
 				continue
@@ -301,7 +301,7 @@ func _select_maze_key_cells(
 	var attempts: int = 0
 	while result.size() < desired and attempts < 80 and not candidates.is_empty():
 		var best_cell: Vector2i = candidates[0]
-		var best_score: float = - INF
+		var best_score: float = -INF
 		for cell in candidates:
 			var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
 			var score = min(world.distance_to(door_world), world.distance_to(start_world))
@@ -376,93 +376,31 @@ func _generate_maze_coins(grid: Array, start: Vector2i, exit_cell: Vector2i, off
 func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scene) -> void:
 	var rows = grid.size()
 	var cols = grid[0].size()
-	
-	# Create horizontal wall segments
+	var thickness := cell_size * context.MAZE_WALL_SIZE_RATIO
+	var half_thickness := thickness * 0.5
 	for y in range(rows):
 		var start_x = -1
 		for x in range(cols):
 			if grid[y][x]:
-				if start_x == -1:
-					start_x = x
-			else:
-				if start_x != -1:
-					_create_horizontal_wall_segment(start_x, x - 1, y, offset, cell_size, main_scene)
-					start_x = -1
-		if start_x != -1:
-			_create_horizontal_wall_segment(start_x, cols - 1, y, offset, cell_size, main_scene)
-	
-	# Create vertical wall segments
-	for x in range(cols):
-		var start_y = -1
-		for y in range(rows):
-			if grid[y][x]:
-				if start_y == -1:
-					start_y = y
-			else:
-				if start_y != -1:
-					_create_vertical_wall_segment(x, start_y, y - 1, offset, cell_size, main_scene)
-					start_y = -1
-		if start_y != -1:
-			_create_vertical_wall_segment(x, start_y, rows - 1, offset, cell_size, main_scene)
-
-func _create_horizontal_wall_segment(start_x: int, end_x: int, y: int, offset: Vector2, cell_size: float, main_scene) -> void:
-	var segment_width = (end_x - start_x + 1) * cell_size
-	var wall_thickness = cell_size * context.MAZE_WALL_SIZE_RATIO
-	
-	# Create wall from scratch instead of using factory
-	var wall = StaticBody2D.new()
-	wall.name = "MazeWall" + str(context.maze_walls.size())
-	
-	# Create visual body
-	var body = ColorRect.new()
-	body.name = "WallBody"
-	body.offset_left = 0
-	body.offset_top = 0
-	body.offset_right = segment_width
-	body.offset_bottom = wall_thickness
-	body.color = WALL_COLOR
-	wall.add_child(body)
-	
-	# Create collision
-	var collision = CollisionShape2D.new()
-	collision.name = "WallCollision"
-	var shape = RectangleShape2D.new()
-	shape.size = Vector2(segment_width, wall_thickness)
-	collision.shape = shape
-	collision.position = Vector2(segment_width * 0.5, wall_thickness * 0.5)
-	wall.add_child(collision)
-	
-	wall.position = offset + Vector2(start_x * cell_size, y * cell_size)
-	context.maze_walls.append(wall)
-	context.add_generated_node(wall, main_scene)
-
-func _create_vertical_wall_segment(x: int, start_y: int, end_y: int, offset: Vector2, cell_size: float, main_scene) -> void:
-	var segment_height = (end_y - start_y + 1) * cell_size
-	var wall_thickness = cell_size * context.MAZE_WALL_SIZE_RATIO
-	
-	# Create wall from scratch instead of using factory
-	var wall = StaticBody2D.new()
-	wall.name = "MazeWall" + str(context.maze_walls.size())
-	
-	# Create visual body
-	var body = ColorRect.new()
-	body.name = "WallBody"
-	body.offset_left = 0
-	body.offset_top = 0
-	body.offset_right = wall_thickness
-	body.offset_bottom = segment_height
-	body.color = WALL_COLOR
-	wall.add_child(body)
-	
-	# Create collision
-	var collision = CollisionShape2D.new()
-	collision.name = "WallCollision"
-	var shape = RectangleShape2D.new()
-	shape.size = Vector2(wall_thickness, segment_height)
-	collision.shape = shape
-	collision.position = Vector2(wall_thickness * 0.5, segment_height * 0.5)
-	wall.add_child(collision)
-	
-	wall.position = offset + Vector2(x * cell_size, start_y * cell_size)
-	context.maze_walls.append(wall)
-	context.add_generated_node(wall, main_scene)
+				continue
+			var base := offset + Vector2(x * cell_size, y * cell_size)
+			if y == 0 or grid[y - 1][x]:
+				var top_wall = LevelNodeFactory.create_maze_wall_segment(context.maze_walls.size(), cell_size, thickness, WALL_COLOR)
+				top_wall.position = base + Vector2(0.0, -half_thickness)
+				context.maze_walls.append(top_wall)
+				context.add_generated_node(top_wall, main_scene)
+			if y == rows - 1 or grid[y + 1][x]:
+				var bottom_wall = LevelNodeFactory.create_maze_wall_segment(context.maze_walls.size(), cell_size, thickness, WALL_COLOR)
+				bottom_wall.position = base + Vector2(0.0, cell_size - half_thickness)
+				context.maze_walls.append(bottom_wall)
+				context.add_generated_node(bottom_wall, main_scene)
+			if x == 0 or grid[y][x - 1]:
+				var left_wall = LevelNodeFactory.create_maze_wall_segment(context.maze_walls.size(), thickness, cell_size, WALL_COLOR)
+				left_wall.position = base + Vector2(-half_thickness, 0.0)
+				context.maze_walls.append(left_wall)
+				context.add_generated_node(left_wall, main_scene)
+			if x == cols - 1 or grid[y][x + 1]:
+				var right_wall = LevelNodeFactory.create_maze_wall_segment(context.maze_walls.size(), thickness, cell_size, WALL_COLOR)
+				right_wall.position = base + Vector2(cell_size - half_thickness, 0.0)
+				context.maze_walls.append(right_wall)
+				context.add_generated_node(right_wall, main_scene)
