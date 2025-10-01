@@ -5,8 +5,8 @@ const Logger = preload("res://scripts/Logger.gd")
 const MazeGenerator = preload("res://scripts/level_generators/MazeGenerator.gd")
 const LevelUtils = preload("res://scripts/LevelUtils.gd")
 const GameState = preload("res://scripts/GameState.gd")
-const KeyLevelGenerator = preload("res://scripts/level_generators/KeyLevelGenerator.gd")
 const ObstacleUtilities = preload("res://scripts/level_generators/ObstacleUtilities.gd")
+const KeyLevelGenerator = preload("res://scripts/level_generators/KeyLevelGenerator.gd")
 
 const DOOR_GROUP_COLORS := [
 	Color(0.95, 0.49, 0.38, 1.0),

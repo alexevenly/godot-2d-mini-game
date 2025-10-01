@@ -1,4 +1,4 @@
-extends RefCounted
+extends Object
 class_name ObstacleUtilities
 
 const LevelUtils = preload("res://scripts/LevelUtils.gd")
