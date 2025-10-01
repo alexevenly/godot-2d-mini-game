@@ -88,7 +88,6 @@ const LEVEL_TYPE_TUNING := {
 	}
 }
 
-
 const BASE_TIME_PER_LEVEL := 22.0
 var _difficulty: StringName = &"regular"
 
