@@ -1,4 +1,4 @@
-extends RefCounted
+extends Object
 class_name MazeGenerator
 
 const Logger = preload("res://scripts/Logger.gd")
@@ -379,6 +379,7 @@ func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scen
 	var thickness := cell_size * context.MAZE_WALL_SIZE_RATIO
 	var half_thickness := thickness * 0.5
 	for y in range(rows):
+		var start_x = -1
 		for x in range(cols):
 			if grid[y][x]:
 				continue

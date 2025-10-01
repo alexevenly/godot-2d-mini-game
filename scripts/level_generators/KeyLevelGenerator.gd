@@ -1,4 +1,5 @@
 extends RefCounted
+
 class_name KeyLevelGenerator
 
 const Logger = preload("res://scripts/Logger.gd")
@@ -36,7 +37,10 @@ func generate(main_scene, level: int, player_start_position: Vector2) -> void:
 		var initially_open = false
 		if i % 4 == 3 and randf() < 0.25:
 			initially_open = true
-		var keys_needed = clamp(1 + int(floor(level / 3.0)) + (i % 3 == 1 ? 1 : 0), 1, 4)
+		var extra_key = 0
+		if i % 3 == 1:
+			extra_key = 1
+		var keys_needed = clamp(1 + int(floor(level / 3.0)) + extra_key, 1, 4)
 		if initially_open:
 			keys_needed = 0
 		else:
