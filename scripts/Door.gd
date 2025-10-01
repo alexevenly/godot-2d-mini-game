@@ -58,7 +58,6 @@ func _apply_visual_state() -> void:
 func _set_collision_disabled(disabled: bool) -> void:
 	if collision == null:
 		return
-	collision.disabled = disabled
 	collision.set_deferred("disabled", disabled)
 
 func _compute_open_color(color: Color) -> Color:

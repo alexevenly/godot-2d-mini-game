@@ -1,6 +1,7 @@
 extends Control
 
-@onready var start_button = $VBoxContainer/StartButton
+@onready var practice_button = $VBoxContainer/PracticeButton
+@onready var challenge_button = $VBoxContainer/ChallengeButton
 @onready var exit_button = $VBoxContainer/ExitButton
 @onready var difficulty_slider = $VBoxContainer/DifficultySlider
 @onready var difficulty_label = $VBoxContainer/DifficultyLabel
@@ -21,7 +22,8 @@ var current_level_type_index = 0
 
 func _ready():
 	# Connect signals
-	start_button.pressed.connect(_on_start_pressed)
+	practice_button.pressed.connect(_on_practice_pressed)
+	challenge_button.pressed.connect(_on_challenge_pressed)
 	exit_button.pressed.connect(_on_exit_pressed)
 	difficulty_slider.value_changed.connect(_on_difficulty_changed)
 	level_type_option.item_selected.connect(_on_level_type_changed)
@@ -43,22 +45,14 @@ func _ready():
 	# Update difficulty label
 	_update_difficulty_label()
 
-func _on_start_pressed():
-	# Set difficulty in TimerManager
-	var timer_manager = get_node_or_null("/root/Main/TimerManager")
-	if timer_manager:
-		timer_manager.set_difficulty(difficulty_names[current_difficulty_index])
-	# Set level type in GameState
-	var game_state = get_node_or_null("/root/Main/GameState")
+func _on_practice_pressed():
 	var metadata = level_type_option.get_item_metadata(level_type_option.selected)
 	if metadata == null:
 		metadata = level_type_options[current_level_type_index]["type"]
-	Engine.set_meta("level_type_selection", metadata)
-	if game_state:
-		game_state.set_level_type(metadata)
+	_start_game_with_mode(int(metadata))
 
-	# Switch to game scene
-	get_tree().change_scene_to_file("res://scenes/Main.tscn")
+func _on_challenge_pressed():
+	_start_game_with_mode(GameState.LevelType.CHALLENGE)
 
 func _on_exit_pressed():
 	get_tree().quit()
@@ -78,3 +72,13 @@ func _on_level_type_changed(index: int) -> void:
 func _update_level_type_label() -> void:
 	var option = level_type_options[current_level_type_index]
 	level_type_label.text = "Level Type: " + option["name"]
+
+func _start_game_with_mode(level_type: int) -> void:
+	var timer_manager = get_node_or_null("/root/Main/TimerManager")
+	if timer_manager:
+		timer_manager.set_difficulty(difficulty_names[current_difficulty_index])
+	var game_state = get_node_or_null("/root/Main/GameState")
+	Engine.set_meta("level_type_selection", level_type)
+	if game_state:
+		game_state.set_level_type(level_type)
+	get_tree().change_scene_to_file("res://scenes/Main.tscn")

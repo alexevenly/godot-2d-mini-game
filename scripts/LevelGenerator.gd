@@ -5,8 +5,8 @@ const Logger = preload("res://scripts/Logger.gd")
 const MazeGenerator = preload("res://scripts/level_generators/MazeGenerator.gd")
 const LevelUtils = preload("res://scripts/LevelUtils.gd")
 const GameState = preload("res://scripts/GameState.gd")
-const KeyLevelGenerator = preload("res://scripts/level_generators/KeyLevelGenerator.gd")
 const ObstacleUtilities = preload("res://scripts/level_generators/ObstacleUtilities.gd")
+const KeyLevelGenerator = preload("res://scripts/level_generators/KeyLevelGenerator.gd")
 
 const DOOR_GROUP_COLORS := [
 	Color(0.95, 0.49, 0.38, 1.0),
@@ -18,7 +18,7 @@ const DOOR_GROUP_COLORS := [
 ]
 
 const MAZE_BASE_CELL_SIZE := 64.0
-const MAZE_WALL_SIZE_RATIO := 0.5
+const MAZE_WALL_SIZE_RATIO := 0.18
 
 var obstacles: Array = []
 var coins: Array[Area2D] = []

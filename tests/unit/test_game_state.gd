@@ -70,3 +70,18 @@ func test_get_next_level_size_handles_final_level() -> void:
 	var next_size := state.get_next_level_size()
 	assert_near(next_size, 0.75, 0.0001)
 	state.free()
+
+func test_challenge_sequence_cycles_modes() -> void:
+	var state := _make_state()
+	state.set_level_type(GameState.LevelType.CHALLENGE)
+	assert_eq(state.selected_level_type, GameState.LevelType.CHALLENGE)
+	assert_eq(state.challenge_sequence.size(), 7)
+	var allowed := [GameState.LevelType.OBSTACLES_COINS, GameState.LevelType.KEYS, GameState.LevelType.MAZE, GameState.LevelType.MAZE_COINS, GameState.LevelType.MAZE_KEYS]
+	for mode in state.challenge_sequence:
+		assert_true(allowed.has(mode))
+	var first_mode := state.get_current_level_type()
+	state.advance_level()
+	var next_mode := state.get_current_level_type()
+	assert_true(allowed.has(first_mode))
+	assert_true(allowed.has(next_mode))
+	state.free()

@@ -34,9 +34,13 @@ text = "Mini 2D Game"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StartButton" type="Button" parent="VBoxContainer"]
+[node name="PracticeButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Start Game"
+text = "Practice"
+
+[node name="ChallengeButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Challenge Run"
 
 [node name="DifficultyLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
