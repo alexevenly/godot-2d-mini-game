@@ -161,74 +161,74 @@ func _generate_key_level_obstacles(level_size: float, main_scene, level: int, of
 		obstacle_utils.clear_around_position(spawn_override, 140.0)
 
 func _sample_far_points(count: int, offset: Vector2, level_width: float, level_height: float, min_distance: float) -> Array:
-var points: Array = []
-var attempts: int = 0
-var spacing: float = min_distance
-while points.size() < count and attempts < 400:
-var candidate = Vector2(
-randf_range(offset.x + 120.0, offset.x + level_width - 120.0),
-randf_range(offset.y + 120.0, offset.y + level_height - 120.0)
-)
-var valid := true
-for existing in points:
-if existing.distance_to(candidate) < spacing:
-valid = false
-break
-if valid:
-points.append(candidate)
-else:
-attempts += 1
-if attempts % 80 == 0 and spacing > 140.0:
-spacing *= 0.85
-if points.size() < count:
-for i in range(count - points.size()):
-var t = float(points.size() + i + 1) / float(count + 1)
-var fallback = Vector2(
-offset.x + level_width * t,
-offset.y + level_height * randf_range(0.25, 0.75)
-)
-points.append(fallback)
-return points
+	var points: Array = []
+	var attempts: int = 0
+	var spacing: float = min_distance
+	while points.size() < count and attempts < 400:
+		var candidate = Vector2(
+			randf_range(offset.x + 120.0, offset.x + level_width - 120.0),
+			randf_range(offset.y + 120.0, offset.y + level_height - 120.0)
+		)
+		var valid := true
+		for existing in points:
+			if existing.distance_to(candidate) < spacing:
+				valid = false
+				break
+		if valid:
+			points.append(candidate)
+		else:
+			attempts += 1
+			if attempts % 80 == 0 and spacing > 140.0:
+				spacing *= 0.85
+	if points.size() < count:
+		for i in range(count - points.size()):
+			var t = float(points.size() + i + 1) / float(count + 1)
+			var fallback = Vector2(
+				offset.x + level_width * t,
+				offset.y + level_height * randf_range(0.25, 0.75)
+			)
+			points.append(fallback)
+	return points
 
 func _pick_keys_for_door(
-door_center: Vector2,
-keys_needed: int,
-offset: Vector2,
-level_width: float,
-level_height: float,
-spawn_override: Vector2,
-exit_position: Vector2,
-used_positions: Array
+	door_center: Vector2,
+	keys_needed: int,
+	offset: Vector2,
+	level_width: float,
+	level_height: float,
+	spawn_override: Vector2,
+	exit_position: Vector2,
+	used_positions: Array
 ) -> Array:
-var result: Array = []
-if keys_needed <= 0:
-return result
-var min_spacing: float = 150.0
-var attempts: int = 0
-while result.size() < keys_needed and attempts < 240:
-var candidate = Vector2(
-randf_range(offset.x + 90.0, offset.x + level_width - 90.0),
-randf_range(offset.y + 90.0, offset.y + level_height - 90.0)
-)
-var score = min(candidate.distance_to(door_center), candidate.distance_to(spawn_override))
-score = min(score, candidate.distance_to(exit_position))
-for used in used_positions:
-score = min(score, candidate.distance_to(used))
-for existing in result:
-score = min(score, candidate.distance_to(existing))
-if score < min_spacing:
-attempts += 1
-if attempts % 60 == 0 and min_spacing > 90.0:
-min_spacing *= 0.9
-continue
-result.append(candidate)
-used_positions.append(candidate)
-if result.size() < keys_needed:
-while result.size() < keys_needed:
-var fallback = Vector2(
-offset.x + level_width * randf_range(0.15, 0.85),
-offset.y + level_height * randf_range(0.25, 0.75)
-)
-result.append(fallback)
-used_positions.append(fallback)
-return result
+	var result: Array = []
+	if keys_needed <= 0:
+		return result
+	var min_spacing: float = 150.0
+	var attempts: int = 0
+	while result.size() < keys_needed and attempts < 240:
+		var candidate = Vector2(
+			randf_range(offset.x + 90.0, offset.x + level_width - 90.0),
+			randf_range(offset.y + 90.0, offset.y + level_height - 90.0)
+		)
+		var score = min(candidate.distance_to(door_center), candidate.distance_to(spawn_override))
+		score = min(score, candidate.distance_to(exit_position))
+		for used in used_positions:
+			score = min(score, candidate.distance_to(used))
+		for existing in result:
+			score = min(score, candidate.distance_to(existing))
+		if score < min_spacing:
+			attempts += 1
+			if attempts % 60 == 0 and min_spacing > 90.0:
+				min_spacing *= 0.9
+			continue
+		result.append(candidate)
+		used_positions.append(candidate)
+	if result.size() < keys_needed:
+		while result.size() < keys_needed:
+			var fallback = Vector2(
+				offset.x + level_width * randf_range(0.15, 0.85),
+				offset.y + level_height * randf_range(0.25, 0.75)
+			)
+			result.append(fallback)
+			used_positions.append(fallback)
+	return result
