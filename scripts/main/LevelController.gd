@@ -22,34 +22,58 @@ func generate_new_level() -> void:
 	if main.game_state.current_level > 7:
 		main.game_state.reset_to_start()
 		Logger.log_game_mode("Level exceeded cap, reset to level", [main.game_state.current_level])
-Logger.log_generation("Generating level %d (size: %.2f)" % [main.game_state.current_level, generation_level_size])
-main.level_start_time = Time.get_ticks_msec() / 1000.0
-main.collected_coins = main.previous_coin_count
-main.exit_active = false
-main.exit = null
-coins = [] as Array[Area2D]
-keys = [] as Array[Area2D]
-main.game_state.set_state(GameState.GameStateType.PLAYING)
-if main.game_state.current_state != GameState.GameStateType.PLAYING:
-Logger.log_game_mode("Game state corrected to PLAYING before generation")
-main.game_state.set_state(GameState.GameStateType.PLAYING)
-if game_flow_controller:
-game_flow_controller.handle_timer_for_game_state()
-await main.get_tree().process_frame
-var level_type: int = main.game_state.get_current_level_type()
-var generation_level_size: float = main.game_state.current_level_size
-if level_type == GameState.LevelType.KEYS:
-generation_level_size = min(generation_level_size + 0.35, main.game_state.max_level_size + 0.25)
-LevelUtils.update_level_boundaries(generation_level_size, main.play_area, main.boundaries)
-position_player_within_level(generation_level_size)
-var level_type_names: Array[String] = ["Obstacles+Coins", "Keys", "Maze", "Maze+Coins", "Maze+Keys", "Random", "Challenge"]
-var level_type_label: String = level_type_names[level_type] if level_type < level_type_names.size() else str(level_type)
-Logger.log_game_mode("Preparing level type: %s" % level_type_label)
-var generate_obstacles: bool = true
-var generate_coins: bool = true
-if main.level_generator and is_instance_valid(main.level_generator):
-generate_obstacles = main.game_state.generate_obstacles
-generate_coins = main.game_state.generate_coins
+
+	var generation_level_size: float = main.game_state.current_level_size
+	Logger.log_generation(
+		"Generating level %d (size: %.2f)" % [main.game_state.current_level, generation_level_size]
+	)
+	main.level_start_time = Time.get_ticks_msec() / 1000.0
+	main.collected_coins = main.previous_coin_count
+	main.exit_active = false
+	main.exit = null
+	coins = [] as Array[Area2D]
+	keys = [] as Array[Area2D]
+
+	main.game_state.set_state(GameState.GameStateType.PLAYING)
+	if main.game_state.current_state != GameState.GameStateType.PLAYING:
+		Logger.log_game_mode("Game state corrected to PLAYING before generation")
+		main.game_state.set_state(GameState.GameStateType.PLAYING)
+
+	if game_flow_controller:
+		game_flow_controller.handle_timer_for_game_state()
+
+	await main.get_tree().process_frame
+
+	var level_type: int = main.game_state.get_current_level_type()
+	if level_type == GameState.LevelType.KEYS:
+		generation_level_size = min(
+			generation_level_size + 0.35,
+			main.game_state.max_level_size + 0.25
+		)
+
+	LevelUtils.update_level_boundaries(generation_level_size, main.play_area, main.boundaries)
+	position_player_within_level(generation_level_size)
+
+	var level_type_names: Array[String] = [
+		"Obstacles+Coins",
+		"Keys",
+		"Maze",
+		"Maze+Coins",
+		"Maze+Keys",
+		"Random",
+		"Challenge"
+	]
+	var level_type_label: String = (
+		level_type_names[level_type] if level_type < level_type_names.size() else str(level_type)
+	)
+	Logger.log_game_mode("Preparing level type: %s" % level_type_label)
+
+	var generate_obstacles: bool = true
+	var generate_coins: bool = true
+
+	if main.level_generator and is_instance_valid(main.level_generator):
+		generate_obstacles = main.game_state.generate_obstacles
+		generate_coins = main.game_state.generate_coins
 		if level_type == GameState.LevelType.KEYS:
 			generate_obstacles = false
 			generate_coins = false
@@ -60,13 +84,14 @@ generate_coins = main.game_state.generate_coins
 		if level_type == GameState.LevelType.MAZE or level_type == GameState.LevelType.MAZE_COINS or level_type == GameState.LevelType.MAZE_KEYS:
 			generate_obstacles = false
 			generate_coins = false
-main.level_generator.generate_level(
-generation_level_size,
-generate_obstacles,
-generate_coins,
-main.game_state.min_exit_distance_ratio,
-main.game_state.use_full_map_coverage,
-main,
+
+	main.level_generator.generate_level(
+		generation_level_size,
+		generate_obstacles,
+		generate_coins,
+		main.game_state.min_exit_distance_ratio,
+		main.game_state.use_full_map_coverage,
+		main,
 		main.game_state.current_level,
 		main.previous_coin_count,
 		main.player.global_position if main.player else LevelUtils.PLAYER_START,
@@ -85,8 +110,14 @@ main,
 	Logger.log_generation("Coins generated: %d" % coins.size())
 	Logger.log_generation("Keys generated: %d" % keys.size())
 	if main.timer_manager:
-		var timer_start_position: Vector2 = spawn_override if has_spawn_override else (main.player.global_position if main.player else LevelUtils.PLAYER_START)
-		var maze_path_length: float = main.level_generator.get_last_maze_path_length() if main.level_generator else 0.0
+		var timer_start_position: Vector2 = (
+			spawn_override if has_spawn_override else (
+				main.player.global_position if main.player else LevelUtils.PLAYER_START
+			)
+		)
+		var maze_path_length: float = (
+			main.level_generator.get_last_maze_path_length() if main.level_generator else 0.0
+		)
 		main.game_time = main.timer_manager.calculate_level_time(
 			main.game_state.current_level,
 			coins,
@@ -134,14 +165,16 @@ main,
 		main.player.rotation = 0.0
 		Logger.log_generation("Level ready: time %.2f, coins %d" % [main.game_time, main.total_coins])
 	else:
-		Logger.log_generation("Level ready: time %.2f, coins %d (default spawn)" % [main.game_time, main.total_coins])
+		Logger.log_generation(
+			"Level ready: time %.2f, coins %d (default spawn)" % [main.game_time, main.total_coins]
+		)
 	main.level_initializing = false
 
 func position_player_within_level(level_size: float = -1.0) -> void:
-var size_to_use: float = level_size
-if size_to_use <= 0.0:
-size_to_use = main.game_state.current_level_size
-var dimensions: Dictionary = LevelUtils.get_scaled_level_dimensions(size_to_use)
+	var size_to_use: float = level_size
+	if size_to_use <= 0.0:
+		size_to_use = main.game_state.current_level_size
+	var dimensions: Dictionary = LevelUtils.get_scaled_level_dimensions(size_to_use)
 	var level_width: float = dimensions.width
 	var level_height: float = dimensions.height
 	var offset_x: float = dimensions.offset_x
@@ -152,7 +185,6 @@ var dimensions: Dictionary = LevelUtils.get_scaled_level_dimensions(size_to_use)
 	player_y = max(player_y, 50)
 	if main.player:
 		main.player.position = Vector2(player_x, player_y)
-
 func handle_coin_collected(body: Node, coin: Area2D) -> void:
 	if body == main.player and main.game_state.is_game_active():
 		main.collected_coins += 1
