@@ -132,3 +132,24 @@ static func create_maze_wall(name_index: int, cell_size: float, wall_color: Colo
 	wall.add_child(collision)
 
 	return wall
+
+static func create_maze_wall_segment(name_index: int, width: float, height: float, wall_color: Color) -> StaticBody2D:
+	var wall := StaticBody2D.new()
+	wall.name = "MazeWall" + str(name_index)
+
+	var body := ColorRect.new()
+	body.name = "WallBody"
+	body.offset_right = width
+	body.offset_bottom = height
+	body.color = wall_color
+	wall.add_child(body)
+
+	var collision := CollisionShape2D.new()
+	collision.name = "WallCollision"
+	var shape := RectangleShape2D.new()
+	shape.size = Vector2(width, height)
+	collision.shape = shape
+	collision.position = Vector2(width * 0.5, height * 0.5)
+	wall.add_child(collision)
+
+	return wall
