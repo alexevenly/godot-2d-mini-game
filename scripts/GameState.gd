@@ -5,7 +5,7 @@ const Logger = preload("res://scripts/Logger.gd")
 
 # Game state management
 enum GameStateType { PLAYING, WON, LOST }
-enum LevelType { OBSTACLES_COINS, KEYS, MAZE, MAZE_COINS, MAZE_KEYS, RANDOM }
+enum LevelType { OBSTACLES_COINS, KEYS, MAZE, MAZE_COINS, MAZE_KEYS, RANDOM, CHALLENGE }
 var current_state = GameStateType.PLAYING
 
 # Progressive level scaling
@@ -23,13 +23,15 @@ var level_size_increment = 0.0
 
 var selected_level_type: LevelType = LevelType.OBSTACLES_COINS
 var current_level_type: LevelType = LevelType.OBSTACLES_COINS
+var challenge_sequence: Array = []
+var challenge_stage_index: int = 0
 
 func _ready():
 	# Calculate level size increment
 	level_size_increment = (max_level_size - current_level_size) / 7.0
 	if Engine.has_meta("level_type_selection"):
 		var stored_type = int(Engine.get_meta("level_type_selection"))
-		if stored_type >= 0 and stored_type <= LevelType.RANDOM:
+		if stored_type >= 0 and stored_type <= LevelType.CHALLENGE:
 			selected_level_type = LevelType.values()[stored_type]
 	_refresh_level_type(true)
 
@@ -38,6 +40,7 @@ func reset_to_start():
 	victories = 0
 	current_state = GameStateType.PLAYING
 	current_level_size = 0.75
+	challenge_stage_index = 0
 	_refresh_level_type(true)
 
 func advance_level():
@@ -52,6 +55,8 @@ func advance_level():
 	# Update level size
 	current_level_size = 0.75 + (victories * level_size_increment)
 	current_level_size = min(current_level_size, max_level_size)
+	if selected_level_type == LevelType.CHALLENGE:
+		challenge_stage_index = clamp(current_level - 1, 0, 6)
 	_refresh_level_type(true)
 
 	return false
@@ -60,6 +65,7 @@ func drop_progress_on_loss():
 	current_level = 1
 	victories = 0
 	current_level_size = 0.75
+	challenge_stage_index = 0
 	_refresh_level_type(true)
 
 func get_level_progress_text() -> String:
@@ -81,6 +87,9 @@ func get_state() -> GameStateType:
 
 func set_level_type(new_type: LevelType):
 	selected_level_type = new_type
+	if selected_level_type == LevelType.CHALLENGE:
+		_generate_challenge_sequence()
+		challenge_stage_index = 0
 	_refresh_level_type(true)
 	Logger.log_game_mode("Level type selection updated to %s" % _get_level_type_label(selected_level_type))
 
@@ -89,7 +98,15 @@ func get_current_level_type() -> LevelType:
 
 func _refresh_level_type(force_new: bool = false):
 	var previous_type = current_level_type
-	if selected_level_type == LevelType.RANDOM:
+	if selected_level_type == LevelType.CHALLENGE:
+		if force_new or challenge_sequence.is_empty():
+			_generate_challenge_sequence()
+		challenge_stage_index = clamp(current_level - 1, 0, challenge_sequence.size() - 1)
+		if challenge_sequence.is_empty():
+			current_level_type = LevelType.OBSTACLES_COINS
+		else:
+			current_level_type = challenge_sequence[challenge_stage_index]
+	elif selected_level_type == LevelType.RANDOM:
 		if force_new or current_level_type == LevelType.RANDOM:
 			current_level_type = _pick_random_level_type()
 	else:
@@ -117,4 +134,23 @@ func _get_level_type_label(level_type: LevelType) -> String:
 			return "Maze + Keys"
 		LevelType.RANDOM:
 			return "Random"
+		LevelType.CHALLENGE:
+			return "Challenge"
 	return str(level_type)
+
+func _generate_challenge_sequence() -> void:
+	var base: Array = [LevelType.OBSTACLES_COINS, LevelType.KEYS, LevelType.MAZE, LevelType.MAZE_COINS, LevelType.MAZE_KEYS]
+	base.shuffle()
+	var sequence: Array = []
+	for item in base:
+		sequence.append(item)
+	var attempts: int = 0
+	while sequence.size() < 7 and attempts < 60:
+		var candidate = base[randi() % base.size()]
+		if sequence.is_empty() or sequence[sequence.size() - 1] != candidate:
+			sequence.append(candidate)
+		else:
+			attempts += 1
+	while sequence.size() < 7:
+		sequence.append(base[(sequence.size() + attempts) % base.size()])
+	challenge_sequence = sequence

@@ -18,7 +18,7 @@ const DOOR_GROUP_COLORS := [
 ]
 
 const MAZE_BASE_CELL_SIZE := 64.0
-const MAZE_WALL_SIZE_RATIO := 0.5
+const MAZE_WALL_SIZE_RATIO := 0.18
 
 var obstacles: Array = []
 var coins: Array[Area2D] = []
