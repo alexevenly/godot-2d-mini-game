@@ -23,10 +23,10 @@ func test_logger_toggle_updates_state() -> void:
 	assert_eq(Logger._enabled[Logger.Category.GENERATION], original)
 
 func test_smooth_camera_tracks_player_velocity() -> void:
-	var camera = SmoothCamera.new()
+	var camera = track_node(SmoothCamera.new())
 	camera.global_position = Vector2.ZERO
 	camera.is_initialized = true
-	var player = CharacterBody2D.new()
+	var player = track_node(CharacterBody2D.new())
 	player.global_position = Vector2(10, 0)
 	player.velocity = Vector2(20, 0)
 	camera.player = player
@@ -34,27 +34,28 @@ func test_smooth_camera_tracks_player_velocity() -> void:
 	assert_true(camera.global_position.x > 0.0)
 
 func test_key_collects_only_player() -> void:
-	var key = KeyScript.new()
-	var door = DoorStub.new()
+	var key = track_node(KeyScript.new())
+	var door = track_node(DoorStub.new())
 	key.door_reference = door
 	key.door_id = 7
-	key._on_body_entered(Node2D.new())
-	var player = CharacterBody2D.new()
+	var other := track_node(Node2D.new())
+	key._on_body_entered(other)
+	var player = track_node(CharacterBody2D.new())
 	player.name = "Player"
 	key._on_body_entered(player)
 	assert_eq(door.register_count, 1)
 
 func test_door_register_key_opens() -> void:
-	var door = DoorScript.new()
+	var door = track_node(DoorScript.new())
 	door.required_keys = 1
-	door.body = ColorRect.new()
-	door.collision = CollisionShape2D.new()
+	door.body = track_node(ColorRect.new())
+	door.collision = track_node(CollisionShape2D.new())
 	door._apply_closed_state()
 	door.register_key()
 	assert_true(door._is_open)
 
 func test_player_boost_parameters_and_apply() -> void:
-	var player = PlayerScript.new()
+	var player = track_node(PlayerScript.new())
 	player.speed_boost_multiplier = 1.5
 	player.max_boost_stacks = 2.0
 	player.boost_decay_time = 2.0

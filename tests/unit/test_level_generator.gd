@@ -67,7 +67,7 @@ func _dispatch_generate(generator: LevelGenerator, level: int, spawn: Vector2, l
 	generator.generate_level(1.0, true, true, 0.4, true, null, level, 0, spawn, level_type)
 
 func test_generate_level_dispatches_to_branch_generators() -> void:
-	var generator := DispatchLevelGenerator.new()
+	var generator := track_node(DispatchLevelGenerator.new())
 	var key_stub := KeyGeneratorStub.new()
 	var maze_stub := MazeGeneratorStub.new()
 	generator.key_level_generator = key_stub
@@ -95,20 +95,20 @@ func test_generate_level_dispatches_to_branch_generators() -> void:
 	assert_eq(maze_stub.last_key_level, 5)
 
 func test_clear_existing_objects_resets_state_and_notifies_spawners() -> void:
-	var generator := LevelGenerator.new()
-	generator.obstacles = [Node2D.new()]
-	generator.coins = [Area2D.new()]
-	generator.doors = [Node2D.new()]
-	generator.key_barriers = [Node2D.new()]
-	generator.key_items = [Area2D.new()]
-	generator.maze_walls = [Node2D.new()]
+	var generator := track_node(LevelGenerator.new())
+	generator.obstacles = [track_node(Node2D.new())] as Array[Node2D]
+	generator.coins = [track_node(Area2D.new())] as Array[Area2D]
+	generator.doors = [track_node(Node2D.new())] as Array[Node2D]
+	generator.key_barriers = [track_node(Node2D.new())] as Array[Node2D]
+	generator.key_items = [track_node(Area2D.new())] as Array[Area2D]
+	generator.maze_walls = [track_node(Node2D.new())] as Array[Node2D]
 	generator.exit_pos = Vector2(120, 75)
 	generator.has_player_spawn_override = true
 	generator.player_spawn_override = Vector2(8, 9)
 
-	var obstacle_spawner := DummyObstacleSpawner.new()
-	var coin_spawner := DummyCoinSpawner.new()
-	var exit_spawner := DummyExitSpawner.new()
+	var obstacle_spawner := track_node(DummyObstacleSpawner.new())
+	var coin_spawner := track_node(DummyCoinSpawner.new())
+	var exit_spawner := track_node(DummyExitSpawner.new())
 	generator.obstacle_spawner = obstacle_spawner
 	generator.coin_spawner = coin_spawner
 	generator.exit_spawner = exit_spawner
@@ -129,7 +129,7 @@ func test_clear_existing_objects_resets_state_and_notifies_spawners() -> void:
 	assert_true(exit_spawner.cleared)
 
 func test_get_group_color_cycles_palette() -> void:
-	var generator := LevelGenerator.new()
+	var generator := track_node(LevelGenerator.new())
 	var colors := []
 	for i in range(8):
 		colors.append(generator.get_group_color(i))
@@ -137,7 +137,7 @@ func test_get_group_color_cycles_palette() -> void:
 	assert_eq(colors[1], colors[7 % LevelGenerator.DOOR_GROUP_COLORS.size()])
 
 func test_is_exit_position_valid_enforces_margin() -> void:
-	var generator := LevelGenerator.new()
+	var generator := track_node(LevelGenerator.new())
 	var width := 400
 	var height := 320
 	assert_true(generator.is_exit_position_valid(Vector2(32, 32), width, height))

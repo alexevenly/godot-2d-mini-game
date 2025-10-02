@@ -6,7 +6,7 @@ const UIController = preload("res://scripts/main/UIController.gd")
 const StatisticsLogger = preload("res://scripts/main/StatisticsLogger.gd")
 
 class FakeTree:
-	extends Node
+	extends RefCounted
 	signal process_frame
 
 	var change_scene_path = null
@@ -116,10 +116,12 @@ class MainStub:
 	func _init() -> void:
 		game_state = GameState.new()
 		game_state._ready()
+		add_child(game_state)
 		timer = Timer.new()
 		add_child(timer)
 		player = PlayerStub.new()
 		add_child(player)
+		add_child(play_area)
 
 	@warning_ignore("native_method_override")
 	func get_tree():
@@ -132,7 +134,7 @@ func get_suite_name() -> String:
 	return "MainSystems"
 
 func test_handle_timer_for_non_playing_state_disconnects_timeout() -> void:
-	var main := MainStub.new()
+	var main := track_node(MainStub.new())
 	main.game_state.set_state(GameState.GameStateType.WON)
 	main.timer.timeout.connect(main._on_timer_timeout)
 	var controller = GameFlowController.new()
@@ -142,7 +144,7 @@ func test_handle_timer_for_non_playing_state_disconnects_timeout() -> void:
 	assert_false(main.timer.timeout.is_connected(main._on_timer_timeout))
 
 func test_trigger_game_over_updates_state_and_ui() -> void:
-	var main := MainStub.new()
+	var main := track_node(MainStub.new())
 	main.game_state.set_state(GameState.GameStateType.PLAYING)
 	main.timer.timeout.connect(main._on_timer_timeout)
 	var ui := UIStub.new()
@@ -157,7 +159,7 @@ func test_trigger_game_over_updates_state_and_ui() -> void:
 	assert_false(main.timer.timeout.is_connected(main._on_timer_timeout))
 
 func test_trigger_level_win_sets_prevent_flag_on_final_level() -> void:
-	var main := MainStub.new()
+	var main := track_node(MainStub.new())
 	main.game_state.current_level = 7
 	main.game_state.set_state(GameState.GameStateType.PLAYING)
 	main.timer.timeout.connect(main._on_timer_timeout)
@@ -175,16 +177,16 @@ func test_trigger_level_win_sets_prevent_flag_on_final_level() -> void:
 
 func test_ui_controller_coin_and_key_updates() -> void:
 	var controller = UIController.new()
-	var main := Node.new()
-	var timer_label := Label.new()
-	var coin_label := Label.new()
-	var level_label := Label.new()
-	var game_over := Label.new()
-	var win_label := Label.new()
-	var restart := Button.new()
-	var menu := Button.new()
-	var key_container := Control.new()
-	var key_status := Control.new()
+	var main := track_node(Node.new())
+	var timer_label := track_node(Label.new())
+	var coin_label := track_node(Label.new())
+	var level_label := track_node(Label.new())
+	var game_over := track_node(Label.new())
+	var win_label := track_node(Label.new())
+	var restart := track_node(Button.new())
+	var menu := track_node(Button.new())
+	var key_container := track_node(Control.new())
+	var key_status := track_node(Control.new())
 	controller.setup(main, timer_label, coin_label, level_label, game_over, win_label, restart, menu, key_container, key_status)
 	controller.update_coin_display(0, 0)
 	assert_false(coin_label.visible)
@@ -192,7 +194,7 @@ func test_ui_controller_coin_and_key_updates() -> void:
 	controller.update_coin_display(3, 1)
 	assert_true(coin_label.visible)
 	assert_eq(coin_label.text, "Coins: 1/3")
-	var key := Area2D.new()
+	var key := track_node(Area2D.new())
 	key.set_meta("group_color", Color(0.5, 0.6, 0.2))
 	controller.setup_key_ui([key])
 	assert_true(key_container.visible)
@@ -203,10 +205,19 @@ func test_ui_controller_coin_and_key_updates() -> void:
 
 func test_ui_controller_updates_exit_visual_state() -> void:
 	var controller = UIController.new()
-	var main := Node.new()
-	controller.setup(main, Label.new(), Label.new(), Label.new(), Label.new(), Label.new(), Button.new(), Button.new(), Control.new(), Control.new())
-	var exit := Area2D.new()
-	var body := ColorRect.new()
+	var main := track_node(Node.new())
+	var timer_label := track_node(Label.new())
+	var coin_label := track_node(Label.new())
+	var level_label := track_node(Label.new())
+	var game_over := track_node(Label.new())
+	var win_label := track_node(Label.new())
+	var restart := track_node(Button.new())
+	var menu := track_node(Button.new())
+	var key_container := track_node(Control.new())
+	var key_status := track_node(Control.new())
+	controller.setup(main, timer_label, coin_label, level_label, game_over, win_label, restart, menu, key_container, key_status)
+	var exit := track_node(Area2D.new())
+	var body := track_node(ColorRect.new())
 	body.name = "ExitBody"
 	exit.add_child(body)
 	controller.update_exit_state(false, exit)
@@ -215,19 +226,19 @@ func test_ui_controller_updates_exit_visual_state() -> void:
 	assert_near(body.color.g, 0.8, 0.0001)
 
 func test_statistics_logger_records_line_and_registers_surplus() -> void:
-	var main := MainStub.new()
+	var main := track_node(MainStub.new())
 	main.game_state.current_level = 3
 	main.game_state.current_level_size = 1.2
 	main.play_area.size = Vector2(400, 300)
 	main.game_time = 12.5
 	main.collected_coins = 2
-	var exit := Area2D.new()
-	var exit_body := CollisionShape2D.new()
+	var exit := track_node(Area2D.new())
+	var exit_body := track_node(CollisionShape2D.new())
 	exit.add_child(exit_body)
 	exit.global_position = Vector2(200, 160)
 	main.exit = exit
 	main.player.global_position = Vector2(220, 180)
-	var coin := Area2D.new()
+	var coin := track_node(Area2D.new())
 	var level_controller := LevelControllerStub.new([coin])
 	var timer_manager := TimerManagerStub.new()
 	var logger := StatisticsLogger.new()

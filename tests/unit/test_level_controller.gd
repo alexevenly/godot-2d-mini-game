@@ -36,6 +36,7 @@ class MainStub:
 		add_child(player)
 		game_state = GameState.new()
 		game_state._ready()
+		add_child(game_state)
 		add_child(play_area)
 		add_child(boundaries)
 
@@ -48,7 +49,7 @@ func _make_controller():
 	return controller
 
 func test_position_player_within_level_uses_dimensions() -> void:
-	var main := MainStub.new()
+	var main := track_node(MainStub.new())
 	main.game_state.current_level_size = 1.0
 	var controller = _make_controller()
 	controller.main = main
@@ -59,17 +60,17 @@ func test_position_player_within_level_uses_dimensions() -> void:
 	assert_vector_near(main.player.position, Vector2(expected_x, expected_y), 0.001)
 
 func test_handle_coin_collected_updates_counts_and_ui() -> void:
-	var main := MainStub.new()
+	var main := track_node(MainStub.new())
 	var controller = _make_controller()
 	controller.main = main
 	var ui = controller.ui_controller
 	main.total_coins = 2
 	main.collected_coins = 0
 	main.previous_coin_count = 0
-	main.exit = Area2D.new()
+	main.exit = track_node(Area2D.new())
 	main.exit_active = false
 	controller.coins = [] as Array[Area2D]
-	var coin: Area2D = Area2D.new()
+	var coin: Area2D = track_node(Area2D.new())
 	controller.coins.append(coin)
 	main.game_state.set_state(GameState.GameStateType.PLAYING)
 	controller.handle_coin_collected(main.player, coin)
@@ -83,7 +84,7 @@ func test_handle_coin_collected_updates_counts_and_ui() -> void:
 	assert_eq(ui.last_exit, main.exit)
 
 func test_handle_key_collected_clamps_total() -> void:
-	var main := MainStub.new()
+	var main := track_node(MainStub.new())
 	var controller = _make_controller()
 	controller.main = main
 	var ui = controller.ui_controller
@@ -96,28 +97,28 @@ func test_handle_key_collected_clamps_total() -> void:
 	assert_eq(ui.last_keys, 1)
 
 func test_clear_level_objects_queues_matching_children_and_clears_generator() -> void:
-	var main := MainStub.new()
+	var main := track_node(MainStub.new())
 	var controller = _make_controller()
 	controller.main = main
-	var obstacle: Node2D = Node2D.new()
+	var obstacle: Node2D = track_node(Node2D.new())
 	obstacle.name = "Obstacle1"
 	main.add_child(obstacle)
-	var coin_node: Node2D = Node2D.new()
+	var coin_node: Node2D = track_node(Node2D.new())
 	coin_node.name = "Coin0"
 	main.add_child(coin_node)
-	var door: Node2D = Node2D.new()
+	var door: Node2D = track_node(Node2D.new())
 	door.name = "DoorA"
 	main.add_child(door)
-	var key: Node2D = Node2D.new()
+	var key: Node2D = track_node(Node2D.new())
 	key.name = "KeyItem"
 	main.add_child(key)
-	var maze_wall: Node2D = Node2D.new()
+	var maze_wall: Node2D = track_node(Node2D.new())
 	maze_wall.name = "MazeWall3"
 	main.add_child(maze_wall)
-	var exit_node: Node2D = Node2D.new()
+	var exit_node: Node2D = track_node(Node2D.new())
 	exit_node.name = "Exit"
 	main.add_child(exit_node)
-	var other: Node2D = Node2D.new()
+	var other: Node2D = track_node(Node2D.new())
 	other.name = "Decor"
 	main.add_child(other)
 	var generator: LevelGeneratorStub = LevelGeneratorStub.new()

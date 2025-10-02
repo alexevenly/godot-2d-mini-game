@@ -4,6 +4,8 @@ extends RefCounted
 var _current_test := ""
 var _current_failures: Array[String] = []
 var _assertions := 0
+var _nodes_to_free: Array[Node] = []
+var _objects_to_free: Array[Object] = []
 
 func run() -> Dictionary:
 	var summary := {
@@ -37,10 +39,18 @@ func get_suite_name() -> String:
 	return get_script().resource_path
 
 func _before_each() -> void:
-	pass
+	_nodes_to_free.clear()
+	_objects_to_free.clear()
 
 func _after_each() -> void:
-	pass
+	for node in _nodes_to_free:
+		if is_instance_valid(node):
+			node.free()
+	_nodes_to_free.clear()
+	for obj in _objects_to_free:
+		if is_instance_valid(obj):
+			obj.free()
+	_objects_to_free.clear()
 
 func assert_true(condition: bool, message := "") -> void:
 	_assertions += 1
@@ -73,6 +83,14 @@ func assert_array_contains(collection: Array, value, message := "") -> void:
 	if not collection.has(value):
 		var detail := "Expected collection to contain %s" % str(value)
 		_register_failure(_compose_message(message, detail))
+
+func track_node(node: Node) -> Node:
+	_nodes_to_free.append(node)
+	return node
+
+func track_object(obj: Object) -> Object:
+	_objects_to_free.append(obj)
+	return obj
 
 func _compose_message(prefix: String, detail: String) -> String:
 	return detail if prefix == "" else "%s: %s" % [prefix, detail]

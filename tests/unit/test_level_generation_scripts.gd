@@ -25,7 +25,7 @@ class ObstacleContextStub extends RefCounted:
 		obstacle_spawner = ObstacleSpawnerStub.new(obstacles)
 
 func _make_obstacle(position: Vector2) -> StaticBody2D:
-	var obstacle := StaticBody2D.new()
+	var obstacle := track_node(StaticBody2D.new())
 	obstacle.position = position
 	var body := ColorRect.new()
 	body.name = "ObstacleBody"
@@ -38,7 +38,7 @@ func get_suite_name() -> String:
 	return "LevelGenerationScripts"
 
 func test_level_node_factory_creates_door_with_children() -> void:
-	var door := LevelNodeFactory.create_door_node(2, 1, false, 60.0, 40.0, Color(0.2, 0.4, 0.6))
+	var door := track_node(LevelNodeFactory.create_door_node(2, 1, false, 60.0, 40.0, Color(0.2, 0.4, 0.6)))
 	assert_eq(door.name, "Door2")
 	assert_eq(door.required_keys, 1)
 	var body: ColorRect = door.get_node("DoorBody")
@@ -47,8 +47,8 @@ func test_level_node_factory_creates_door_with_children() -> void:
 	assert_true(collision != null)
 
 func test_level_node_factory_key_node_references_door() -> void:
-	var door := LevelNodeFactory.create_door_node(1, 2, false, 50.0, 30.0, Color(0.5, 0.2, 0.2))
-	var key := LevelNodeFactory.create_key_node(0, door, Vector2(12, 18), 2, Color(0.5, 0.2, 0.2))
+	var door := track_node(LevelNodeFactory.create_door_node(1, 2, false, 50.0, 30.0, Color(0.5, 0.2, 0.2)))
+	var key := track_node(LevelNodeFactory.create_key_node(0, door, Vector2(12, 18), 2, Color(0.5, 0.2, 0.2)))
 	assert_eq(key.door_reference, door)
 	assert_eq(key.required_key_count, 2)
 	assert_eq(key.position, Vector2(12, 18))
@@ -61,7 +61,7 @@ func test_obstacle_utilities_clears_rect_overlaps() -> void:
 	var second := _make_obstacle(Vector2(400, 400))
 	context.obstacles.append(first)
 	context.obstacles.append(second)
-	var utilities := ObstacleUtilities.new(context)
+	var utilities := track_object(ObstacleUtilities.new(context))
 	utilities.clear_in_rects([Rect2(Vector2(80, 80), Vector2(80, 80))])
 	assert_false(context.obstacles.has(first))
 	assert_true(context.obstacles.has(second))
@@ -72,7 +72,7 @@ func test_obstacle_utilities_clears_near_points() -> void:
 	var far_obstacle := _make_obstacle(Vector2(400, 400))
 	context.obstacles.append(close_obstacle)
 	context.obstacles.append(far_obstacle)
-	var utilities := ObstacleUtilities.new(context)
+	var utilities := track_object(ObstacleUtilities.new(context))
 	utilities.clear_near_points([Vector2(205, 205)], 50.0)
 	assert_false(context.obstacles.has(close_obstacle))
 	assert_true(context.obstacles.has(far_obstacle))
@@ -89,7 +89,7 @@ func test_key_level_generator_sample_far_points_within_bounds() -> void:
 		assert_true(point.y <= 170.0)
 
 func test_maze_generator_select_key_cells_excludes_special_cells() -> void:
-	var generator := MazeGenerator.new({}, null)
+	var generator := track_object(MazeGenerator.new({}, null)) as MazeGenerator
 	var reachable := [Vector2i(1, 1), Vector2i(3, 1), Vector2i(5, 1), Vector2i(3, 3)]
 	var taken := []
 	var door_worlds: Array = []
@@ -101,7 +101,7 @@ func test_maze_generator_select_key_cells_excludes_special_cells() -> void:
 		assert_false(cell == Vector2i(3, 1))
 
 func test_obstacle_spawner_rejects_near_player_or_existing_obstacles() -> void:
-	var spawner := ObstacleSpawner.new()
+	var spawner := track_node(ObstacleSpawner.new())
 	var near_player := _make_obstacle(LevelUtils.PLAYER_START)
 	assert_false(spawner.is_valid_obstacle_position(near_player))
 	var existing := _make_obstacle(Vector2(300, 300))
@@ -110,16 +110,17 @@ func test_obstacle_spawner_rejects_near_player_or_existing_obstacles() -> void:
 	assert_false(spawner.is_valid_obstacle_position(too_close))
 
 func test_coin_spawner_add_coin_adds_to_collection() -> void:
-	var spawner := CoinSpawner.new()
-	spawner.coins = []
-	var coin := Area2D.new()
-	spawner._add_coin(coin, Node.new())
+	var spawner := track_node(CoinSpawner.new())
+	spawner.coins = [] as Array[Area2D]
+	var coin := track_node(Area2D.new())
+	var parent := track_node(Node.new())
+	spawner._add_coin(coin, parent)
 	assert_true(spawner.coins.has(coin))
 
 func test_coin_spawner_create_coin_sets_unique_name() -> void:
-	var spawner := CoinSpawner.new()
+	var spawner := track_node(CoinSpawner.new())
 	spawner.current_level_size = 1.0
-	var coin := spawner._create_coin(4, 3)
+	var coin := track_node(spawner._create_coin(4, 3))
 	assert_eq(coin.name, "Coin0")
 	var body: ColorRect = coin.get_node("CoinBody")
 	assert_true(body != null)

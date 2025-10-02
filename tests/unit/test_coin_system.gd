@@ -52,7 +52,7 @@ func test_navigation_rejects_out_of_bounds_positions() -> void:
 	assert_false(CoinNavigation.has_clear_path(ctx, start, goal))
 
 func _make_obstacle(size: Vector2, position: Vector2) -> Node2D:
-	var obstacle := Node2D.new()
+	var obstacle := track_node(Node2D.new())
 	obstacle.position = position
 	var body := ColorRect.new()
 	body.name = "ObstacleBody"
@@ -62,6 +62,6 @@ func _make_obstacle(size: Vector2, position: Vector2) -> Node2D:
 	return obstacle
 
 func _make_coin(position: Vector2) -> Area2D:
-	var coin := Area2D.new()
+	var coin := track_node(Area2D.new())
 	coin.position = position
 	return coin
