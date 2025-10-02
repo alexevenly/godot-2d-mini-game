@@ -1,7 +1,7 @@
 class_name UIController
 extends RefCounted
 
-var main: Main = null
+var main = null
 var timer_label: Label = null
 var coin_label: Label = null
 var level_progress_label: Label = null
@@ -15,7 +15,7 @@ var key_checkbox_nodes: Array[CheckBox] = []
 var key_colors: Array[Color] = []
 
 func setup(
-	main_ref: Main,
+	main_ref,
 	timer_label_ref: Label,
 	coin_label_ref: Label,
 	level_progress_label_ref: Label,

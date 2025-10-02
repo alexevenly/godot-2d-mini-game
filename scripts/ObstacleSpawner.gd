@@ -1,6 +1,7 @@
 extends Node2D
 
 const Logger = preload("res://scripts/Logger.gd")
+const LevelUtils = preload("res://scripts/LevelUtils.gd")
 
 var obstacles = []
 var current_level_size = 1.0

@@ -109,7 +109,55 @@ func test_maze_overhead_uses_path_statistics() -> void:
 	assert_true(info["slack"] > 0.0)
 	assert_near(info["base_path"], 300.0, 0.0001)
 	tm.free()
-
+func test_maze_overhead_uses_fallback_slack_when_no_path() -> void:
+	var tm: TimerManager = _new_timer()
+	var start := LevelUtils.PLAYER_START
+	var exit := LevelUtils.PLAYER_START + Vector2(180, 45)
+	var info := tm._maze_overhead(GameState.LevelType.MAZE, 0.0, start, exit, 320.0)
+	var profile := tm._get_type_profile(GameState.LevelType.MAZE)
+	var fallback_factor := float(profile.get("maze_fallback_factor", 1.0))
+	assert_true(info["slack"] > 0.0)
+	assert_near(info["factor"], fallback_factor, 0.0001)
+	var straight := start.distance_to(exit)
+	assert_near(info["base_path"], straight * fallback_factor, 0.0001)
+	tm.free()
+func test_maze_overhead_scales_with_ratio_and_path_bonus() -> void:
+	var tm: TimerManager = _new_timer()
+	var start := Vector2.ZERO
+	var exit := Vector2(100, 0)
+	var maze_length := 300.0
+	var info := tm._maze_overhead(GameState.LevelType.MAZE, maze_length, start, exit, 300.0)
+	var straight := start.distance_to(exit)
+	var profile := tm._get_type_profile(GameState.LevelType.MAZE)
+	var ratio: float = maze_length / max(straight, 1.0)
+	var base_scale: float = float(profile.get("maze_base_scale", 0.0))
+	var expected_factor: float = 1.0 + (ratio - 1.0) * base_scale
+	assert_near(float(info["factor"]), expected_factor, 0.0001)
+	var ratio_span: float = max(float(profile.get("maze_ratio_span", 1.0)), 0.0001)
+	var ratio_t: float = clamp((ratio - 1.0) / ratio_span, 0.0, 1.0)
+	var slack_curve: Vector2 = profile.get("maze_slack_curve", Vector2.ZERO)
+	var expected_slack: float = lerp(slack_curve.x, slack_curve.y, ratio_t)
+	var path_cap: float = float(profile.get("maze_path_cap", 0.0))
+	var path_bonus: float = clamp((maze_length - straight) / 300.0, 0.0, path_cap)
+	var path_scale: float = float(profile.get("maze_path_scale", 0.0))
+	var total_expected_slack: float = expected_slack + path_bonus * path_scale
+	assert_near(float(info["slack"]), total_expected_slack, 0.0001)
+	assert_near(float(info["base_path"]), maze_length, 0.0001)
+	tm.free()
+func test_maze_overhead_enforces_path_floor_and_curve() -> void:
+	var tm: TimerManager = _new_timer()
+	var start := Vector2.ZERO
+	var exit := Vector2(200, 0)
+	var maze_length := 150.0
+	var straight := start.distance_to(exit)
+	var info := tm._maze_overhead(GameState.LevelType.MAZE, maze_length, start, exit, 300.0)
+	var profile := tm._get_type_profile(GameState.LevelType.MAZE)
+	var floor_scale := float(profile.get("maze_path_floor", 1.0))
+	assert_near(float(info["base_path"]), straight * floor_scale, 0.0001)
+	assert_near(float(info["factor"]), 1.0, 0.0001)
+	var slack_curve: Vector2 = profile.get("maze_slack_curve", Vector2.ZERO)
+	assert_near(float(info["slack"]), slack_curve.x, 0.0001)
+	tm.free()
 func test_calculate_level_time_extends_minimum_for_pickups() -> void:
 	var tm: TimerManager = _new_timer()
 	var coin := Node2D.new()
@@ -129,4 +177,12 @@ func test_get_time_for_level_reacts_to_surplus_history() -> void:
 	var min_time := float(tm._get_preset()["min_time"])
 	assert_true(adjusted <= baseline)
 	assert_true(adjusted >= min_time)
+	tm.free()
+
+func test_calculate_level_time_grows_with_maze_path_length() -> void:
+	var tm: TimerManager = _new_timer()
+	var exit := LevelUtils.PLAYER_START + Vector2(280, 0)
+	var short_time := tm.calculate_level_time(2, [], exit, LevelUtils.PLAYER_START, GameState.LevelType.MAZE, 0.0)
+	var long_time := tm.calculate_level_time(2, [], exit, LevelUtils.PLAYER_START, GameState.LevelType.MAZE, 1100.0)
+	assert_true(long_time > short_time)
 	tm.free()

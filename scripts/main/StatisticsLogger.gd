@@ -3,12 +3,12 @@ extends RefCounted
 
 const Logger = preload("res://scripts/Logger.gd")
 
-var main: Main = null
-var timer_manager: TimerManager = null
-var level_controller: LevelController = null
+var main = null
+var timer_manager = null
+var level_controller = null
 var statistics_file: FileAccess = null
 
-func setup(main_ref: Main, timer_manager_ref: TimerManager, level_controller_ref: LevelController) -> void:
+func setup(main_ref, timer_manager_ref, level_controller_ref) -> void:
 	main = main_ref
 	timer_manager = timer_manager_ref
 	level_controller = level_controller_ref

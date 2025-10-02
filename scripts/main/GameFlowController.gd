@@ -2,17 +2,18 @@ class_name GameFlowController
 extends RefCounted
 
 const Logger = preload("res://scripts/Logger.gd")
+const GameState = preload("res://scripts/GameState.gd")
 
-var main: Main = null
-var ui_controller: UIController = null
-var level_controller: LevelController = null
-var statistics_logger: StatisticsLogger = null
+var main = null
+var ui_controller = null
+var level_controller = null
+var statistics_logger = null
 
 func setup(
-	main_ref: Main,
-	ui_controller_ref: UIController,
-	level_controller_ref: LevelController,
-	statistics_logger_ref: StatisticsLogger
+	main_ref,
+	ui_controller_ref,
+	level_controller_ref,
+	statistics_logger_ref
 ) -> void:
 	main = main_ref
 	ui_controller = ui_controller_ref

@@ -376,8 +376,8 @@ func _generate_maze_coins(grid: Array, start: Vector2i, exit_cell: Vector2i, off
 func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scene) -> void:
 	var rows = grid.size()
 	var cols = grid[0].size()
-	var thickness := cell_size * context.MAZE_WALL_SIZE_RATIO
-	var half_thickness := thickness * 0.5
+	var thickness = cell_size * context.MAZE_WALL_SIZE_RATIO
+	var half_thickness = thickness * 0.5
 	for y in range(rows):
 		var start_x = -1
 		for x in range(cols):
