@@ -1,5 +1,6 @@
 extends Node2D
 
+const LevelUtils = preload("res://scripts/LevelUtils.gd")
 const MIN_EXIT_DISTANCE = 0.4 # 40% of level diagonal (more reasonable for small levels)
 
 var exit = null

@@ -3,19 +3,20 @@ extends RefCounted
 
 const Logger = preload("res://scripts/Logger.gd")
 const LevelUtils = preload("res://scripts/LevelUtils.gd")
+const GameState = preload("res://scripts/GameState.gd")
 
-var main: Main = null
-var ui_controller: UIController = null
-var game_flow_controller: GameFlowController = null
+var main = null
+var ui_controller = null
+var game_flow_controller = null
 var coins: Array[Area2D] = []
 var keys: Array[Area2D] = []
 
-func setup(main_ref: Main, ui_controller_ref: UIController) -> void:
-        main = main_ref
-        ui_controller = ui_controller_ref
+func setup(main_ref, ui_controller_ref) -> void:
+	main = main_ref
+	ui_controller = ui_controller_ref
 
-func set_game_flow_controller(controller: GameFlowController) -> void:
-        game_flow_controller = controller
+func set_game_flow_controller(controller) -> void:
+	game_flow_controller = controller
 
 func generate_new_level() -> void:
 	main.level_initializing = true
@@ -161,53 +162,53 @@ func position_player_within_level(level_size: float = -1.0) -> void:
 		main.player.position = Vector2(player_x, player_y)
 
 func handle_coin_collected(body: Node, coin: Area2D) -> void:
-        if body == main.player and main.game_state.is_game_active():
-                main.collected_coins += 1
-                main.previous_coin_count = main.collected_coins
-                if main.player and is_instance_valid(main.player):
-                        if main.player.has_method("apply_speed_boost"):
-                                main.player.apply_speed_boost()
-                coin.queue_free()
-                coins.erase(coin)
+	if body == main.player and main.game_state.is_game_active():
+		main.collected_coins += 1
+		main.previous_coin_count = main.collected_coins
+		if main.player and is_instance_valid(main.player):
+			if main.player.has_method("apply_speed_boost"):
+				main.player.apply_speed_boost()
+		coin.queue_free()
+		coins.erase(coin)
 
-        main.exit_active = main.collected_coins >= main.total_coins
-        ui_controller.update_coin_display(main.total_coins, main.collected_coins)
-        ui_controller.update_exit_state(main.exit_active, main.exit)
+	main.exit_active = main.collected_coins >= main.total_coins
+	ui_controller.update_coin_display(main.total_coins, main.collected_coins)
+	ui_controller.update_exit_state(main.exit_active, main.exit)
 
 func handle_key_collected() -> void:
-        main.collected_keys_count += 1
-        main.collected_keys_count = min(main.collected_keys_count, main.total_keys)
-        ui_controller.update_key_status_display(main.collected_keys_count)
+	main.collected_keys_count += 1
+	main.collected_keys_count = min(main.collected_keys_count, main.total_keys)
+	ui_controller.update_key_status_display(main.collected_keys_count)
 
 func clear_level_objects() -> void:
-        Logger.log_generation("Clearing previously generated objects")
-        for child in main.get_children():
-                var node_child: Node = child
-                var child_name: String = node_child.name
-                var should_clear: bool = (
-                        child_name.begins_with("Obstacle")
-                        or child_name.begins_with("Coin")
-                        or child_name == "Exit"
-                        or child_name.begins_with("Door")
-                        or child_name.begins_with("Key")
-                        or child_name.begins_with("MazeWall")
-                )
-                if should_clear and is_instance_valid(node_child):
-                        node_child.queue_free()
+	Logger.log_generation("Clearing previously generated objects")
+	for child in main.get_children():
+		var node_child: Node = child
+		var child_name: String = node_child.name
+		var should_clear: bool = (
+			child_name.begins_with("Obstacle")
+			or child_name.begins_with("Coin")
+			or child_name == "Exit"
+			or child_name.begins_with("Door")
+			or child_name.begins_with("Key")
+			or child_name.begins_with("MazeWall")
+		)
+		if should_clear and is_instance_valid(node_child):
+			node_child.queue_free()
 
-        if main.level_generator and is_instance_valid(main.level_generator):
-                main.level_generator.clear_existing_objects()
-                Logger.log_generation("LevelGenerator cleared existing objects")
+	if main.level_generator and is_instance_valid(main.level_generator):
+		main.level_generator.clear_existing_objects()
+		Logger.log_generation("LevelGenerator cleared existing objects")
 
-        main.exit = null
-        coins = [] as Array[Area2D]
-        keys = [] as Array[Area2D]
-        main.total_coins = 0
-        main.collected_coins = 0
-        main.total_keys = 0
-        main.collected_keys_count = 0
-        main.exit_active = false
-        ui_controller.clear_key_ui()
+	main.exit = null
+	coins = [] as Array[Area2D]
+	keys = [] as Array[Area2D]
+	main.total_coins = 0
+	main.collected_coins = 0
+	main.total_keys = 0
+	main.collected_keys_count = 0
+	main.exit_active = false
+	ui_controller.clear_key_ui()
 
 func get_active_coins() -> Array[Area2D]:
-        return coins
+	return coins
