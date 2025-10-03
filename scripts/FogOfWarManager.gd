@@ -5,6 +5,7 @@ extends Node2D
 @export var ray_count := 720
 @export var update_interval := 0.05
 @export var invert_border_margin := 512.0
+@export var overlay_z_index := 6000
 
 var player: Node2D = null
 var _fog_polygon: Polygon2D = null
@@ -13,6 +14,8 @@ var _ray_angles := PackedFloat32Array()
 var _excluded_rids: Array[RID] = []
 
 func _ready() -> void:
+	z_as_relative = false
+	z_index = overlay_z_index
 	_create_fog_polygon()
 	_refresh_ray_angles()
 	_update_excluded_rids()
@@ -66,7 +69,8 @@ func _create_fog_polygon() -> void:
 	_fog_polygon.color = darkness_color
 	_fog_polygon.invert = true
 	_fog_polygon.antialiased = true
-	_fog_polygon.z_index = 4096
+	_fog_polygon.z_as_relative = false
+	_fog_polygon.z_index = overlay_z_index
 	_fog_polygon.invert_border = _compute_invert_border()
 	add_child(_fog_polygon)
 

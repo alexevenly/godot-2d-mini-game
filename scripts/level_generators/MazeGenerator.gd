@@ -38,7 +38,7 @@ func generate_maze_level(include_coins: bool, main_scene, player_start_position:
 	var grid = MazeUtils.init_maze_grid(cols, rows)
 	MazeUtils.carve_maze(grid, start_cell, cols, rows)
 	_spawn_maze_walls(grid, maze_offset, cell_size, main_scene)
-	_fill_unreachable_areas(grid, maze_offset, cell_size, main_scene)
+	_fill_unreachable_areas(grid, start_cell, maze_offset, cell_size, main_scene)
 
 	var farthest_data = MazeUtils.find_farthest_cell(grid, start_cell, cols, rows)
 	var farthest: Vector2i = farthest_data["cell"]
@@ -83,7 +83,7 @@ func generate_maze_keys_level(main_scene, level: int, player_start_position: Vec
 	var grid = MazeUtils.init_maze_grid(cols, rows)
 	MazeUtils.carve_maze(grid, start_cell, cols, rows)
 	_spawn_maze_walls(grid, maze_offset, cell_size, main_scene)
-	_fill_unreachable_areas(grid, maze_offset, cell_size, main_scene)
+	_fill_unreachable_areas(grid, start_cell, maze_offset, cell_size, main_scene)
 
 	var farthest_data = MazeUtils.find_farthest_cell(grid, start_cell, cols, rows)
 	var exit_cell: Vector2i = farthest_data["cell"]
@@ -405,15 +405,15 @@ func _get_random_maze_cell(cols: int, rows: int) -> Vector2i:
 	# Fallback to center if random fails
 	return Vector2i(int(cols / 2.0) | 1, int(rows / 2.0) | 1)
 
-func _fill_unreachable_areas(grid: Array, offset: Vector2, cell_size: float, main_scene) -> void:
+func _fill_unreachable_areas(grid: Array, start_cell: Vector2i, offset: Vector2, cell_size: float, main_scene) -> void:
 	"""Fill unreachable areas inside walls with black rectangles"""
 	var rows = grid.size()
 	var cols = grid[0].size()
 	var BLACK_COLOR := Color(0.0, 0.0, 0.0, 1.0)
-	
+
 	# Find all reachable areas using flood fill from the start position
-	var reachable = _find_reachable_areas(grid, rows, cols)
-	
+	var reachable = _find_reachable_areas(grid, rows, cols, start_cell)
+
 	for y in range(rows):
 		for x in range(cols):
 			# Fill areas that are carved out of the maze but cannot be reached from the start.
@@ -426,7 +426,7 @@ func _fill_unreachable_areas(grid: Array, offset: Vector2, cell_size: float, mai
 				context.maze_walls.append(black_rect)
 				context.add_generated_node(black_rect, main_scene)
 
-func _find_reachable_areas(grid: Array, rows: int, cols: int) -> Array:
+func _find_reachable_areas(grid: Array, rows: int, cols: int, start_cell: Vector2i) -> Array:
 	"""Find all reachable areas using flood fill"""
 	var reachable = []
 	for y in range(rows):
@@ -435,35 +435,47 @@ func _find_reachable_areas(grid: Array, rows: int, cols: int) -> Array:
 		for x in range(cols):
 			row[x] = false
 		reachable.append(row)
-	
-	# Find the start position (first open cell)
-	var start_pos = Vector2i(-1, -1)
-	for y in range(rows):
-		for x in range(cols):
-			if grid[y][x]: # If it's an open cell
-				start_pos = Vector2i(x, y)
+
+	var start_pos = start_cell
+	var needs_fallback: bool = (
+		start_pos.x < 0 or start_pos.x >= cols or
+		start_pos.y < 0 or start_pos.y >= rows or
+		grid[start_pos.y][start_pos.x]
+	)
+	if needs_fallback:
+		start_pos = Vector2i(-1, -1)
+		for y in range(rows):
+			var found := false
+			for x in range(cols):
+				if not grid[y][x]:
+					start_pos = Vector2i(x, y)
+					found = true
+					break
+			if found:
 				break
-		if start_pos != Vector2i(-1, -1):
-			break
-	
+
 	if start_pos == Vector2i(-1, -1):
 		return reachable
-	
+
 	# Flood fill from start position
 	var queue = [start_pos]
 	reachable[start_pos.y][start_pos.x] = true
-	
+
 	while not queue.is_empty():
 		var current = queue.pop_front()
 		var directions = [Vector2i(0, 1), Vector2i(0, -1), Vector2i(1, 0), Vector2i(-1, 0)]
-		
+
 		for dir in directions:
 			var next = current + dir
-			if (next.x >= 0 and next.x < cols and next.y >= 0 and next.y < rows and
-				grid[next.y][next.x] and not reachable[next.y][next.x]):
+			if (
+				next.x >= 0 and next.x < cols and
+				next.y >= 0 and next.y < rows and
+				not grid[next.y][next.x] and
+				not reachable[next.y][next.x]
+			):
 				reachable[next.y][next.x] = true
 				queue.append(next)
-	
+
 	return reachable
 
 func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scene) -> void:

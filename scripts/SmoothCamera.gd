@@ -60,5 +60,13 @@ func _setup_limited_field_of_view():
 	var current_scene = get_tree().current_scene
 	if current_scene:
 		current_scene.add_child(fog_manager)
-		fog_manager.set_visibility_radius(visibility_radius)
-		last_visibility_radius = visibility_radius
+		var total_children := current_scene.get_child_count()
+		var ui_node = current_scene.get_node_or_null("UI")
+		if ui_node:
+			current_scene.move_child(ui_node, total_children - 1)
+			if total_children >= 2:
+				current_scene.move_child(fog_manager, total_children - 2)
+		else:
+			current_scene.move_child(fog_manager, total_children - 1)
+	fog_manager.set_visibility_radius(visibility_radius)
+	last_visibility_radius = visibility_radius
