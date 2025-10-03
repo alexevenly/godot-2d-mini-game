@@ -27,12 +27,18 @@ func generate_maze_level(include_coins: bool, main_scene, player_start_position:
 	var maze_height = rows * cell_size
 	var maze_offset = offset + Vector2((level_width - maze_width) * 0.5, (level_height - maze_height) * 0.5)
 
-	var start_cell = MazeUtils.world_to_maze_cell(player_start_position, maze_offset, cell_size)
-	start_cell = MazeUtils.ensure_odd_cell(start_cell, cols, rows)
+	var start_cell: Vector2i
+	# For larger levels (1.2+), place player in random spot
+	if context.current_level_size >= 1.2:
+		start_cell = _get_random_maze_cell(cols, rows)
+	else:
+		start_cell = MazeUtils.world_to_maze_cell(player_start_position, maze_offset, cell_size)
+		start_cell = MazeUtils.ensure_odd_cell(start_cell, cols, rows)
 
 	var grid = MazeUtils.init_maze_grid(cols, rows)
 	MazeUtils.carve_maze(grid, start_cell, cols, rows)
 	_spawn_maze_walls(grid, maze_offset, cell_size, main_scene)
+	_fill_unreachable_areas(grid, maze_offset, cell_size, main_scene)
 
 	var farthest_data = MazeUtils.find_farthest_cell(grid, start_cell, cols, rows)
 	var farthest: Vector2i = farthest_data["cell"]
@@ -66,12 +72,18 @@ func generate_maze_keys_level(main_scene, level: int, player_start_position: Vec
 	var maze_height = rows * cell_size
 	var maze_offset = offset + Vector2((level_width - maze_width) * 0.5, (level_height - maze_height) * 0.5)
 
-	var start_cell = MazeUtils.world_to_maze_cell(player_start_position, maze_offset, cell_size)
-	start_cell = MazeUtils.ensure_odd_cell(start_cell, cols, rows)
+	var start_cell: Vector2i
+	# For larger levels (1.2+), place player in random spot
+	if context.current_level_size >= 1.2:
+		start_cell = _get_random_maze_cell(cols, rows)
+	else:
+		start_cell = MazeUtils.world_to_maze_cell(player_start_position, maze_offset, cell_size)
+		start_cell = MazeUtils.ensure_odd_cell(start_cell, cols, rows)
 
 	var grid = MazeUtils.init_maze_grid(cols, rows)
 	MazeUtils.carve_maze(grid, start_cell, cols, rows)
 	_spawn_maze_walls(grid, maze_offset, cell_size, main_scene)
+	_fill_unreachable_areas(grid, maze_offset, cell_size, main_scene)
 
 	var farthest_data = MazeUtils.find_farthest_cell(grid, start_cell, cols, rows)
 	var exit_cell: Vector2i = farthest_data["cell"]
@@ -133,7 +145,7 @@ func generate_maze_keys_level(main_scene, level: int, player_start_position: Vec
 		)
 		if key_cells.is_empty() and keys_target > 0:
 			var fallback_cell: Vector2i = door_cell
-			var fallback_score: float = -INF
+			var fallback_score: float = - INF
 			var door_world = door_worlds[i]
 			for variant in reachable_cells:
 				var candidate: Vector2i = variant
@@ -198,7 +210,7 @@ func _select_maze_door_cells(path: Array, start_cell: Vector2i, exit_cell: Vecto
 	var attempts: int = 0
 	while selected.size() < min(desired, candidates.size()) and attempts < 40:
 		var best_cell: Vector2i = candidates[0]
-		var best_score: float = -INF
+		var best_score: float = - INF
 		for cell in candidates:
 			if selected.has(cell):
 				continue
@@ -296,15 +308,18 @@ func _select_maze_key_cells(
 	if candidates.is_empty() or desired <= 0:
 		return []
 	var result: Array = []
-	var min_spacing: float = cell_size * 2.0
+	var min_spacing: float = cell_size * 2.5 # Increased from 2.0
 	var door_world = MazeUtils.maze_cell_to_world(door_cell, offset, cell_size)
 	var attempts: int = 0
 	while result.size() < desired and attempts < 80 and not candidates.is_empty():
 		var best_cell: Vector2i = candidates[0]
-		var best_score: float = -INF
+		var best_score: float = - INF
 		for cell in candidates:
 			var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
-			var score = min(world.distance_to(door_world), world.distance_to(start_world))
+			# Prioritize distance from door more heavily
+			var door_distance = world.distance_to(door_world)
+			var score = door_distance * 1.5 # Weight door distance more
+			score = min(score, world.distance_to(start_world))
 			score = min(score, world.distance_to(exit_world))
 			for door_world_other in door_worlds:
 				if door_world_other == door_world:
@@ -324,7 +339,8 @@ func _select_maze_key_cells(
 			if cell == best_cell:
 				continue
 			var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
-			if best_world.distance_to(world) >= min_spacing and world.distance_to(door_world) >= cell_size * 1.6:
+			# Increased minimum distance from door from 1.6 to 2.5
+			if best_world.distance_to(world) >= min_spacing and world.distance_to(door_world) >= cell_size * 2.5:
 				filtered.append(cell)
 		candidates = filtered
 		if candidates.is_empty() and result.size() < desired and min_spacing > cell_size * 0.9:
@@ -337,7 +353,8 @@ func _select_maze_key_cells(
 				if cell == start_cell or cell == exit_cell or cell == door_cell:
 					continue
 				var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
-				if world.distance_to(door_world) < cell_size * 1.4:
+				# Increased minimum distance from door from 1.4 to 2.0
+				if world.distance_to(door_world) < cell_size * 2.0:
 					continue
 				var too_close := false
 				for existing_world in key_world_positions:
@@ -373,13 +390,89 @@ func _generate_maze_coins(grid: Array, start: Vector2i, exit_cell: Vector2i, off
 		context.coins.append(coin)
 		context.add_generated_node(coin, main_scene)
 
+func _get_random_maze_cell(cols: int, rows: int) -> Vector2i:
+	"""Get a random odd cell for maze generation that's not on the edge"""
+	var attempts = 0
+	while attempts < 100:
+		# Ensure we're well inside the maze, not on the outer edge
+		var x = randi_range(3, cols - 4) | 1 # Ensure odd and not on edge
+		var y = randi_range(3, rows - 4) | 1 # Ensure odd and not on edge
+		var cell = Vector2i(x, y)
+		# Double check we're well inside the maze boundaries
+		if cell.x >= 3 and cell.x < cols - 3 and cell.y >= 3 and cell.y < rows - 3:
+			return cell
+		attempts += 1
+	# Fallback to center if random fails
+	return Vector2i(int(cols / 2.0) | 1, int(rows / 2.0) | 1)
+
+func _fill_unreachable_areas(grid: Array, offset: Vector2, cell_size: float, main_scene) -> void:
+	"""Fill unreachable areas inside walls with black rectangles"""
+	var rows = grid.size()
+	var cols = grid[0].size()
+	var BLACK_COLOR := Color(0.0, 0.0, 0.0, 1.0)
+	
+	# Find all reachable areas using flood fill from the start position
+	var reachable = _find_reachable_areas(grid, rows, cols)
+	
+	for y in range(rows):
+		for x in range(cols):
+			# Fill areas that are not walls and not reachable (unreachable areas)
+			# grid[y][x] = true means it's an open cell (not a wall)
+			# reachable[y][x] = false means it's not reachable from start
+			if grid[y][x] and not reachable[y][x]:
+				var base := offset + Vector2(x * cell_size, y * cell_size)
+				var black_rect = LevelNodeFactory.create_maze_wall_segment(context.maze_walls.size(), cell_size, cell_size, BLACK_COLOR)
+				black_rect.position = base
+				context.maze_walls.append(black_rect)
+				context.add_generated_node(black_rect, main_scene)
+
+func _find_reachable_areas(grid: Array, rows: int, cols: int) -> Array:
+	"""Find all reachable areas using flood fill"""
+	var reachable = []
+	for y in range(rows):
+		var row = []
+		row.resize(cols)
+		for x in range(cols):
+			row[x] = false
+		reachable.append(row)
+	
+	# Find the start position (first open cell)
+	var start_pos = Vector2i(-1, -1)
+	for y in range(rows):
+		for x in range(cols):
+			if grid[y][x]: # If it's an open cell
+				start_pos = Vector2i(x, y)
+				break
+		if start_pos != Vector2i(-1, -1):
+			break
+	
+	if start_pos == Vector2i(-1, -1):
+		return reachable
+	
+	# Flood fill from start position
+	var queue = [start_pos]
+	reachable[start_pos.y][start_pos.x] = true
+	
+	while not queue.is_empty():
+		var current = queue.pop_front()
+		var directions = [Vector2i(0, 1), Vector2i(0, -1), Vector2i(1, 0), Vector2i(-1, 0)]
+		
+		for dir in directions:
+			var next = current + dir
+			if (next.x >= 0 and next.x < cols and next.y >= 0 and next.y < rows and
+				grid[next.y][next.x] and not reachable[next.y][next.x]):
+				reachable[next.y][next.x] = true
+				queue.append(next)
+	
+	return reachable
+
 func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scene) -> void:
 	var rows = grid.size()
 	var cols = grid[0].size()
 	var thickness = cell_size * context.MAZE_WALL_SIZE_RATIO
 	var half_thickness = thickness * 0.5
 	for y in range(rows):
-		var start_x = -1
+		var _start_x = -1
 		for x in range(cols):
 			if grid[y][x]:
 				continue

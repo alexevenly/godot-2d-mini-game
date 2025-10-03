@@ -16,12 +16,12 @@ func _ready():
 	if body:
 		body.color = key_color
 
-func _on_body_entered(body: Node) -> void:
-	if body == null:
+func _on_body_entered(entered_body: Node) -> void:
+	if entered_body == null:
 		return
-	if not body.is_class("CharacterBody2D"):
+	if not entered_body.is_class("CharacterBody2D"):
 		return
-	if body.name != "Player":
+	if entered_body.name != "Player":
 		return
 	var door = _get_door()
 	if door:

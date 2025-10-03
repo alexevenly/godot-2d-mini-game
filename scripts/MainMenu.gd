@@ -7,9 +7,10 @@ extends Control
 @onready var difficulty_label = $VBoxContainer/DifficultyLabel
 @onready var level_type_label = $VBoxContainer/LevelTypeLabel
 @onready var level_type_option = $VBoxContainer/LevelTypeOption
+@onready var limited_field_of_view_checkbox = $VBoxContainer/LimitedFieldOfViewCheckBox
 
 var difficulty_names = ["child", "regular", "hard", "challenge"]
-var current_difficulty_index = 1  # Start with "regular"
+var current_difficulty_index = 1 # Start with "regular"
 var level_type_options = [
 	{"name": "Obstacles + Coins", "type": GameState.LevelType.OBSTACLES_COINS},
 	{"name": "Keys", "type": GameState.LevelType.KEYS},
@@ -81,4 +82,6 @@ func _start_game_with_mode(level_type: int) -> void:
 	Engine.set_meta("level_type_selection", level_type)
 	if game_state:
 		game_state.set_level_type(level_type)
+		# Set limited field of view mode
+		Engine.set_meta("limited_field_of_view", limited_field_of_view_checkbox.button_pressed)
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")

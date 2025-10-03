@@ -1,8 +1,8 @@
 class_name GameFlowController
 extends RefCounted
 
-const Logger = preload("res://scripts/Logger.gd")
-const GameState = preload("res://scripts/GameState.gd")
+const GameLogger = preload("res://scripts/Logger.gd")
+const GameStateClass = preload("res://scripts/GameState.gd")
 
 var main = null
 var ui_controller = null
@@ -113,6 +113,9 @@ func handle_restart_pressed() -> void:
 		level_controller.position_player_within_level()
 		main.player.z_index = 100
 		main.player.set_physics_process(true)
+		# Reset player speed boost between levels
+		if main.player.has_method("reset_speed_boost"):
+			main.player.reset_speed_boost()
 	level_controller.clear_level_objects()
 	await main.get_tree().process_frame
 	if main.game_state.current_level > 7:

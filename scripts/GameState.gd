@@ -1,25 +1,30 @@
 class_name GameState
 extends Node
 
-const Logger = preload("res://scripts/Logger.gd")
+const GameLogger = preload("res://scripts/Logger.gd")
 
 # Game state management
-enum GameStateType { PLAYING, WON, LOST }
-enum LevelType { OBSTACLES_COINS, KEYS, MAZE, MAZE_COINS, MAZE_KEYS, RANDOM, CHALLENGE }
+enum GameStateType {PLAYING, WON, LOST}
+enum LevelType {OBSTACLES_COINS, KEYS, MAZE, MAZE_COINS, MAZE_KEYS, RANDOM, CHALLENGE}
 var current_state = GameStateType.PLAYING
 
 # Progressive level scaling
 var current_level = 1
 var victories = 0
-var current_level_size = 0.75  # Start at 75% of full size
-var max_level_size = 2.0      # 200% of base size
+var current_level_size = 0.85 # Start at 85% of full size
+var max_level_size = 2.0 # 200% of base size
 var level_size_increment = 0.0
 
 # Game configuration
 @export var generate_obstacles = true
 @export var generate_coins = true
-@export var min_exit_distance_ratio = 0.4  # 40% of level diagonal
-@export var use_full_map_coverage = true  # Populate whole map instead of just center
+@export var min_exit_distance_ratio = 0.4 # 40% of level diagonal
+@export var use_full_map_coverage = true # Populate whole map instead of just center
+
+# Tug of war configuration
+@export var tug_of_war_enabled = false
+var tug_of_war_force = 0.0 # -1.0 to 1.0, negative pulls left, positive pulls right
+var tug_of_war_strength = 50.0 # Force strength
 
 var selected_level_type: LevelType = LevelType.OBSTACLES_COINS
 var current_level_type: LevelType = LevelType.OBSTACLES_COINS
@@ -39,7 +44,7 @@ func reset_to_start():
 	current_level = 1
 	victories = 0
 	current_state = GameStateType.PLAYING
-	current_level_size = 0.75
+	current_level_size = 0.85
 	challenge_stage_index = 0
 	_refresh_level_type(true)
 
@@ -47,13 +52,13 @@ func advance_level():
 	# Check if we've completed all levels BEFORE incrementing
 	if current_level >= 7:
 		reset_to_start()
-		return true  # Indicates we've completed all levels
+		return true # Indicates we've completed all levels
 
 	current_level += 1
 	victories += 1
 
 	# Update level size
-	current_level_size = 0.75 + (victories * level_size_increment)
+	current_level_size = 0.85 + (victories * level_size_increment)
 	current_level_size = min(current_level_size, max_level_size)
 	if selected_level_type == LevelType.CHALLENGE:
 		challenge_stage_index = clamp(current_level - 1, 0, 6)
@@ -64,7 +69,7 @@ func advance_level():
 func drop_progress_on_loss():
 	current_level = 1
 	victories = 0
-	current_level_size = 0.75
+	current_level_size = 0.85
 	challenge_stage_index = 0
 	_refresh_level_type(true)
 
@@ -73,8 +78,8 @@ func get_level_progress_text() -> String:
 
 func get_next_level_size() -> float:
 	if current_level >= 7:
-		return 0.75  # Reset to start
-	return 0.75 + (victories * level_size_increment)
+		return 0.85 # Reset to start
+	return 0.85 + (victories * level_size_increment)
 
 func is_game_active() -> bool:
 	return current_state == GameStateType.PLAYING
@@ -91,10 +96,33 @@ func set_level_type(new_type: LevelType):
 		_generate_challenge_sequence()
 		challenge_stage_index = 0
 	_refresh_level_type(true)
-	Logger.log_game_mode("Level type selection updated to %s" % _get_level_type_label(selected_level_type))
+	GameLogger.log_game_mode("Level type selection updated to %s" % _get_level_type_label(selected_level_type))
 
 func get_current_level_type() -> LevelType:
 	return current_level_type
+
+func set_tug_of_war_enabled(enabled: bool) -> void:
+	tug_of_war_enabled = enabled
+	if not enabled:
+		tug_of_war_force = 0.0
+
+func update_tug_of_war_force(delta: float) -> void:
+	if not tug_of_war_enabled:
+		return
+	
+	# Simple tug of war: gradually shift force based on player position
+	# This is a simplified implementation - in a real game you'd have more complex logic
+	var random_factor = randf_range(-0.1, 0.1)
+	tug_of_war_force += random_factor * delta
+	tug_of_war_force = clamp(tug_of_war_force, -1.0, 1.0)
+	
+	# Gradually return to center
+	tug_of_war_force *= 0.95
+
+func get_tug_of_war_force() -> Vector2:
+	if not tug_of_war_enabled:
+		return Vector2.ZERO
+	return Vector2(tug_of_war_force * tug_of_war_strength, 0.0)
 
 func _refresh_level_type(force_new: bool = false):
 	var previous_type = current_level_type

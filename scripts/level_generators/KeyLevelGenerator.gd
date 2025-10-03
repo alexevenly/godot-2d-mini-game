@@ -2,9 +2,9 @@ extends RefCounted
 
 class_name KeyLevelGenerator
 
-const Logger = preload("res://scripts/Logger.gd")
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
-const LevelNodeFactory = preload("res://scripts/level_generators/LevelNodeFactory.gd")
+const GameLogger = preload("res://scripts/Logger.gd")
+const GameLevelUtils = preload("res://scripts/LevelUtils.gd")
+const GameLevelNodeFactory = preload("res://scripts/level_generators/LevelNodeFactory.gd")
 
 const BARRIER_COLOR := Color(0.18, 0.21, 0.32, 1)
 
@@ -22,7 +22,10 @@ func generate(main_scene, level: int, player_start_position: Vector2) -> void:
 	var offset = Vector2(dims.offset_x, dims.offset_y)
 
 	var door_count = clamp(3 + int(floor(level / 2.0)), 3, 7)
-	var min_spacing = min(level_width, level_height) * 0.22 + 140.0
+	# Ensure doors are at least 2x player body size (64px) apart
+	var player_body_size = 32.0 # Player body is 32x32
+	var min_door_spacing = player_body_size * 3.0 # 96px minimum
+	var min_spacing = max(min(level_width, level_height) * 0.22 + 140.0, min_door_spacing)
 	var door_centers: Array = _sample_far_points(door_count, offset, level_width, level_height, min_spacing)
 
 	var door_layouts: Array = []
@@ -137,9 +140,9 @@ func generate(main_scene, level: int, player_start_position: Vector2) -> void:
 	context.set_player_spawn_override(spawn_override)
 
 
-func _generate_key_level_obstacles(level_size: float, main_scene, level: int, offset: Vector2, level_width: float, level_height: float, door_layouts: Array, spawn_override: Vector2) -> void:
+func _generate_key_level_obstacles(level_size: float, main_scene, level: int, offset: Vector2, _level_width: float, level_height: float, door_layouts: Array, spawn_override: Vector2) -> void:
 	if context.obstacle_spawner == null or not is_instance_valid(context.obstacle_spawner):
-		Logger.log_error("ObstacleSpawner unavailable for key level")
+		GameLogger.log_error("ObstacleSpawner unavailable for key level")
 		return
 
 	context.obstacles = context.obstacle_spawner.generate_obstacles(level_size, true, main_scene, level)
@@ -198,7 +201,7 @@ func _pick_keys_for_door(
 	door_center: Vector2,
 	keys_needed: int,
 	offset: Vector2,
-	level_width: float,
+	_level_width: float,
 	level_height: float,
 	spawn_override: Vector2,
 	exit_position: Vector2,
@@ -209,11 +212,35 @@ func _pick_keys_for_door(
 		return result
 	var min_spacing: float = 150.0
 	var attempts: int = 0
+	
+	# Ensure keys are placed in the accessible area (left side of door from player perspective)
+	var accessible_x_max = door_center.x - 50.0 # Leave space before the door
+	var accessible_x_min = offset.x + 90.0
+	
 	while result.size() < keys_needed and attempts < 240:
 		var candidate = Vector2(
-			randf_range(offset.x + 90.0, offset.x + level_width - 90.0),
+			randf_range(accessible_x_min, accessible_x_max),
 			randf_range(offset.y + 90.0, offset.y + level_height - 90.0)
 		)
+		
+		# Check if key is in accessible area (before the door)
+		if candidate.x >= door_center.x - 30.0:
+			attempts += 1
+			continue
+		
+		# Check for collision with obstacles
+		var collides_with_obstacle = false
+		for obstacle in context.obstacles:
+			if obstacle and is_instance_valid(obstacle):
+				var obstacle_rect = LevelUtils.get_obstacle_rect(obstacle)
+				if obstacle_rect.has_point(candidate):
+					collides_with_obstacle = true
+					break
+		
+		if collides_with_obstacle:
+			attempts += 1
+			continue
+			
 		var score = min(candidate.distance_to(door_center), candidate.distance_to(spawn_override))
 		score = min(score, candidate.distance_to(exit_position))
 		for used in used_positions:
@@ -230,7 +257,7 @@ func _pick_keys_for_door(
 	if result.size() < keys_needed:
 		while result.size() < keys_needed:
 			var fallback = Vector2(
-				offset.x + level_width * randf_range(0.15, 0.85),
+				randf_range(accessible_x_min, accessible_x_max),
 				offset.y + level_height * randf_range(0.25, 0.75)
 			)
 			result.append(fallback)

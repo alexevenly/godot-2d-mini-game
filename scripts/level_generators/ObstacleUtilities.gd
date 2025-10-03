@@ -1,7 +1,7 @@
 extends Object
 class_name ObstacleUtilities
 
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
+const GameLevelUtils = preload("res://scripts/LevelUtils.gd")
 
 var context
 

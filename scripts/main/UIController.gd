@@ -5,6 +5,7 @@ var main = null
 var timer_label: Label = null
 var coin_label: Label = null
 var level_progress_label: Label = null
+var speed_label: Label = null
 var game_over_label: Label = null
 var win_label: Label = null
 var restart_button: Button = null
@@ -19,6 +20,7 @@ func setup(
 	timer_label_ref: Label,
 	coin_label_ref: Label,
 	level_progress_label_ref: Label,
+	speed_label_ref: Label,
 	game_over_label_ref: Label,
 	win_label_ref: Label,
 	restart_button_ref: Button,
@@ -30,6 +32,7 @@ func setup(
 	timer_label = timer_label_ref
 	coin_label = coin_label_ref
 	level_progress_label = level_progress_label_ref
+	speed_label = speed_label_ref
 	game_over_label = game_over_label_ref
 	win_label = win_label_ref
 	restart_button = restart_button_ref
@@ -53,6 +56,10 @@ func update_coin_display(total_coins: int, collected_coins: int) -> void:
 func update_level_progress(progress_text: String) -> void:
 	if level_progress_label:
 		level_progress_label.text = progress_text
+
+func update_speed_display(current_speed: float, boost_count: int) -> void:
+	if speed_label:
+		speed_label.text = "Speed: %.0f (%dx)" % [current_speed, boost_count]
 
 func update_exit_state(exit_active: bool, exit_node: Node) -> void:
 	if exit_node == null:

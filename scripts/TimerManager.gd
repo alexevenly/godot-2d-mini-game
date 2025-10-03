@@ -33,58 +33,58 @@ const LEVEL_TYPE_TUNING := {
 	GameState.LevelType.OBSTACLES_COINS: {
 		"scale_start": 0.78,
 		"scale_end": 0.48,
-		"buffer_bias": -0.45,
-		"flat_bonus": -1.8,
+		"buffer_bias": - 0.45,
+		"flat_bonus": - 1.8,
 		"route_trim": 0.82,
 		"trim_ramp": 4.0
 	},
 	GameState.LevelType.MAZE: {
-		"scale_start": 1.05,
-		"scale_end": 0.82,
-		"buffer_bias": 0.12,
-		"flat_bonus": 1.6,
-		"maze_slack_curve": Vector2(3.5, 7.5),
-		"maze_path_scale": 0.55,
-		"maze_path_cap": 7.0,
-		"maze_base_scale": 0.52,
-		"maze_fallback_slack": 4.5,
-		"maze_ratio_span": 2.0,
-		"maze_path_floor": 1.05,
-		"maze_fallback_factor": 1.18
+		"scale_start": 0.95, # Reduced from 1.05
+		"scale_end": 0.75, # Reduced from 0.82
+		"buffer_bias": 0.05, # Reduced from 0.12
+		"flat_bonus": 0.8, # Reduced from 1.6
+		"maze_slack_curve": Vector2(2.5, 5.5), # Reduced from 3.5, 7.5
+		"maze_path_scale": 0.45, # Reduced from 0.55
+		"maze_path_cap": 5.5, # Reduced from 7.0
+		"maze_base_scale": 0.42, # Reduced from 0.52
+		"maze_fallback_slack": 3.0, # Reduced from 4.5
+		"maze_ratio_span": 1.8, # Reduced from 2.0
+		"maze_path_floor": 0.95, # Reduced from 1.05
+		"maze_fallback_factor": 1.12 # Reduced from 1.18
 	},
 	GameState.LevelType.MAZE_COINS: {
-		"scale_start": 1.08,
-		"scale_end": 0.86,
-		"buffer_bias": 0.18,
-		"flat_bonus": 2.2,
-		"maze_slack_curve": Vector2(4.0, 8.5),
-		"maze_path_scale": 0.60,
-		"maze_path_cap": 7.5,
-		"maze_base_scale": 0.58,
-		"maze_fallback_slack": 5.0,
-		"maze_ratio_span": 2.2,
-		"maze_path_floor": 1.08,
-		"maze_fallback_factor": 1.22
+		"scale_start": 0.98, # Reduced from 1.08
+		"scale_end": 0.78, # Reduced from 0.86
+		"buffer_bias": 0.08, # Reduced from 0.18
+		"flat_bonus": 1.4, # Reduced from 2.2
+		"maze_slack_curve": Vector2(3.0, 6.5), # Reduced from 4.0, 8.5
+		"maze_path_scale": 0.50, # Reduced from 0.60
+		"maze_path_cap": 6.0, # Reduced from 7.5
+		"maze_base_scale": 0.48, # Reduced from 0.58
+		"maze_fallback_slack": 3.5, # Reduced from 5.0
+		"maze_ratio_span": 2.0, # Reduced from 2.2
+		"maze_path_floor": 0.98, # Reduced from 1.08
+		"maze_fallback_factor": 1.15 # Reduced from 1.22
 	},
 	GameState.LevelType.MAZE_KEYS: {
-		"scale_start": 1.12,
-		"scale_end": 0.90,
-		"buffer_bias": 0.24,
-		"flat_bonus": 2.8,
-		"maze_slack_curve": Vector2(4.5, 9.5),
-		"maze_path_scale": 0.65,
-		"maze_path_cap": 8.0,
-		"maze_base_scale": 0.62,
-		"maze_fallback_slack": 5.5,
-		"maze_ratio_span": 2.4,
-		"maze_path_floor": 1.12,
-		"maze_fallback_factor": 1.28
+		"scale_start": 1.02, # Reduced from 1.12
+		"scale_end": 0.82, # Reduced from 0.90
+		"buffer_bias": 0.14, # Reduced from 0.24
+		"flat_bonus": 2.0, # Reduced from 2.8
+		"maze_slack_curve": Vector2(3.5, 7.5), # Reduced from 4.5, 9.5
+		"maze_path_scale": 0.55, # Reduced from 0.65
+		"maze_path_cap": 6.5, # Reduced from 8.0
+		"maze_base_scale": 0.52, # Reduced from 0.62
+		"maze_fallback_slack": 4.0, # Reduced from 5.5
+		"maze_ratio_span": 2.2, # Reduced from 2.4
+		"maze_path_floor": 1.02, # Reduced from 1.12
+		"maze_fallback_factor": 1.18 # Reduced from 1.28
 	},
 	GameState.LevelType.KEYS: {
-		"scale_start": 1.08,
-		"scale_end": 0.96,
-		"buffer_bias": 0.05,
-		"flat_bonus": 0.6
+		"scale_start": 2.7, # x2.5 time multiplier
+		"scale_end": 2.4, # x2.5 time multiplier
+		"buffer_bias": 0.15, # Increased buffer
+		"flat_bonus": 3.0 # Increased flat bonus for no coins
 	}
 }
 
@@ -170,6 +170,18 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 	var base_time: float = (total_distance / speed) * _route_detour_factor(coins.size())
 	var per_coin_sec: float = float(p["per_coin_sec"])
 	var pickup_time: float = float(coins.size()) * per_coin_sec
+	
+	# Special handling for keys levels with no coins - add extra time since no speed boosts
+	if level_type == GameState.LevelType.KEYS and coins.size() == 0:
+		base_time *= 1.5 # 50% more time since no speed boosts available
+	
+	# Add time bonus for each key in keys levels
+	if level_type == GameState.LevelType.KEYS:
+		var key_bonus = 1.5 # 1.5 seconds per key
+		# We need to get the key count from the level generation context
+		# This is a simplified approach - in practice you'd pass key count as parameter
+		var estimated_key_count = max(3, level) # Estimate based on level
+		base_time += estimated_key_count * key_bonus
 	var mult: float = _level_multiplier(level)
 	var preset_scale: float = float(p["global_scale"])
 	var min_time: float = float(p["min_time"])

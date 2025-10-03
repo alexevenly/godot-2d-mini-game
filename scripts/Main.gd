@@ -14,6 +14,7 @@ const GameState = preload("res://scripts/GameState.gd")
 @onready var timer_label: Label = $UI/TimerLabel
 @onready var coin_label: Label = $UI/CoinLabel
 @onready var level_progress_label: Label = $UI/LevelProgressLabel
+@onready var speed_label: Label = $UI/SpeedLabel
 @onready var game_over_label: Label = $UI/GameOverLabel
 @onready var win_label: Label = $UI/WinLabel
 @onready var restart_button: Button = $UI/RestartButton
@@ -45,7 +46,7 @@ var game_flow_controller: GameFlowController = null
 
 func _ready() -> void:
 	ui_controller = UIController.new()
-	ui_controller.setup(self, timer_label, coin_label, level_progress_label, game_over_label, win_label, restart_button, menu_button, key_container, key_status_container)
+	ui_controller.setup(self, timer_label, coin_label, level_progress_label, speed_label, game_over_label, win_label, restart_button, menu_button, key_container, key_status_container)
 	level_controller = LevelController.new()
 	level_controller.setup(self, ui_controller)
 	statistics_logger = StatisticsLogger.new()
@@ -72,6 +73,16 @@ func _process(delta: float) -> void:
 		return
 	game_time -= delta
 	ui_controller.update_timer_display(game_time)
+	
+	# Update tug of war force
+	if game_state.has_method("update_tug_of_war_force"):
+		game_state.update_tug_of_war_force(delta)
+	
+	# Update speed display
+	if player and is_instance_valid(player):
+		var boost_count = player.get_boost_count()
+		ui_controller.update_speed_display(player.current_speed, boost_count)
+	
 	if game_time <= 0.0:
 		game_flow_controller.trigger_game_over()
 

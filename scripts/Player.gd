@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-const SPEED := 200.0
+const SPEED := 150.0
 const CONFIG_PATH := "res://config/game.cfg"
 
 # Configurable speed boost settings
@@ -84,7 +84,13 @@ func _physics_process(delta):
 		direction = direction.normalized()
 		rotation = direction.angle()
 
-	velocity = direction * current_speed
+	# Apply tug of war force if enabled
+	var tug_force = Vector2.ZERO
+	var game_state = get_node("/root/Main/GameState")
+	if game_state and game_state.has_method("get_tug_of_war_force"):
+		tug_force = game_state.get_tug_of_war_force()
+
+	velocity = direction * current_speed + tug_force
 	move_and_slide()
 
 func _update_boost(delta: float) -> void:
@@ -166,3 +172,15 @@ func apply_speed_boost():
 	current_boost_value = min(current_boost_value + boost_increment, max_boost_value)
 	current_speed = SPEED * (1.0 + current_boost_value)
 	ghost_spawn_timer = 0.0
+
+func reset_speed_boost():
+	"""Reset player speed and boost state to default values"""
+	current_boost_value = 0.0
+	current_speed = SPEED
+	ghost_spawn_timer = 0.0
+
+func get_boost_count() -> int:
+	"""Get the number of active speed boosts"""
+	if max_boost_value <= 0.0:
+		return 0
+	return int(current_boost_value / boost_increment) if boost_increment > 0.0 else 0

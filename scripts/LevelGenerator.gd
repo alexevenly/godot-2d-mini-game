@@ -1,12 +1,12 @@
 class_name LevelGenerator
 extends Node2D
 
-const Logger = preload("res://scripts/Logger.gd")
-const MazeGenerator = preload("res://scripts/level_generators/MazeGenerator.gd")
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
-const GameState = preload("res://scripts/GameState.gd")
-const ObstacleUtilities = preload("res://scripts/level_generators/ObstacleUtilities.gd")
-const KeyLevelGenerator = preload("res://scripts/level_generators/KeyLevelGenerator.gd")
+const GameLogger = preload("res://scripts/Logger.gd")
+const GameLevelUtils = preload("res://scripts/LevelUtils.gd")
+const GameStateClass = preload("res://scripts/GameState.gd")
+const GameObstacleUtilities = preload("res://scripts/level_generators/ObstacleUtilities.gd")
+const GameKeyLevelGenerator = preload("res://scripts/level_generators/KeyLevelGenerator.gd")
+const GameMazeGenerator = preload("res://scripts/level_generators/MazeGenerator.gd")
 
 const DOOR_GROUP_COLORS := [
 	Color(0.95, 0.49, 0.38, 1.0),
@@ -46,14 +46,14 @@ func _ready():
 
 func _ensure_helpers() -> void:
 	if obstacle_utils == null:
-		obstacle_utils = ObstacleUtilities.new(self)
+		obstacle_utils = GameObstacleUtilities.new(self)
 	if maze_generator == null:
-		maze_generator = MazeGenerator.new(self, obstacle_utils)
+		maze_generator = GameMazeGenerator.new(self, obstacle_utils)
 	if key_level_generator == null:
-		key_level_generator = KeyLevelGenerator.new(self, obstacle_utils)
+		key_level_generator = GameKeyLevelGenerator.new(self, obstacle_utils)
 
 func generate_level(level_size := 1.0, generate_obstacles := true, generate_coins := true, min_exit_distance_ratio := 0.4, use_full_map_coverage := true, main_scene: Node = null, level := 1, preserved_coin_count := 0, player_start_position: Vector2 = LevelUtils.PLAYER_START, level_type: int = GameState.LevelType.OBSTACLES_COINS):
-	Logger.log_generation("LevelGenerator starting (size %.2f, type %d)" % [level_size, level_type])
+	GameLogger.log_generation("LevelGenerator starting (size %.2f, type %d)" % [level_size, level_type])
 	current_level_size = level_size
 	exit_pos = Vector2.ZERO
 	last_maze_path_length = 0.0
