@@ -1,7 +1,7 @@
 class_name StatisticsLogger
 extends RefCounted
 
-const GameLogger = preload("res://scripts/Logger.gd")
+const Logger = preload("res://scripts/Logger.gd")
 
 var main = null
 var timer_manager = null

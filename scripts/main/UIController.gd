@@ -20,25 +20,25 @@ func setup(
 	timer_label_ref: Label,
 	coin_label_ref: Label,
 	level_progress_label_ref: Label,
-	speed_label_ref: Label,
 	game_over_label_ref: Label,
 	win_label_ref: Label,
 	restart_button_ref: Button,
 	menu_button_ref: Button,
 	key_container_ref: Control,
-	key_status_container_ref: Control
+	key_status_container_ref: Control,
+	speed_label_ref: Label = null
 ) -> void:
 	main = main_ref
 	timer_label = timer_label_ref
 	coin_label = coin_label_ref
 	level_progress_label = level_progress_label_ref
-	speed_label = speed_label_ref
 	game_over_label = game_over_label_ref
 	win_label = win_label_ref
 	restart_button = restart_button_ref
 	menu_button = menu_button_ref
 	key_container = key_container_ref
 	key_status_container = key_status_container_ref
+	speed_label = speed_label_ref
 
 func update_timer_display(game_time: float) -> void:
 	if timer_label:

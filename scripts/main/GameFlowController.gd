@@ -1,8 +1,8 @@
 class_name GameFlowController
 extends RefCounted
 
-const GameLogger = preload("res://scripts/Logger.gd")
-const GameStateClass = preload("res://scripts/GameState.gd")
+const Logger = preload("res://scripts/Logger.gd")
+const GameState = preload("res://scripts/GameState.gd")
 
 var main = null
 var ui_controller = null

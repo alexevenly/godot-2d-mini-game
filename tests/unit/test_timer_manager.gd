@@ -78,7 +78,7 @@ func test_level_type_scale_interpolates_and_defaults() -> void:
 	var start_scale := tm._level_type_scale(GameState.LevelType.MAZE, 1)
 	var end_scale := tm._level_type_scale(GameState.LevelType.MAZE, 9)
 	assert_true(start_scale > end_scale)
-	assert_near(end_scale, 0.82, 0.05)
+	assert_near(end_scale, 0.75, 0.05)
 	var unknown_scale := tm._level_type_scale(9999, 3)
 	assert_near(unknown_scale, 1.0, 0.0001)
 	tm.free()

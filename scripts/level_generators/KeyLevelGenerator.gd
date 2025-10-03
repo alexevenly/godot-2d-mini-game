@@ -2,9 +2,9 @@ extends RefCounted
 
 class_name KeyLevelGenerator
 
-const GameLogger = preload("res://scripts/Logger.gd")
-const GameLevelUtils = preload("res://scripts/LevelUtils.gd")
-const GameLevelNodeFactory = preload("res://scripts/level_generators/LevelNodeFactory.gd")
+const Logger = preload("res://scripts/Logger.gd")
+const LevelUtils = preload("res://scripts/LevelUtils.gd")
+const LevelNodeFactory = preload("res://scripts/level_generators/LevelNodeFactory.gd")
 
 const BARRIER_COLOR := Color(0.18, 0.21, 0.32, 1)
 
@@ -142,7 +142,7 @@ func generate(main_scene, level: int, player_start_position: Vector2) -> void:
 
 func _generate_key_level_obstacles(level_size: float, main_scene, level: int, offset: Vector2, _level_width: float, level_height: float, door_layouts: Array, spawn_override: Vector2) -> void:
 	if context.obstacle_spawner == null or not is_instance_valid(context.obstacle_spawner):
-		GameLogger.log_error("ObstacleSpawner unavailable for key level")
+		Logger.log_error("ObstacleSpawner unavailable for key level")
 		return
 
 	context.obstacles = context.obstacle_spawner.generate_obstacles(level_size, true, main_scene, level)

@@ -1,6 +1,6 @@
 class_name LevelUtils
 
-const GameLogger = preload("res://scripts/Logger.gd")
+const Logger = preload("res://scripts/Logger.gd")
 
 # Common constants for all level generation scripts
 const BASE_LEVEL_WIDTH = 1024
@@ -82,10 +82,10 @@ static func update_level_boundaries(level_size: float, play_area: ColorRect, bou
 
 	# Update play area
 	if play_area:
-		GameLogger.log_generation("LevelUtils updating play area (width %.2f, height %.2f, offset %.2f, %.2f)" % [level_width, level_height, offset_x, offset_y])
+		Logger.log_generation("LevelUtils updating play area (width %.2f, height %.2f, offset %.2f, %.2f)" % [level_width, level_height, offset_x, offset_y])
 		play_area.position = Vector2(offset_x, offset_y)
 		play_area.size = Vector2(level_width, level_height)
-		GameLogger.log_generation("LevelUtils play area positioned at %s size %s" % [str(play_area.position), str(play_area.size)])
+		Logger.log_generation("LevelUtils play area positioned at %s size %s" % [str(play_area.position), str(play_area.size)])
 
 	# Update boundaries
 	if boundaries:

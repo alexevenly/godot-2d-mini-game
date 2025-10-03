@@ -140,7 +140,7 @@ func _refresh_level_type(force_new: bool = false):
 	else:
 		current_level_type = selected_level_type
 	if previous_type != current_level_type:
-		Logger.log_game_mode("Current level type set to %s" % _get_level_type_label(current_level_type))
+		GameLogger.log_game_mode("Current level type set to %s" % _get_level_type_label(current_level_type))
 
 func _pick_random_level_type() -> LevelType:
 	var options: Array = [LevelType.OBSTACLES_COINS, LevelType.KEYS, LevelType.MAZE, LevelType.MAZE_COINS, LevelType.MAZE_KEYS]

@@ -1,9 +1,9 @@
 class_name LevelController
 extends RefCounted
 
-const GameLogger = preload("res://scripts/Logger.gd")
-const GameLevelUtils = preload("res://scripts/LevelUtils.gd")
-const GameStateClass = preload("res://scripts/GameState.gd")
+const Logger = preload("res://scripts/Logger.gd")
+const LevelUtils = preload("res://scripts/LevelUtils.gd")
+const GameState = preload("res://scripts/GameState.gd")
 
 var main = null
 var ui_controller = null
@@ -83,13 +83,13 @@ func generate_new_level() -> void:
 		var has_spawn_override: bool = typeof(spawn_override_variant) == TYPE_VECTOR2
 		var spawn_override: Vector2 = spawn_override_variant if has_spawn_override else Vector2.ZERO
 		if main.exit:
-			GameLogger.log_generation("Exit generated at %s" % [main.exit.position])
+			Logger.log_generation("Exit generated at %s" % [main.exit.position])
 		else:
-			GameLogger.log_generation("No exit generated")
-		GameLogger.log_generation("Coins generated: %d" % coins.size())
-		GameLogger.log_generation("Keys generated: %d" % keys.size())
+			Logger.log_generation("No exit generated")
+		Logger.log_generation("Coins generated: %d" % coins.size())
+		Logger.log_generation("Keys generated: %d" % keys.size())
 		if main.timer_manager:
-			var timer_start_position: Vector2 = spawn_override if has_spawn_override else (main.player.global_position if main.player else GameLevelUtils.PLAYER_START)
+			var timer_start_position: Vector2 = spawn_override if has_spawn_override else (main.player.global_position if main.player else LevelUtils.PLAYER_START)
 			var maze_path_length: float = main.level_generator.get_last_maze_path_length() if main.level_generator else 0.0
 			main.game_time = main.timer_manager.calculate_level_time(
 				main.game_state.current_level,

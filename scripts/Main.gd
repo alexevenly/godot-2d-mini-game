@@ -46,7 +46,7 @@ var game_flow_controller: GameFlowController = null
 
 func _ready() -> void:
 	ui_controller = UIController.new()
-	ui_controller.setup(self, timer_label, coin_label, level_progress_label, speed_label, game_over_label, win_label, restart_button, menu_button, key_container, key_status_container)
+	ui_controller.setup(self, timer_label, coin_label, level_progress_label, game_over_label, win_label, restart_button, menu_button, key_container, key_status_container, speed_label)
 	level_controller = LevelController.new()
 	level_controller.setup(self, ui_controller)
 	statistics_logger = StatisticsLogger.new()
