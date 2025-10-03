@@ -6,26 +6,33 @@ extends Node2D
 @export var update_interval := 0.05
 @export var invert_border_margin := 512.0
 @export var overlay_z_index := 6000
+@export var debug_logging := false
 
 var player: Node2D = null
+var _fog_root: Node2D = null
 var _fog_polygon: Polygon2D = null
 var _time_since_update := 0.0
 var _ray_angles := PackedFloat32Array()
 var _excluded_rids: Array[RID] = []
+var _log_file: FileAccess = null
 
 func _ready() -> void:
 	z_as_relative = false
 	z_index = overlay_z_index
-	_create_fog_polygon()
+	_create_overlay()
 	_refresh_ray_angles()
 	_update_excluded_rids()
 	set_physics_process(true)
 	_update_visibility_polygon(true)
 
 func _exit_tree() -> void:
+	_fog_root = null
 	_fog_polygon = null
 	_ray_angles = PackedFloat32Array()
 	_excluded_rids.clear()
+	if _log_file:
+		_log_file.close()
+		_log_file = null
 
 func set_player(target: Node) -> void:
 	if target is Node2D:
@@ -61,18 +68,29 @@ func _physics_process(delta: float) -> void:
 func _is_player_valid() -> bool:
 	return player != null and is_instance_valid(player)
 
-func _create_fog_polygon() -> void:
-	if _fog_polygon:
-		return
-	_fog_polygon = Polygon2D.new()
-	_fog_polygon.name = "FogOfWarPolygon"
-	_fog_polygon.color = darkness_color
-	_fog_polygon.invert = true
-	_fog_polygon.antialiased = true
-	_fog_polygon.z_as_relative = false
-	_fog_polygon.z_index = overlay_z_index
-	_fog_polygon.invert_border = _compute_invert_border()
-	add_child(_fog_polygon)
+func _create_overlay() -> void:
+	if _fog_root == null:
+		_fog_root = Node2D.new()
+		_fog_root.name = "FogRoot"
+		add_child(_fog_root)
+	if _fog_polygon == null:
+		_fog_polygon = Polygon2D.new()
+		_fog_polygon.name = "FogOfWarPolygon"
+		_fog_polygon.color = darkness_color
+		_fog_polygon.invert = true
+		_fog_polygon.antialiased = true
+		_fog_polygon.z_as_relative = false
+		_fog_polygon.z_index = overlay_z_index
+		_fog_polygon.invert_border = _compute_invert_border()
+		_fog_root.add_child(_fog_polygon)
+	if debug_logging and _log_file == null:
+		var dir := "user://logs"
+		DirAccess.make_dir_recursive_absolute(dir)
+		var path := dir + "/fog_debug.log"
+		_log_file = FileAccess.open(path, FileAccess.WRITE)
+		if _log_file:
+			_log_file.store_line("FogOfWarManager ready; radius=%f" % visibility_radius)
+			_log_file.flush()
 
 func _compute_invert_border() -> float:
 	return max(visibility_radius + invert_border_margin, visibility_radius * 1.5)
@@ -101,14 +119,14 @@ func _update_visibility_polygon(force_fallback := false) -> void:
 			_fog_polygon.polygon = PackedVector2Array()
 		return
 	var origin: Vector2 = player.global_position
-	var space_state: PhysicsDirectSpaceState2D = get_world_2d().direct_space_state
+	var space_state := _find_space_state()
 	if space_state == null:
 		return
 	var hit_results: Array = []
 	for angle in _ray_angles:
 		var direction: Vector2 = Vector2.RIGHT.rotated(angle)
 		var target: Vector2 = origin + direction * visibility_radius
-		var params: PhysicsRayQueryParameters2D = PhysicsRayQueryParameters2D.create(origin, target)
+		var params := PhysicsRayQueryParameters2D.create(origin, target)
 		params.exclude = _excluded_rids
 		params.collide_with_bodies = true
 		params.collide_with_areas = false
@@ -119,26 +137,43 @@ func _update_visibility_polygon(force_fallback := false) -> void:
 		hit_results.append([angle, hit_point])
 	if hit_results.is_empty():
 		if force_fallback:
-			_fog_polygon.position = origin
+			_fog_root.global_position = origin
 			_fog_polygon.polygon = _create_fallback_circle()
 		return
 	hit_results.sort_custom(Callable(self, "_sort_hits"))
-	var polygon_points: PackedVector2Array = PackedVector2Array()
-	var last_angle: float = -1.0
+	var polygon_points := PackedVector2Array()
+	var last_angle := -1.0
 	for entry in hit_results:
-		var angle: float = float(entry[0])
+		var angle := float(entry[0])
 		if last_angle >= 0.0 and abs(angle - last_angle) < 0.0001:
 			continue
 		last_angle = angle
-		var point := (entry[1] as Vector2)
+		var point: Vector2 = entry[1]
 		polygon_points.push_back(point - origin)
 	if polygon_points.size() < 3:
 		if force_fallback:
 			polygon_points = _create_fallback_circle()
 		else:
 			return
-	_fog_polygon.position = origin
+	_fog_root.global_position = origin
 	_fog_polygon.polygon = polygon_points
+	if _log_file:
+		_log_file.store_line("update origin=%s points=%d" % [str(origin), polygon_points.size()])
+		_log_file.flush()
+
+func _find_space_state() -> PhysicsDirectSpaceState2D:
+	var world := get_world_2d()
+	if world:
+		return world.direct_space_state
+	if player and player.get_world_2d():
+		return player.get_world_2d().direct_space_state
+	var loop := Engine.get_main_loop()
+	if loop is SceneTree:
+		var tree: SceneTree = loop
+		var root := tree.root
+		if root and root.world_2d:
+			return root.world_2d.direct_space_state
+	return null
 
 func _create_fallback_circle() -> PackedVector2Array:
 	var segments: int = 48

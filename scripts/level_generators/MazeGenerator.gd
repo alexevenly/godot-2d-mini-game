@@ -8,12 +8,45 @@ const LevelNodeFactory = preload("res://scripts/level_generators/LevelNodeFactor
 
 const WALL_COLOR := Color(0.15, 0.18, 0.28, 1)
 const PLAYER_COLLISION_SIZE := 32.0
+const BLACK_SHADOW_COLOR := Color(0.0, 0.0, 0.0, 1.0)
+const DEBUG_LOG_DIR := "user://logs"
+const DEBUG_LOG_FILE := "maze_debug.log"
 
 var context
+var _debug_logging := false
+var _debug_file: FileAccess = null
+
 func _init(level_context, _obstacle_helper):
 	context = level_context
 
+func _setup_debug_logging() -> void:
+	_debug_logging = true
+	if Engine.has_meta("maze_debug_logging"):
+		_debug_logging = bool(Engine.get_meta("maze_debug_logging"))
+		if _debug_logging:
+			_open_debug_file()
+
+func _open_debug_file() -> void:
+	if _debug_file:
+		return
+	DirAccess.make_dir_recursive_absolute(DEBUG_LOG_DIR)
+	var path := "%s/%s" % [DEBUG_LOG_DIR, DEBUG_LOG_FILE]
+	_debug_file = FileAccess.open(path, FileAccess.WRITE)
+	if _debug_file:
+		_debug_file.store_line("MazeGenerator debug log started")
+		_debug_file.flush()
+
+func _log_debug(message: String) -> void:
+	if not _debug_logging:
+		return
+	if _debug_file == null:
+		_open_debug_file()
+	if _debug_file:
+		_debug_file.store_line(message)
+		_debug_file.flush()
+
 func generate_maze_level(include_coins: bool, main_scene, player_start_position: Vector2) -> void:
+	_setup_debug_logging()
 	var dims = LevelUtils.get_scaled_level_dimensions(context.current_level_size)
 	var level_width: float = float(dims.width)
 	var level_height: float = float(dims.height)
@@ -59,6 +92,7 @@ func generate_maze_level(include_coins: bool, main_scene, player_start_position:
 		_generate_maze_coins(grid, start_cell, farthest, maze_offset, cell_size, main_scene)
 
 func generate_maze_keys_level(main_scene, level: int, player_start_position: Vector2) -> void:
+	_setup_debug_logging()
 	var dims = LevelUtils.get_scaled_level_dimensions(context.current_level_size)
 	var level_width: float = float(dims.width)
 	var level_height: float = float(dims.height)
@@ -407,26 +441,25 @@ func _get_random_maze_cell(cols: int, rows: int) -> Vector2i:
 	return Vector2i(int(cols / 2.0) | 1, int(rows / 2.0) | 1)
 
 func _fill_unreachable_areas(grid: Array, start_cell: Vector2i, offset: Vector2, cell_size: float, main_scene) -> void:
-	"""Fill unreachable areas inside walls with black rectangles"""
 	var rows = grid.size()
 	var cols = grid[0].size()
-	var BLACK_COLOR := Color(0.0, 0.0, 0.0, 1.0)
-
-	# Find all reachable areas using flood fill from the start position
 	var reachable = _find_reachable_areas(grid, rows, cols, start_cell, offset, cell_size, main_scene)
+	var unreachable_count := 0
 
 	for y in range(rows):
 		for x in range(cols):
-			# Fill areas that are carved out of the maze but cannot be reached from the start.
-			# Within the maze grid a value of `false` represents an open tile, so combine that with
-			# an unreachable flag to find the voids we want to cover in black.
 			if not grid[y][x] and not reachable[y][x]:
+				unreachable_count += 1
 				var base := offset + Vector2(x * cell_size, y * cell_size)
-				var black_rect = LevelNodeFactory.create_maze_wall_segment(context.maze_walls.size(), cell_size, cell_size, BLACK_COLOR)
-				black_rect.position = base
-				context.maze_walls.append(black_rect)
-				context.add_generated_node(black_rect, main_scene)
+				var shadow: Node2D = LevelNodeFactory.create_maze_shadow_segment(context.maze_shadows.size(), cell_size, cell_size, BLACK_SHADOW_COLOR)
+				shadow.position = base
+				context.maze_shadows.append(shadow)
+				context.add_generated_node(shadow, main_scene)
 
+	if unreachable_count > 0:
+		_log_debug("Maze unreachable pockets filled: %d" % unreachable_count)
+	else:
+		_log_debug("Maze reachable everywhere from start cell %s" % str(start_cell))
 func _find_reachable_areas(grid: Array, rows: int, cols: int, start_cell: Vector2i, offset: Vector2, cell_size: float, main_scene) -> Array:
 	"""Find all reachable areas using flood fill"""
 	var reachable = []
@@ -458,20 +491,18 @@ func _find_reachable_areas(grid: Array, rows: int, cols: int, start_cell: Vector
 	if start_pos == Vector2i(-1, -1):
 		return reachable
 
-	var space_state: PhysicsDirectSpaceState2D = null
+	var space_state := _get_space_state(main_scene)
 	var player_shape: RectangleShape2D = null
-	if main_scene and is_instance_valid(main_scene):
-		var world_2d: World2D = main_scene.get_world_2d()
-		if world_2d:
-			space_state = world_2d.direct_space_state
 	if space_state:
 		player_shape = RectangleShape2D.new()
-		player_shape.size = Vector2(PLAYER_COLLISION_SIZE, PLAYER_COLLISION_SIZE) * 0.95
+		player_shape.size = Vector2(PLAYER_COLLISION_SIZE, PLAYER_COLLISION_SIZE)
 		var start_world := MazeUtils.maze_cell_to_world(start_pos, offset, cell_size)
 		if not _can_player_fit_at(space_state, player_shape, start_world):
+			_log_debug("Start cell %s blocked for player footprint" % str(start_pos))
 			player_shape = null
 			space_state = null
-
+	else:
+		_log_debug("Physics space unavailable while evaluating maze reachability")
 	# Flood fill from start position
 	var queue = [start_pos]
 	reachable[start_pos.y][start_pos.x] = true
@@ -509,16 +540,15 @@ func _can_traverse_between_cells(
 	if not _can_player_fit_at(space_state, player_shape, to_world):
 		return false
 	var delta := to_world - from_world
-	var max_extent := max(player_shape.size.x, player_shape.size.y)
-	var step_distance := max(max_extent * 0.35, 6.0)
-	var steps := int(ceil(delta.length() / step_distance))
-	for i in range(1, steps):
-		var t := float(i) / float(steps)
-		var sample := from_world.lerp(to_world, t)
+	var max_extent: float = max(player_shape.size.x, player_shape.size.y)
+	var step_distance: float = max(max_extent * 0.35, 6.0)
+	var steps: int = int(ceil(delta.length() / step_distance))
+	for i: int in range(1, steps):
+		var t: float = float(i) / float(steps)
+		var sample: Vector2 = from_world.lerp(to_world, t)
 		if not _can_player_fit_at(space_state, player_shape, sample):
 			return false
 	return true
-
 func _can_player_fit_at(
 	space_state: PhysicsDirectSpaceState2D,
 	player_shape: RectangleShape2D,
@@ -535,7 +565,18 @@ func _can_player_fit_at(
 	params.margin = 0.05
 	var results = space_state.intersect_shape(params, 1)
 	return results.is_empty()
-
+func _get_space_state(main_scene) -> PhysicsDirectSpaceState2D:
+	if main_scene and is_instance_valid(main_scene):
+		var world: World2D = main_scene.get_world_2d()
+		if world:
+			return world.direct_space_state
+	var tree := Engine.get_main_loop()
+	if tree is SceneTree:
+		var scene_tree: SceneTree = tree
+		var root := scene_tree.root
+		if root and root.world_2d:
+			return root.world_2d.direct_space_state
+	return null
 func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scene) -> void:
 	var rows = grid.size()
 	var cols = grid[0].size()

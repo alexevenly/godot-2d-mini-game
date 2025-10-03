@@ -28,6 +28,7 @@ var current_level_size: float = 1.0
 var doors: Array = []
 var key_items: Array[Area2D] = []
 var maze_walls: Array = []
+var maze_shadows: Array = []
 var key_barriers: Array = []
 var player_spawn_override: Vector2 = Vector2.ZERO
 var has_player_spawn_override: bool = false
@@ -148,6 +149,10 @@ func clear_existing_objects():
 		if is_instance_valid(node):
 			node.queue_free()
 	maze_walls.clear()
+	for node in maze_shadows:
+		if is_instance_valid(node):
+			node.queue_free()
+	maze_shadows.clear()
 
 	if obstacle_spawner and is_instance_valid(obstacle_spawner):
 		obstacle_spawner.clear_obstacles()
