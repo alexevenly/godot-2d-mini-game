@@ -28,6 +28,8 @@ func set_player(target: Node) -> void:
 	if target is Node2D:
 		player = target
 		_update_excluded_rids()
+		_time_since_update = update_interval
+		_update_visibility_polygon(true)
 
 func set_visibility_radius(radius: float) -> void:
 	visibility_radius = max(radius, 32.0)

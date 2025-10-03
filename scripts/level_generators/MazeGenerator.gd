@@ -416,10 +416,10 @@ func _fill_unreachable_areas(grid: Array, offset: Vector2, cell_size: float, mai
 	
 	for y in range(rows):
 		for x in range(cols):
-			# Fill areas that are not walls and not reachable (unreachable areas)
-			# grid[y][x] = true means it's an open cell (not a wall)
-			# reachable[y][x] = false means it's not reachable from start
-			if grid[y][x] and not reachable[y][x]:
+			# Fill areas that are carved out of the maze but cannot be reached from the start.
+			# Within the maze grid a value of `false` represents an open tile, so combine that with
+			# an unreachable flag to find the voids we want to cover in black.
+			if not grid[y][x] and not reachable[y][x]:
 				var base := offset + Vector2(x * cell_size, y * cell_size)
 				var black_rect = LevelNodeFactory.create_maze_wall_segment(context.maze_walls.size(), cell_size, cell_size, BLACK_COLOR)
 				black_rect.position = base
