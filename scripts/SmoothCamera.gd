@@ -57,16 +57,22 @@ func _setup_limited_field_of_view():
 		return
 	fog_manager = FogOfWarManager.new()
 	fog_manager.set_player(player)
-	var current_scene = get_tree().current_scene
-	if current_scene:
-		current_scene.add_child(fog_manager)
-		var total_children := current_scene.get_child_count()
-		var ui_node = current_scene.get_node_or_null("UI")
-		if ui_node:
-			current_scene.move_child(ui_node, total_children - 1)
-			if total_children >= 2:
-				current_scene.move_child(fog_manager, total_children - 2)
-		else:
-			current_scene.move_child(fog_manager, total_children - 1)
+	_attach_fog_manager_to_scene()
 	fog_manager.set_visibility_radius(visibility_radius)
 	last_visibility_radius = visibility_radius
+
+func _attach_fog_manager_to_scene() -> void:
+	if fog_manager == null or not is_instance_valid(fog_manager):
+		return
+	if fog_manager.get_parent():
+		return
+	var host: Node = get_tree().current_scene
+	if host == null:
+		host = get_parent()
+	if host == null:
+		call_deferred("_attach_fog_manager_to_scene")
+		return
+	host.add_child(fog_manager)
+	var ui_node = host.get_node_or_null("UI")
+	if ui_node:
+		host.move_child(ui_node, host.get_child_count() - 1)

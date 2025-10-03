@@ -14,6 +14,8 @@ var key_container: Control = null
 var key_status_container: Control = null
 var key_checkbox_nodes: Array[CheckBox] = []
 var key_colors: Array[Color] = []
+var key_door_ids: Array[int] = []
+var collected_key_ids: Dictionary = {}
 
 func setup(
 	main_ref,
@@ -75,6 +77,8 @@ func update_exit_state(exit_active: bool, exit_node: Node) -> void:
 func clear_key_ui() -> void:
 	key_checkbox_nodes.clear()
 	key_colors.clear()
+	key_door_ids.clear()
+	collected_key_ids.clear()
 	if key_status_container:
 		for child in key_status_container.get_children():
 			var control_child: Control = child as Control
@@ -92,6 +96,7 @@ func setup_key_ui(key_nodes: Array[Area2D]) -> void:
 		return
 	if key_container:
 		key_container.visible = true
+	collected_key_ids.clear()
 	for index in range(total_keys):
 		var checkbox: CheckBox = CheckBox.new()
 		checkbox.disabled = true
@@ -100,20 +105,39 @@ func setup_key_ui(key_nodes: Array[Area2D]) -> void:
 		checkbox.button_pressed = false
 		var key_node: Area2D = key_nodes[index] if index < key_nodes.size() else null
 		var color: Color = Color(0.9, 0.9, 0.2, 1.0)
-		if key_node and key_node.has_meta("group_color"):
-			color = key_node.get_meta("group_color")
+		if key_node and key_node.has_meta('group_color'):
+			color = key_node.get_meta('group_color')
 		key_colors.append(color)
+		var door_identifier: int = index
+		if key_node:
+			var door_value = key_node.get('door_id') if key_node.has_method('get') else null
+			if door_value != null:
+				door_identifier = int(door_value)
+		key_door_ids.append(door_identifier)
 		checkbox.modulate = color
 		key_status_container.add_child(checkbox)
 		key_checkbox_nodes.append(checkbox)
-	update_key_status_display(0)
+	_refresh_key_checkboxes()
 
 func update_key_status_display(collected_keys: int) -> void:
+	collected_key_ids.clear()
+	var limit: int = min(collected_keys, key_door_ids.size())
+	for i in range(limit):
+		collected_key_ids[key_door_ids[i]] = true
+	_refresh_key_checkboxes()
+
+func mark_key_collected(door_id: int) -> void:
+	if not collected_key_ids.has(door_id):
+		collected_key_ids[door_id] = true
+	_refresh_key_checkboxes()
+
+func _refresh_key_checkboxes() -> void:
 	for index in range(key_checkbox_nodes.size()):
 		var checkbox: CheckBox = key_checkbox_nodes[index]
 		if checkbox == null or not is_instance_valid(checkbox):
 			continue
-		var is_collected: bool = index < collected_keys
+		var door_identifier: int = key_door_ids[index] if index < key_door_ids.size() else index
+		var is_collected: bool = collected_key_ids.has(door_identifier)
 		checkbox.button_pressed = is_collected
 		var base_color: Color = key_colors[index] if index < key_colors.size() else Color(0.9, 0.9, 0.2, 1.0)
 		if is_collected:

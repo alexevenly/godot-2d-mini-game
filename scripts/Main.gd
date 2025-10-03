@@ -33,6 +33,7 @@ var collected_coins: int = 0
 var previous_coin_count: int = 0
 var total_keys: int = 0
 var collected_keys_count: int = 0
+var collected_key_ids: Dictionary = {}
 var exit_active: bool = false
 var exit: Area2D = null
 var prevent_game_over: bool = false
@@ -89,8 +90,8 @@ func _process(delta: float) -> void:
 func _on_coin_collected(body: Node, coin: Area2D) -> void:
 	level_controller.handle_coin_collected(body, coin)
 
-func _on_key_collected(_door_id: int) -> void:
-	level_controller.handle_key_collected()
+func _on_key_collected(door_id: int) -> void:
+	level_controller.handle_key_collected(door_id)
 
 func _on_timer_timeout() -> void:
 	game_flow_controller.on_timer_timeout()

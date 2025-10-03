@@ -175,10 +175,12 @@ func handle_coin_collected(body: Node, coin: Area2D) -> void:
 	ui_controller.update_coin_display(main.total_coins, main.collected_coins)
 	ui_controller.update_exit_state(main.exit_active, main.exit)
 
-func handle_key_collected() -> void:
-	main.collected_keys_count += 1
-	main.collected_keys_count = min(main.collected_keys_count, main.total_keys)
-	ui_controller.update_key_status_display(main.collected_keys_count)
+func handle_key_collected(door_id: int) -> void:
+	if not main.collected_key_ids.has(door_id):
+		main.collected_key_ids[door_id] = true
+		main.collected_keys_count += 1
+		main.collected_keys_count = min(main.collected_keys_count, main.total_keys)
+	ui_controller.mark_key_collected(door_id)
 
 func clear_level_objects() -> void:
 	Logger.log_generation("Clearing previously generated objects")
@@ -207,6 +209,7 @@ func clear_level_objects() -> void:
 	main.collected_coins = 0
 	main.total_keys = 0
 	main.collected_keys_count = 0
+	main.collected_key_ids.clear()
 	main.exit_active = false
 	ui_controller.clear_key_ui()
 

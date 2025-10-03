@@ -7,6 +7,7 @@ const MazeUtils = preload("res://scripts/level_generators/MazeUtils.gd")
 const LevelNodeFactory = preload("res://scripts/level_generators/LevelNodeFactory.gd")
 
 const WALL_COLOR := Color(0.15, 0.18, 0.28, 1)
+const PLAYER_COLLISION_SIZE := 32.0
 
 var context
 func _init(level_context, _obstacle_helper):
@@ -412,7 +413,7 @@ func _fill_unreachable_areas(grid: Array, start_cell: Vector2i, offset: Vector2,
 	var BLACK_COLOR := Color(0.0, 0.0, 0.0, 1.0)
 
 	# Find all reachable areas using flood fill from the start position
-	var reachable = _find_reachable_areas(grid, rows, cols, start_cell)
+	var reachable = _find_reachable_areas(grid, rows, cols, start_cell, offset, cell_size, main_scene)
 
 	for y in range(rows):
 		for x in range(cols):
@@ -426,7 +427,7 @@ func _fill_unreachable_areas(grid: Array, start_cell: Vector2i, offset: Vector2,
 				context.maze_walls.append(black_rect)
 				context.add_generated_node(black_rect, main_scene)
 
-func _find_reachable_areas(grid: Array, rows: int, cols: int, start_cell: Vector2i) -> Array:
+func _find_reachable_areas(grid: Array, rows: int, cols: int, start_cell: Vector2i, offset: Vector2, cell_size: float, main_scene) -> Array:
 	"""Find all reachable areas using flood fill"""
 	var reachable = []
 	for y in range(rows):
@@ -457,6 +458,20 @@ func _find_reachable_areas(grid: Array, rows: int, cols: int, start_cell: Vector
 	if start_pos == Vector2i(-1, -1):
 		return reachable
 
+	var space_state: PhysicsDirectSpaceState2D = null
+	var player_shape: RectangleShape2D = null
+	if main_scene and is_instance_valid(main_scene):
+		var world_2d: World2D = main_scene.get_world_2d()
+		if world_2d:
+			space_state = world_2d.direct_space_state
+	if space_state:
+		player_shape = RectangleShape2D.new()
+		player_shape.size = Vector2(PLAYER_COLLISION_SIZE, PLAYER_COLLISION_SIZE) * 0.95
+		var start_world := MazeUtils.maze_cell_to_world(start_pos, offset, cell_size)
+		if not _can_player_fit_at(space_state, player_shape, start_world):
+			player_shape = null
+			space_state = null
+
 	# Flood fill from start position
 	var queue = [start_pos]
 	reachable[start_pos.y][start_pos.x] = true
@@ -473,10 +488,53 @@ func _find_reachable_areas(grid: Array, rows: int, cols: int, start_cell: Vector
 				not grid[next.y][next.x] and
 				not reachable[next.y][next.x]
 			):
+				if space_state and player_shape:
+					if not _can_traverse_between_cells(space_state, player_shape, current, next, offset, cell_size):
+						continue
 				reachable[next.y][next.x] = true
 				queue.append(next)
 
 	return reachable
+
+func _can_traverse_between_cells(
+	space_state: PhysicsDirectSpaceState2D,
+	player_shape: RectangleShape2D,
+	current: Vector2i,
+	next: Vector2i,
+	offset: Vector2,
+	cell_size: float
+) -> bool:
+	var from_world := MazeUtils.maze_cell_to_world(current, offset, cell_size)
+	var to_world := MazeUtils.maze_cell_to_world(next, offset, cell_size)
+	if not _can_player_fit_at(space_state, player_shape, to_world):
+		return false
+	var delta := to_world - from_world
+	var max_extent := max(player_shape.size.x, player_shape.size.y)
+	var step_distance := max(max_extent * 0.35, 6.0)
+	var steps := int(ceil(delta.length() / step_distance))
+	for i in range(1, steps):
+		var t := float(i) / float(steps)
+		var sample := from_world.lerp(to_world, t)
+		if not _can_player_fit_at(space_state, player_shape, sample):
+			return false
+	return true
+
+func _can_player_fit_at(
+	space_state: PhysicsDirectSpaceState2D,
+	player_shape: RectangleShape2D,
+	position: Vector2
+) -> bool:
+	if space_state == null or player_shape == null:
+		return true
+	var params := PhysicsShapeQueryParameters2D.new()
+	params.shape = player_shape
+	params.transform = Transform2D.IDENTITY
+	params.transform.origin = position
+	params.collide_with_areas = false
+	params.collide_with_bodies = true
+	params.margin = 0.05
+	var results = space_state.intersect_shape(params, 1)
+	return results.is_empty()
 
 func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scene) -> void:
 	var rows = grid.size()

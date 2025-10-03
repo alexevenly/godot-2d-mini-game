@@ -6,6 +6,7 @@ var last_coin_collected := -1
 var last_exit_active := false
 var last_exit: Node = null
 var last_keys := -1
+var last_marked_key := -1
 var buttons_visible := false
 var restart_text := ""
 var level_progress := ""
@@ -27,6 +28,9 @@ func setup_key_ui(_keys: Array[Area2D]) -> void:
 
 func update_key_status_display(collected: int) -> void:
 	last_keys = collected
+
+func mark_key_collected(door_id: int) -> void:
+	last_marked_key = door_id
 
 func show_game_over_ui(text: String) -> void:
 	buttons_visible = true
