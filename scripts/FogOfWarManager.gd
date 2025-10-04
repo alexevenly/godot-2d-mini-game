@@ -8,6 +8,8 @@ extends Node2D
 @export var overlay_z_index: int = 3200: set = set_overlay_z_index
 @export var debug_logging := false
 
+const FOG_RAYCASTER := preload("res://scripts/fog/FogRaycaster.gd")
+
 var player: Node2D = null
 var _fog_root: Node2D = null
 var _fog_polygon: Polygon2D = null
@@ -15,11 +17,13 @@ var _time_since_update := 0.0
 var _ray_angles := PackedFloat32Array()
 var _excluded_rids: Array[RID] = []
 var _log_file: FileAccess = null
+var _fallback_circle := PackedVector2Array()
 
 func _ready() -> void:
 	set_overlay_z_index(overlay_z_index)
 	_create_overlay()
 	_refresh_ray_angles()
+	_update_fallback_circle()
 	_update_excluded_rids()
 	set_physics_process(true)
 	_update_visibility_polygon(true)
@@ -29,6 +33,7 @@ func _exit_tree() -> void:
 	_fog_polygon = null
 	_ray_angles = PackedFloat32Array()
 	_excluded_rids.clear()
+	_fallback_circle = PackedVector2Array()
 	if _log_file:
 		_log_file.close()
 		_log_file = null
@@ -44,6 +49,7 @@ func set_visibility_radius(radius: float) -> void:
 	visibility_radius = max(radius, 32.0)
 	if _fog_polygon:
 		_fog_polygon.invert_border = _compute_invert_border()
+	_update_fallback_circle()
 	_update_visibility_polygon(true)
 
 func set_overlay_z_index(value: int) -> void:
@@ -59,7 +65,7 @@ func set_darkness_color(color: Color) -> void:
 		_fog_polygon.color = darkness_color
 
 func set_ray_count(count: int) -> void:
-	ray_count = max(count, 32)
+	ray_count = max(count, FOG_RAYCASTER.MIN_RAY_COUNT)
 	_refresh_ray_angles()
 
 func _physics_process(delta: float) -> void:
@@ -107,17 +113,13 @@ func _clamp_overlay_z(value: int) -> int:
 	return clamp(value, min_limit, max_limit)
 
 func _refresh_ray_angles() -> void:
-	var clamped_count: int = max(ray_count, 32)
-	var step: float = TAU / float(clamped_count)
-	var angles: PackedFloat32Array = PackedFloat32Array()
-	for i in range(clamped_count):
-		var base_angle: float = step * float(i)
-		angles.push_back(_wrap_angle(base_angle))
-		angles.push_back(_wrap_angle(base_angle + 0.0006))
-		angles.push_back(_wrap_angle(base_angle - 0.0006))
-	_ray_angles = angles
+	_ray_angles = FOG_RAYCASTER.build_angles(ray_count)
+
+func _update_fallback_circle() -> void:
+	_fallback_circle = FOG_RAYCASTER.create_fallback_circle(visibility_radius)
 
 func _update_excluded_rids() -> void:
+
 	_excluded_rids.clear()
 	if player is CollisionObject2D:
 		_excluded_rids.append(player.get_rid())
@@ -133,45 +135,20 @@ func _update_visibility_polygon(force_fallback := false) -> void:
 	var space_state := _find_space_state()
 	if space_state == null:
 		return
-	var hit_results: Array = []
-	for angle in _ray_angles:
-		var direction: Vector2 = Vector2.RIGHT.rotated(angle)
-		var target: Vector2 = origin + direction * visibility_radius
-		var params := PhysicsRayQueryParameters2D.create(origin, target)
-		params.exclude = _excluded_rids
-		params.collide_with_bodies = true
-		params.collide_with_areas = false
-		var result: Dictionary = space_state.intersect_ray(params)
-		var hit_point: Vector2 = target
-		if result and result.has("position"):
-			hit_point = result["position"]
-		hit_results.append([angle, hit_point])
+	var hit_results: Array = FOG_RAYCASTER.cast_rays(space_state, origin, visibility_radius, _ray_angles, _excluded_rids)
 	if hit_results.is_empty():
 		if force_fallback:
 			_fog_root.global_position = origin
-			_fog_polygon.polygon = _create_fallback_circle()
+			_fog_polygon.polygon = _fallback_circle
 		return
-	hit_results.sort_custom(Callable(self, "_sort_hits"))
-	var polygon_points := PackedVector2Array()
-	var last_angle := -1.0
-	for entry in hit_results:
-		var angle := float(entry[0])
-		if last_angle >= 0.0 and abs(angle - last_angle) < 0.0001:
-			continue
-		last_angle = angle
-		var point: Vector2 = entry[1]
-		polygon_points.push_back(point - origin)
-	if polygon_points.size() < 3:
-		if force_fallback:
-			polygon_points = _create_fallback_circle()
-		else:
-			return
+	var polygon_points := FOG_RAYCASTER.build_polygon(hit_results, origin, _fallback_circle, force_fallback)
+	if polygon_points.is_empty():
+		return
 	_fog_root.global_position = origin
 	_fog_polygon.polygon = polygon_points
 	if _log_file:
 		_log_file.store_line("update origin=%s points=%d" % [str(origin), polygon_points.size()])
 		_log_file.flush()
-
 func _find_space_state() -> PhysicsDirectSpaceState2D:
 	var world := get_world_2d()
 	if world:
@@ -186,16 +163,3 @@ func _find_space_state() -> PhysicsDirectSpaceState2D:
 			return root.world_2d.direct_space_state
 	return null
 
-func _create_fallback_circle() -> PackedVector2Array:
-	var segments: int = 48
-	var fallback: PackedVector2Array = PackedVector2Array()
-	for i in range(segments):
-		var angle: float = TAU * float(i) / float(segments)
-		fallback.push_back(Vector2.RIGHT.rotated(angle) * visibility_radius)
-	return fallback
-
-func _wrap_angle(angle: float) -> float:
-	return fposmod(angle, TAU)
-
-static func _sort_hits(a, b) -> bool:
-	return float(a[0]) < float(b[0])

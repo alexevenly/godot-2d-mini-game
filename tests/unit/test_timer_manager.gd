@@ -3,6 +3,8 @@ extends "res://tests/unit/test_utils.gd"
 const TimerManager = preload("res://scripts/TimerManager.gd")
 const LevelUtils = preload("res://scripts/LevelUtils.gd")
 const GameState = preload("res://scripts/GameState.gd")
+const TimerBalanceConfig = preload("res://scripts/timer/TimerBalanceConfig.gd")
+const TimerBalanceCalculator = preload("res://scripts/timer/TimerBalanceCalculator.gd")
 
 func get_suite_name() -> String:
 	return "TimerManager"
@@ -11,26 +13,22 @@ func _new_timer() -> TimerManager:
 	return TimerManager.new()
 
 func test_level_multiplier_decays_with_levels() -> void:
-	var tm: TimerManager = _new_timer()
-	var level1 := tm._level_multiplier(1)
-	var level5 := tm._level_multiplier(5)
+	var preset := TimerBalanceConfig.get_difficulty("regular")
+	var level1 := TimerBalanceCalculator.level_multiplier(1, preset)
+	var level5 := TimerBalanceCalculator.level_multiplier(5, preset)
 	assert_true(level1 >= level5)
-	tm.free()
 
 func test_buffer_cap_reduces_with_level_progress() -> void:
-	var tm: TimerManager = _new_timer()
-	var early := tm._buffer_cap_sec(1)
-	var later := tm._buffer_cap_sec(6)
+	var preset := TimerBalanceConfig.get_difficulty("regular")
+	var early := TimerBalanceCalculator.buffer_cap_sec(1, preset)
+	var later := TimerBalanceCalculator.buffer_cap_sec(6, preset)
 	assert_true(early >= later)
-	tm.free()
 
 func test_route_detour_factor_increases_with_coins() -> void:
-	var tm: TimerManager = _new_timer()
-	var base := tm._route_detour_factor(0)
-	var more := tm._route_detour_factor(10)
+	var base := TimerBalanceCalculator.route_detour_factor(0)
+	var more := TimerBalanceCalculator.route_detour_factor(10)
 	assert_true(more > base)
 	assert_near(base, 1.0, 0.0001)
-	tm.free()
 
 func test_register_level_result_clamps_and_limits_history() -> void:
 	var tm: TimerManager = _new_timer()
@@ -67,68 +65,63 @@ func test_calculate_level_time_accounts_for_coins() -> void:
 func test_set_difficulty_keeps_known_and_ignores_unknown() -> void:
 	var tm: TimerManager = _new_timer()
 	tm.set_difficulty("child")
-	var child_preset := TimerManager.DIFFICULTY_PRESETS["child"]
+	var child_preset := TimerBalanceConfig.get_difficulty("child")
 	assert_eq(tm._get_preset(), child_preset)
 	tm.set_difficulty("impossible-mode")
 	assert_eq(tm._get_preset(), child_preset)
 	tm.free()
 
 func test_level_type_scale_interpolates_and_defaults() -> void:
-	var tm: TimerManager = _new_timer()
-	var start_scale := tm._level_type_scale(GameState.LevelType.MAZE, 1)
-	var end_scale := tm._level_type_scale(GameState.LevelType.MAZE, 9)
+	var profile := TimerBalanceConfig.get_type_profile(GameState.LevelType.MAZE)
+	var start_scale := TimerBalanceCalculator.level_type_scale(profile, 1)
+	var end_scale := TimerBalanceCalculator.level_type_scale(profile, 9)
 	assert_true(start_scale > end_scale)
 	assert_near(end_scale, 0.75, 0.05)
-	var unknown_scale := tm._level_type_scale(9999, 3)
+	var unknown_profile := TimerBalanceConfig.get_type_profile(9999)
+	var unknown_scale := TimerBalanceCalculator.level_type_scale(unknown_profile, 3)
 	assert_near(unknown_scale, 1.0, 0.0001)
-	tm.free()
 
 func test_get_type_profile_returns_defaults_for_unknown() -> void:
-	var tm: TimerManager = _new_timer()
-	var profile := tm._get_type_profile(12345)
+	var profile := TimerBalanceConfig.get_type_profile(12345)
 	assert_eq(profile["scale_start"], 1.0)
 	assert_eq(profile["scale_end"], 1.0)
 	assert_eq(profile["buffer_bias"], 0.0)
 	assert_eq(profile["flat_bonus"], 0.0)
-	tm.free()
 
 func test_maze_overhead_handles_non_maze_types() -> void:
-	var tm: TimerManager = _new_timer()
-	var result := tm._maze_overhead(GameState.LevelType.KEYS, 0.0, Vector2.ZERO, Vector2.ZERO, 300.0)
+	var profile := TimerBalanceConfig.get_type_profile(GameState.LevelType.KEYS)
+	var result := TimerBalanceCalculator.maze_overhead(false, profile, 0.0, Vector2.ZERO, Vector2.ZERO, 300.0)
 	assert_near(result["factor"], 1.0, 0.0001)
 	assert_near(result["slack"], 0.0, 0.0001)
 	assert_near(result["base_path"], 0.0, 0.0001)
-	tm.free()
 
 func test_maze_overhead_uses_path_statistics() -> void:
-	var tm: TimerManager = _new_timer()
 	var start := Vector2.ZERO
 	var exit := Vector2(100, 0)
-	var info := tm._maze_overhead(GameState.LevelType.MAZE, 300.0, start, exit, 300.0)
+	var profile := TimerBalanceConfig.get_type_profile(GameState.LevelType.MAZE)
+	var info := TimerBalanceCalculator.maze_overhead(true, profile, 300.0, start, exit, 300.0)
 	assert_true(info["factor"] > 1.0)
 	assert_true(info["slack"] > 0.0)
 	assert_near(info["base_path"], 300.0, 0.0001)
-	tm.free()
+
 func test_maze_overhead_uses_fallback_slack_when_no_path() -> void:
-	var tm: TimerManager = _new_timer()
 	var start := LevelUtils.PLAYER_START
 	var exit := LevelUtils.PLAYER_START + Vector2(180, 45)
-	var info := tm._maze_overhead(GameState.LevelType.MAZE, 0.0, start, exit, 320.0)
-	var profile := tm._get_type_profile(GameState.LevelType.MAZE)
+	var profile := TimerBalanceConfig.get_type_profile(GameState.LevelType.MAZE)
+	var info := TimerBalanceCalculator.maze_overhead(true, profile, 0.0, start, exit, 320.0)
 	var fallback_factor := float(profile.get("maze_fallback_factor", 1.0))
 	assert_true(info["slack"] > 0.0)
 	assert_near(info["factor"], fallback_factor, 0.0001)
 	var straight := start.distance_to(exit)
 	assert_near(info["base_path"], straight * fallback_factor, 0.0001)
-	tm.free()
+
 func test_maze_overhead_scales_with_ratio_and_path_bonus() -> void:
-	var tm: TimerManager = _new_timer()
 	var start := Vector2.ZERO
 	var exit := Vector2(100, 0)
 	var maze_length := 300.0
-	var info := tm._maze_overhead(GameState.LevelType.MAZE, maze_length, start, exit, 300.0)
+	var profile := TimerBalanceConfig.get_type_profile(GameState.LevelType.MAZE)
+	var info := TimerBalanceCalculator.maze_overhead(true, profile, maze_length, start, exit, 300.0)
 	var straight := start.distance_to(exit)
-	var profile := tm._get_type_profile(GameState.LevelType.MAZE)
 	var ratio: float = maze_length / max(straight, 1.0)
 	var base_scale: float = float(profile.get("maze_base_scale", 0.0))
 	var expected_factor: float = 1.0 + (ratio - 1.0) * base_scale
@@ -143,21 +136,20 @@ func test_maze_overhead_scales_with_ratio_and_path_bonus() -> void:
 	var total_expected_slack: float = expected_slack + path_bonus * path_scale
 	assert_near(float(info["slack"]), total_expected_slack, 0.0001)
 	assert_near(float(info["base_path"]), maze_length, 0.0001)
-	tm.free()
+
 func test_maze_overhead_enforces_path_floor_and_curve() -> void:
-	var tm: TimerManager = _new_timer()
 	var start := Vector2.ZERO
 	var exit := Vector2(200, 0)
 	var maze_length := 150.0
-	var straight := start.distance_to(exit)
-	var info := tm._maze_overhead(GameState.LevelType.MAZE, maze_length, start, exit, 300.0)
-	var profile := tm._get_type_profile(GameState.LevelType.MAZE)
+	var profile := TimerBalanceConfig.get_type_profile(GameState.LevelType.MAZE)
+	var info := TimerBalanceCalculator.maze_overhead(true, profile, maze_length, start, exit, 300.0)
 	var floor_scale := float(profile.get("maze_path_floor", 1.0))
+	var straight := start.distance_to(exit)
 	assert_near(float(info["base_path"]), straight * floor_scale, 0.0001)
 	assert_near(float(info["factor"]), 1.0, 0.0001)
 	var slack_curve: Vector2 = profile.get("maze_slack_curve", Vector2.ZERO)
 	assert_near(float(info["slack"]), slack_curve.x, 0.0001)
-	tm.free()
+
 func test_calculate_level_time_extends_minimum_for_pickups() -> void:
 	var tm: TimerManager = _new_timer()
 	var coin := Node2D.new()
