@@ -115,6 +115,9 @@ func get_generated_coins():
 func get_generated_keys():
 	return key_items
 
+func get_generated_doors():
+	return doors
+
 func get_generated_exit():
 	if exit_spawner:
 		return exit_spawner.get_exit()

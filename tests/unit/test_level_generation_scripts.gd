@@ -4,6 +4,7 @@ const LevelNodeFactory = preload("res://scripts/level_generators/LevelNodeFactor
 const ObstacleUtilities = preload("res://scripts/level_generators/ObstacleUtilities.gd")
 const KeyLevelGenerator = preload("res://scripts/level_generators/KeyLevelGenerator.gd")
 const MazeGenerator = preload("res://scripts/level_generators/MazeGenerator.gd")
+const MazeDoorAndKeyPlanner = preload("res://scripts/level_generators/maze/MazeDoorAndKeyPlanner.gd")
 const ObstacleSpawner = preload("res://scripts/ObstacleSpawner.gd")
 const CoinSpawner = preload("res://scripts/CoinSpawner.gd")
 const LevelUtils = preload("res://scripts/LevelUtils.gd")
@@ -89,12 +90,12 @@ func test_key_level_generator_sample_far_points_within_bounds() -> void:
 		assert_true(point.y <= 170.0)
 
 func test_maze_generator_select_key_cells_excludes_special_cells() -> void:
-	var generator := track_object(MazeGenerator.new({}, null)) as MazeGenerator
+	var planner := MazeDoorAndKeyPlanner.new()
 	var reachable := [Vector2i(1, 1), Vector2i(3, 1), Vector2i(5, 1), Vector2i(3, 3)]
 	var taken := []
-	var door_worlds: Array = []
-	var key_world_positions: Array = []
-	var result := generator._select_maze_key_cells(reachable, 2, Vector2.ZERO, 10.0, Vector2i(3, 1), Vector2i(1, 1), Vector2i(7, 7), taken, door_worlds, key_world_positions, Vector2.ZERO, Vector2(70, 70))
+	var door_worlds: Array[Vector2] = []
+	var key_world_positions: Array[Vector2] = []
+	var result: Array = planner.select_key_cells(reachable, 2, Vector2.ZERO, 10.0, Vector2i(3, 1), Vector2i(1, 1), Vector2i(7, 7), taken, door_worlds, key_world_positions, Vector2.ZERO, Vector2(70, 70))
 	assert_eq(result.size(), 2)
 	for cell in result:
 		assert_false(cell == Vector2i(1, 1))

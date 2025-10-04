@@ -1,6 +1,8 @@
 class_name UIController
 extends RefCounted
 
+const KEY_UI_MANAGER := preload("res://scripts/main/ui/KeyUIManager.gd")
+
 var main = null
 var timer_label: Label = null
 var coin_label: Label = null
@@ -12,11 +14,13 @@ var restart_button: Button = null
 var menu_button: Button = null
 var key_container: Control = null
 var key_status_container: Control = null
-var key_checkbox_nodes: Array[CheckBox] = []
-var key_colors: Array[Color] = []
-var key_door_ids: Array[int] = []
-var collected_key_counts: Dictionary = {}
-var key_slot_counts: Dictionary = {}
+var door_container: Control = null
+var door_status_container: Control = null
+var _key_ui_manager
+
+var key_checkbox_nodes: Array[CheckBox]:
+	get:
+		return _key_ui_manager.key_checkbox_nodes if _key_ui_manager else [] as Array[CheckBox]
 
 func setup(
 	main_ref,
@@ -29,6 +33,8 @@ func setup(
 	menu_button_ref: Button,
 	key_container_ref: Control,
 	key_status_container_ref: Control,
+	door_container_ref: Control,
+	door_status_container_ref: Control,
 	speed_label_ref: Label = null
 ) -> void:
 	main = main_ref
@@ -41,7 +47,12 @@ func setup(
 	menu_button = menu_button_ref
 	key_container = key_container_ref
 	key_status_container = key_status_container_ref
+	door_container = door_container_ref
+	door_status_container = door_status_container_ref
 	speed_label = speed_label_ref
+	if _key_ui_manager == null:
+		_key_ui_manager = KEY_UI_MANAGER.new()
+	_key_ui_manager.setup_containers(key_container, key_status_container, door_container, door_status_container)
 
 func update_timer_display(game_time: float) -> void:
 	if timer_label:
@@ -76,99 +87,30 @@ func update_exit_state(exit_active: bool, exit_node: Node) -> void:
 		exit_body.color = Color(0.4, 0.4, 0.4, 1)
 
 func clear_key_ui() -> void:
-	key_checkbox_nodes.clear()
-	key_colors.clear()
-	key_door_ids.clear()
-	collected_key_counts.clear()
-	key_slot_counts.clear()
-	if key_status_container:
-		for child in key_status_container.get_children():
-			var control_child: Control = child as Control
-			if control_child and is_instance_valid(control_child):
-				control_child.queue_free()
-	if key_container:
-		key_container.visible = false
+	if _key_ui_manager:
+		_key_ui_manager.clear()
 
 func setup_key_ui(key_nodes: Array[Area2D]) -> void:
-	clear_key_ui()
-	if key_nodes == null:
-		key_nodes = [] as Array[Area2D]
-	var total_keys: int = key_nodes.size()
-	if total_keys <= 0 or key_status_container == null:
+	if _key_ui_manager == null:
 		return
-	if key_container:
-		key_container.visible = true
-	for index in range(total_keys):
-		var checkbox: CheckBox = CheckBox.new()
-		checkbox.disabled = true
-		checkbox.focus_mode = Control.FOCUS_NONE
-		checkbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		checkbox.button_pressed = false
-		var key_node: Area2D = key_nodes[index] if index < key_nodes.size() else null
-		var color: Color = Color(0.9, 0.9, 0.2, 1.0)
-		if key_node and key_node.has_meta("group_color"):
-			color = key_node.get_meta("group_color")
-		key_colors.append(color)
-		var door_identifier: int = index
-		if key_node and key_node.has_method("get"):
-			var door_value = key_node.get("door_id")
-			if door_value != null:
-				door_identifier = int(door_value)
-		key_door_ids.append(door_identifier)
-		key_slot_counts[door_identifier] = key_slot_counts.get(door_identifier, 0) + 1
-		checkbox.modulate = color
-		key_status_container.add_child(checkbox)
-		key_checkbox_nodes.append(checkbox)
-	collected_key_counts.clear()
-	_refresh_key_checkboxes()
+	_key_ui_manager.build_from_keys(key_nodes)
+
+func setup_door_ui(door_nodes: Array) -> void:
+	if _key_ui_manager == null:
+		return
+	_key_ui_manager.build_from_doors(door_nodes)
 
 func update_key_status_display(collected_keys: int) -> void:
-	collected_key_counts.clear()
-	var remaining: int = clamp(collected_keys, 0, key_door_ids.size())
-	for door_id in key_door_ids:
-		if remaining <= 0:
-			break
-		var total_slots: int = int(key_slot_counts.get(door_id, 0))
-		if total_slots <= 0:
-			continue
-		var current: int = int(collected_key_counts.get(door_id, 0))
-		if current >= total_slots:
-			continue
-		collected_key_counts[door_id] = current + 1
-		remaining -= 1
-	_refresh_key_checkboxes()
+	if _key_ui_manager:
+		_key_ui_manager.update_key_status_display(collected_keys)
 
 func mark_key_collected(door_id: int) -> void:
-	var total_slots: int = int(key_slot_counts.get(door_id, 0))
-	if total_slots <= 0:
-		return
-	var collected: int = int(collected_key_counts.get(door_id, 0))
-	if collected >= total_slots:
-		return
-	collected_key_counts[door_id] = collected + 1
-	_refresh_key_checkboxes()
+	if _key_ui_manager:
+		_key_ui_manager.mark_key_collected(door_id)
 
-func _refresh_key_checkboxes() -> void:
-	var per_door_usage: Dictionary = {}
-	for index in range(key_checkbox_nodes.size()):
-		var checkbox: CheckBox = key_checkbox_nodes[index]
-		if checkbox == null or not is_instance_valid(checkbox):
-			continue
-		var door_identifier: int = key_door_ids[index] if index < key_door_ids.size() else index
-		var collected_total: int = int(collected_key_counts.get(door_identifier, 0))
-		var used: int = int(per_door_usage.get(door_identifier, 0))
-		var is_collected: bool = used < collected_total
-		per_door_usage[door_identifier] = used + 1
-		checkbox.button_pressed = is_collected
-		var base_color: Color = key_colors[index] if index < key_colors.size() else Color(0.9, 0.9, 0.2, 1.0)
-		if is_collected:
-			var highlight: Color = base_color.lightened(0.35)
-			highlight.a = base_color.a
-			checkbox.modulate = highlight
-		else:
-			checkbox.modulate = base_color
-	if key_container:
-		key_container.visible = key_checkbox_nodes.size() > 0
+func mark_door_opened(door_id: int, door_color: Color) -> void:
+	if _key_ui_manager:
+		_key_ui_manager.mark_door_opened(door_id, door_color)
 
 func show_game_over_ui(restart_text: String) -> void:
 	if game_over_label:

@@ -1,5 +1,7 @@
 extends StaticBody2D
 
+signal door_opened(door_id: int, door_color: Color)
+
 @export var door_id: int = 0
 @export var required_keys: int = 1
 @export var initially_open: bool = false
@@ -41,6 +43,7 @@ func _open_door() -> void:
 	_set_collision_disabled(true)
 	_apply_body_color(_open_color)
 	z_index = -5
+	_emit_door_opened()
 
 func _apply_closed_state() -> void:
 	_is_open = false
@@ -68,3 +71,12 @@ func _compute_open_color(color: Color) -> Color:
 func _apply_body_color(color: Color) -> void:
 	if body:
 		body.color = color
+
+func is_open() -> bool:
+	return _is_open
+
+func get_door_color() -> Color:
+	return _door_color
+
+func _emit_door_opened() -> void:
+	emit_signal("door_opened", door_id, _door_color)
