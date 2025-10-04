@@ -21,11 +21,11 @@ const GAME_STATE := preload("res://scripts/GameState.gd")
 @onready var menu_button: Button = $UI/MenuButton
 @onready var key_container: Control = $UI/KeyContainer
 @onready var key_status_container: Control = $UI/KeyContainer/KeyStatus
-@onready var level_generator: LEVEL_GENERATOR = $LEVEL_GENERATOR
-@onready var timer_manager: TIMER_MANAGER = $TIMER_MANAGER
+@onready var level_generator: LEVEL_GENERATOR = $LevelGenerator
+@onready var timer_manager: TIMER_MANAGER = $TimerManager
 @onready var play_area: ColorRect = $PlayArea
 @onready var boundaries: Node2D = $Boundaries
-@onready var game_state: GAME_STATE = $GAME_STATE
+@onready var game_state: GAME_STATE = $GameState
 
 var game_time: float = 30.0
 var total_coins: int = 0

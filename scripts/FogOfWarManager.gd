@@ -5,7 +5,7 @@ extends Node2D
 @export var ray_count := 720
 @export var update_interval := 0.05
 @export var invert_border_margin := 512.0
-@export var overlay_z_index: int = 3200 : set = set_overlay_z_index
+@export var overlay_z_index: int = 3200: set = set_overlay_z_index
 @export var debug_logging := false
 
 var player: Node2D = null
@@ -83,7 +83,7 @@ func _create_overlay() -> void:
 		_fog_polygon = Polygon2D.new()
 		_fog_polygon.name = "FogOfWarPolygon"
 		_fog_polygon.color = darkness_color
-		_fog_polygon.invert = true
+		_fog_polygon.invert_enabled = true
 		_fog_polygon.antialiased = true
 		_fog_polygon.z_as_relative = false
 		_fog_polygon.z_index = overlay_z_index
