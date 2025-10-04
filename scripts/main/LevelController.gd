@@ -22,6 +22,7 @@ var ui_controller = null
 var game_flow_controller = null
 var coins: Array[Area2D] = []
 var keys: Array[Area2D] = []
+var doors: Array[StaticBody2D] = []
 var _object_binder = LEVEL_OBJECT_BINDER.new()
 var _generation_service = LEVEL_GENERATION_SERVICE.new()
 
@@ -49,6 +50,7 @@ func generate_new_level() -> void:
 	_generation_service.reset_runtime_state()
 	coins = [] as Array[Area2D]
 	keys = [] as Array[Area2D]
+	doors = [] as Array[StaticBody2D]
 	if game_flow_controller:
 		game_flow_controller.handle_timer_for_game_state()
 	await main.get_tree().process_frame
@@ -64,6 +66,7 @@ func generate_new_level() -> void:
 		var outcome := _generation_service.apply_generation_outcome(binding_result, level_type)
 		coins = outcome.get("coins", [] as Array[Area2D])
 		keys = outcome.get("keys", [] as Array[Area2D])
+		doors = outcome.get("doors", [] as Array[StaticBody2D])
 	else:
 		main.game_time = 30.0
 	main.level_initializing = false
@@ -108,6 +111,10 @@ func handle_key_collected(door_id: int) -> void:
 	ui_controller.mark_key_collected(door_id)
 	ui_controller.update_key_status_display(main.collected_keys_count)
 
+func handle_door_opened(door_id: int, door_color: Color) -> void:
+	if ui_controller:
+		ui_controller.mark_door_opened(door_id, door_color)
+
 func clear_level_objects() -> void:
 	LOGGER.log_generation("Clearing previously generated objects")
 	for child in main.get_children():
@@ -129,6 +136,7 @@ func clear_level_objects() -> void:
 	main.exit = null
 	coins = [] as Array[Area2D]
 	keys = [] as Array[Area2D]
+	doors = [] as Array[StaticBody2D]
 	main.total_coins = 0
 	main.collected_coins = 0
 	main.total_keys = 0

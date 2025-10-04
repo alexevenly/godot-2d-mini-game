@@ -5,6 +5,7 @@ class_name LevelGenerationService
 const LOGGER := preload("res://scripts/Logger.gd")
 const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
 const GAME_STATE := preload("res://scripts/GameState.gd")
+const DEFAULT_DOOR_COLOR := Color(0.35, 0.35, 0.75, 1.0)
 
 var main
 var ui_controller
@@ -78,9 +79,11 @@ func apply_generation_outcome(binding_result: Dictionary, level_type: int) -> Di
 	var generated_exit = binding_result.get("exit")
 	var generated_coins = binding_result.get("coins", [] as Array[Area2D])
 	var generated_keys = binding_result.get("keys", [] as Array[Area2D])
+	var generated_doors = binding_result.get("doors", [] as Array[StaticBody2D])
 	main.exit = generated_exit if generated_exit and is_instance_valid(generated_exit) else null
 	var coins: Array[Area2D] = generated_coins if typeof(generated_coins) == TYPE_ARRAY else [] as Array[Area2D]
 	var keys: Array[Area2D] = generated_keys if typeof(generated_keys) == TYPE_ARRAY else [] as Array[Area2D]
+	var doors: Array[StaticBody2D] = generated_doors if typeof(generated_doors) == TYPE_ARRAY else [] as Array[StaticBody2D]
 	if main.exit:
 		LOGGER.log_generation("Exit generated at %s" % [main.exit.position])
 	else:
@@ -118,10 +121,12 @@ func apply_generation_outcome(binding_result: Dictionary, level_type: int) -> Di
 		main.timer.start()
 	if ui_controller:
 		ui_controller.update_coin_display(main.total_coins, main.collected_coins)
+		ui_controller.setup_door_ui(doors)
 		ui_controller.setup_key_ui(keys)
 		ui_controller.update_exit_state(main.exit_active, main.exit)
 		ui_controller.update_timer_display(main.game_time)
 		ui_controller.update_level_progress(main.game_state.get_level_progress_text())
+		_apply_initial_door_state(doors)
 	if has_spawn_override and main.player and is_instance_valid(main.player):
 		main.player.global_position = spawn_override
 		main.player.position = spawn_override
@@ -131,5 +136,31 @@ func apply_generation_outcome(binding_result: Dictionary, level_type: int) -> Di
 		LOGGER.log_generation("Level ready: time %.2f, coins %d (default spawn)" % [main.game_time, main.total_coins])
 	return {
 		"coins": coins,
-		"keys": keys
+		"keys": keys,
+		"doors": doors
 	}
+
+func _apply_initial_door_state(doors: Array[StaticBody2D]) -> void:
+	if ui_controller == null:
+		return
+	for door in doors:
+		var door_body: StaticBody2D = door
+		if door_body == null or not is_instance_valid(door_body):
+			continue
+		if not door_body.has_method("is_open") or not door_body.is_open():
+			continue
+		var door_id: int = 0
+		if door_body.has_method("get"):
+			var door_id_value = door_body.get("door_id")
+			if door_id_value != null:
+				door_id = int(door_id_value)
+		var door_color: Color = DEFAULT_DOOR_COLOR
+		if door_body.has_method("get_door_color"):
+			door_color = door_body.get_door_color()
+		elif door_body.has_meta("group_color"):
+			door_color = door_body.get_meta("group_color")
+		elif door_body.has_method("get"):
+			var door_color_value = door_body.get("door_color")
+			if typeof(door_color_value) == TYPE_COLOR:
+				door_color = door_color_value
+		ui_controller.mark_door_opened(door_id, door_color)

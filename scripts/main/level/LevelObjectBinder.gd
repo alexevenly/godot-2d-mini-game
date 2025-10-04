@@ -14,6 +14,7 @@ func bind_from_generator(level_generator) -> Dictionary:
 		"exit": null,
 		"coins": [] as Array[Area2D],
 		"keys": [] as Array[Area2D],
+		"doors": [] as Array[StaticBody2D],
 		"spawn_override": Vector2.ZERO,
 		"has_spawn_override": false
 	}
@@ -26,6 +27,9 @@ func bind_from_generator(level_generator) -> Dictionary:
 	var coins: Array[Area2D] = level_generator.get_generated_coins() as Array[Area2D]
 	_connect_coins(coins)
 	result.coins = coins
+	var doors: Array[StaticBody2D] = level_generator.get_generated_doors() as Array[StaticBody2D]
+	_connect_doors(doors)
+	result.doors = doors
 	var keys: Array[Area2D] = level_generator.get_generated_keys() as Array[Area2D]
 	_connect_keys(keys)
 	result.keys = keys
@@ -35,6 +39,16 @@ func bind_from_generator(level_generator) -> Dictionary:
 	if has_spawn_override:
 		result.spawn_override = spawn_override_variant
 	return result
+
+func _connect_doors(doors: Array[StaticBody2D]) -> void:
+	if main_node == null:
+		return
+	for door in doors:
+		var door_body: StaticBody2D = door
+		if door_body and is_instance_valid(door_body) and door_body.has_signal("door_opened"):
+			var door_callable: Callable = Callable(main_node, "_on_door_opened")
+			if not door_body.is_connected("door_opened", door_callable):
+				door_body.connect("door_opened", door_callable)
 
 func _connect_exit(exit_node: Node) -> void:
 	if main_node == null or exit_node == null:

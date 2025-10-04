@@ -14,6 +14,8 @@ var restart_button: Button = null
 var menu_button: Button = null
 var key_container: Control = null
 var key_status_container: Control = null
+var door_container: Control = null
+var door_status_container: Control = null
 var _key_ui_manager
 
 var key_checkbox_nodes: Array[CheckBox]:
@@ -31,6 +33,8 @@ func setup(
 	menu_button_ref: Button,
 	key_container_ref: Control,
 	key_status_container_ref: Control,
+	door_container_ref: Control,
+	door_status_container_ref: Control,
 	speed_label_ref: Label = null
 ) -> void:
 	main = main_ref
@@ -43,10 +47,12 @@ func setup(
 	menu_button = menu_button_ref
 	key_container = key_container_ref
 	key_status_container = key_status_container_ref
+	door_container = door_container_ref
+	door_status_container = door_status_container_ref
 	speed_label = speed_label_ref
 	if _key_ui_manager == null:
 		_key_ui_manager = KEY_UI_MANAGER.new()
-	_key_ui_manager.setup_containers(key_container, key_status_container)
+	_key_ui_manager.setup_containers(key_container, key_status_container, door_container, door_status_container)
 
 func update_timer_display(game_time: float) -> void:
 	if timer_label:
@@ -89,6 +95,11 @@ func setup_key_ui(key_nodes: Array[Area2D]) -> void:
 		return
 	_key_ui_manager.build_from_keys(key_nodes)
 
+func setup_door_ui(door_nodes: Array[StaticBody2D]) -> void:
+	if _key_ui_manager == null:
+		return
+	_key_ui_manager.build_from_doors(door_nodes)
+
 func update_key_status_display(collected_keys: int) -> void:
 	if _key_ui_manager:
 		_key_ui_manager.update_key_status_display(collected_keys)
@@ -96,6 +107,10 @@ func update_key_status_display(collected_keys: int) -> void:
 func mark_key_collected(door_id: int) -> void:
 	if _key_ui_manager:
 		_key_ui_manager.mark_key_collected(door_id)
+
+func mark_door_opened(door_id: int, door_color: Color) -> void:
+	if _key_ui_manager:
+		_key_ui_manager.mark_door_opened(door_id, door_color)
 
 func show_game_over_ui(restart_text: String) -> void:
 	if game_over_label:

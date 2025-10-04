@@ -21,6 +21,8 @@ const GAME_STATE := preload("res://scripts/GameState.gd")
 @onready var menu_button: Button = $UI/MenuButton
 @onready var key_container: Control = $UI/KeyContainer
 @onready var key_status_container: Control = $UI/KeyContainer/KeyStatus
+@onready var door_container: Control = $UI/DoorContainer
+@onready var door_status_container: Control = $UI/DoorContainer/DoorStatus
 @onready var level_generator: LEVEL_GENERATOR = $LevelGenerator
 @onready var timer_manager: TIMER_MANAGER = $TimerManager
 @onready var play_area: ColorRect = $PlayArea
@@ -47,7 +49,21 @@ var game_flow_controller: GAME_FLOW_CONTROLLER = null
 
 func _ready() -> void:
 	ui_controller = UI_CONTROLLER.new()
-	ui_controller.setup(self, timer_label, coin_label, level_progress_label, game_over_label, win_label, restart_button, menu_button, key_container, key_status_container, speed_label)
+	ui_controller.setup(
+		self,
+		timer_label,
+		coin_label,
+		level_progress_label,
+		game_over_label,
+		win_label,
+		restart_button,
+		menu_button,
+		key_container,
+		key_status_container,
+		door_container,
+		door_status_container,
+		speed_label
+	)
 	level_controller = LEVEL_CONTROLLER.new()
 	level_controller.setup(self, ui_controller)
 	statistics_logger = STATISTICS_LOGGER.new()
@@ -74,16 +90,16 @@ func _process(delta: float) -> void:
 		return
 	game_time -= delta
 	ui_controller.update_timer_display(game_time)
-	
+
 	# Update tug of war force
 	if game_state.has_method("update_tug_of_war_force"):
 		game_state.update_tug_of_war_force(delta)
-	
+
 	# Update speed display
 	if player and is_instance_valid(player):
 		var boost_count = player.get_boost_count()
 		ui_controller.update_speed_display(player.current_speed, boost_count)
-	
+
 	if game_time <= 0.0:
 		game_flow_controller.trigger_game_over()
 
@@ -92,6 +108,9 @@ func _on_coin_collected(body: Node, coin: Area2D) -> void:
 
 func _on_key_collected(door_id: int) -> void:
 	level_controller.handle_key_collected(door_id)
+
+func _on_door_opened(door_id: int, door_color: Color) -> void:
+	level_controller.handle_door_opened(door_id, door_color)
 
 func _on_timer_timeout() -> void:
 	game_flow_controller.on_timer_timeout()
