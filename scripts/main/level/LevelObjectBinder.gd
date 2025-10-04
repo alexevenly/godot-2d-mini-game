@@ -27,7 +27,7 @@ func bind_from_generator(level_generator) -> Dictionary:
 	var coins: Array[Area2D] = level_generator.get_generated_coins() as Array[Area2D]
 	_connect_coins(coins)
 	result.coins = coins
-	var doors: Array[StaticBody2D] = level_generator.get_generated_doors() as Array[StaticBody2D]
+	var doors: Array = level_generator.get_generated_doors() as Array[StaticBody2D]
 	_connect_doors(doors)
 	result.doors = doors
 	var keys: Array[Area2D] = level_generator.get_generated_keys() as Array[Area2D]
@@ -40,7 +40,7 @@ func bind_from_generator(level_generator) -> Dictionary:
 		result.spawn_override = spawn_override_variant
 	return result
 
-func _connect_doors(doors: Array[StaticBody2D]) -> void:
+func _connect_doors(doors: Array) -> void:
 	if main_node == null:
 		return
 	for door in doors:

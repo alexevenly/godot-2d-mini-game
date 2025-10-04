@@ -95,7 +95,7 @@ func setup_key_ui(key_nodes: Array[Area2D]) -> void:
 		return
 	_key_ui_manager.build_from_keys(key_nodes)
 
-func setup_door_ui(door_nodes: Array[StaticBody2D]) -> void:
+func setup_door_ui(door_nodes: Array) -> void:
 	if _key_ui_manager == null:
 		return
 	_key_ui_manager.build_from_doors(door_nodes)

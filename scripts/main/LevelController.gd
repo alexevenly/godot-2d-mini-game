@@ -22,7 +22,7 @@ var ui_controller = null
 var game_flow_controller = null
 var coins: Array[Area2D] = []
 var keys: Array[Area2D] = []
-var doors: Array[StaticBody2D] = []
+var doors: Array = []
 var _object_binder = LEVEL_OBJECT_BINDER.new()
 var _generation_service = LEVEL_GENERATION_SERVICE.new()
 
@@ -50,7 +50,7 @@ func generate_new_level() -> void:
 	_generation_service.reset_runtime_state()
 	coins = [] as Array[Area2D]
 	keys = [] as Array[Area2D]
-	doors = [] as Array[StaticBody2D]
+	doors = [] as Array
 	if game_flow_controller:
 		game_flow_controller.handle_timer_for_game_state()
 	await main.get_tree().process_frame

@@ -67,7 +67,7 @@ func build_from_keys(key_nodes: Array[Area2D]) -> void:
 	_update_container_visibility(key_container, key_checkbox_nodes)
 	_refresh_checkboxes()
 
-func build_from_doors(door_nodes: Array[StaticBody2D]) -> void:
+func build_from_doors(door_nodes: Array) -> void:
 	_clear_door_checkboxes()
 	if door_nodes == null:
 		door_nodes = [] as Array[StaticBody2D]

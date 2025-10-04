@@ -83,7 +83,7 @@ func apply_generation_outcome(binding_result: Dictionary, level_type: int) -> Di
 	main.exit = generated_exit if generated_exit and is_instance_valid(generated_exit) else null
 	var coins: Array[Area2D] = generated_coins if typeof(generated_coins) == TYPE_ARRAY else [] as Array[Area2D]
 	var keys: Array[Area2D] = generated_keys if typeof(generated_keys) == TYPE_ARRAY else [] as Array[Area2D]
-	var doors: Array[StaticBody2D] = generated_doors if typeof(generated_doors) == TYPE_ARRAY else [] as Array[StaticBody2D]
+	var doors: Array = generated_doors if typeof(generated_doors) == TYPE_ARRAY else [] as Array[StaticBody2D]
 	if main.exit:
 		LOGGER.log_generation("Exit generated at %s" % [main.exit.position])
 	else:
@@ -140,7 +140,7 @@ func apply_generation_outcome(binding_result: Dictionary, level_type: int) -> Di
 		"doors": doors
 	}
 
-func _apply_initial_door_state(doors: Array[StaticBody2D]) -> void:
+func _apply_initial_door_state(doors: Array) -> void:
 	if ui_controller == null:
 		return
 	for door in doors:
