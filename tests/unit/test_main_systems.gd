@@ -83,11 +83,18 @@ class UIStub:
 	func setup_key_ui(_keys: Array[Area2D]) -> void:
 		pass
 
+	func setup_door_ui(_doors: Array[StaticBody2D]) -> void:
+		pass
+
 	func update_key_status_display(_count: int) -> void:
 		pass
 
 	func mark_key_collected(_door_id: int) -> void:
 		pass
+
+	func mark_door_opened(_door_id: int, _door_color: Color) -> void:
+		pass
+
 class StatisticsLoggerStub:
 	extends RefCounted
 
@@ -189,7 +196,9 @@ func test_ui_controller_coin_and_key_updates() -> void:
 	var menu := track_node(Button.new())
 	var key_container := track_node(Control.new())
 	var key_status := track_node(Control.new())
-	controller.setup(main, timer_label, coin_label, level_label, game_over, win_label, restart, menu, key_container, key_status)
+	var door_container := track_node(Control.new())
+	var door_status := track_node(Control.new())
+	controller.setup(main, timer_label, coin_label, level_label, game_over, win_label, restart, menu, key_container, key_status, door_container, door_status)
 	controller.update_coin_display(0, 0)
 	assert_false(coin_label.visible)
 	assert_eq(coin_label.text, "")
@@ -217,7 +226,9 @@ func test_ui_controller_updates_exit_visual_state() -> void:
 	var menu := track_node(Button.new())
 	var key_container := track_node(Control.new())
 	var key_status := track_node(Control.new())
-	controller.setup(main, timer_label, coin_label, level_label, game_over, win_label, restart, menu, key_container, key_status)
+	var door_container := track_node(Control.new())
+	var door_status := track_node(Control.new())
+	controller.setup(main, timer_label, coin_label, level_label, game_over, win_label, restart, menu, key_container, key_status, door_container, door_status)
 	var exit := track_node(Area2D.new())
 	var body := track_node(ColorRect.new())
 	body.name = "ExitBody"

@@ -3,132 +3,23 @@ extends Node2D
 
 const GAME_STATE := preload("res://scripts/GameState.gd")
 const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
+const TIMER_CONFIG := preload("res://scripts/timer/TimerBalanceConfig.gd")
+const TIMER_CALC := preload("res://scripts/timer/TimerBalanceCalculator.gd")
 
-# ---- ПРЕСЕТЫ (ужаты под твои данные) ----
-const DIFFICULTY_PRESETS := {
-	"child": {
-		"mult_max": 1.45, "mult_min": 1.05, "half_life": 3.0,
-		"min_time": 15.0, "speed": 250.0, "per_coin_sec": 0.12, "global_scale": 1.00,
-		"buf_cap_start": 9.0, "buf_cap_end": 3.5, "cap_half_life": 3.0
-	},
-	"regular": {
-		# было 1.35→1.25; cap 10→7, 2.5→1.8
-		"mult_max": 1.25, "mult_min": 1.00, "half_life": 2.3,
-		"min_time": 12.0, "speed": 300.0, "per_coin_sec": 0.06, "global_scale": 0.94,
-		"buf_cap_start": 7.0, "buf_cap_end": 1.8, "cap_half_life": 2.3
-	},
-	"hard": {
-		"mult_max": 1.18, "mult_min": 1.00, "half_life": 2.0,
-		"min_time": 10.0, "speed": 320.0, "per_coin_sec": 0.04, "global_scale": 0.90,
-		"buf_cap_start": 5.5, "buf_cap_end": 1.6, "cap_half_life": 2.0
-	},
-	"challenge": {
-		"mult_max": 1.10, "mult_min": 1.00, "half_life": 1.8,
-		"min_time": 8.0, "speed": 360.0, "per_coin_sec": 0.00, "global_scale": 0.88,
-		"buf_cap_start": 4.0, "buf_cap_end": 1.3, "cap_half_life": 1.8
-	}
-}
-
-const LEVEL_TYPE_TUNING := {
-	GAME_STATE.LevelType.OBSTACLES_COINS: {
-		"scale_start": 0.78,
-		"scale_end": 0.48,
-		"buffer_bias": - 0.45,
-		"flat_bonus": - 1.8,
-		"route_trim": 0.82,
-		"trim_ramp": 4.0
-	},
-	GAME_STATE.LevelType.MAZE: {
-		"scale_start": 0.95, # Reduced from 1.05
-		"scale_end": 0.75, # Reduced from 0.82
-		"buffer_bias": 0.05, # Reduced from 0.12
-		"flat_bonus": 0.8, # Reduced from 1.6
-		"maze_slack_curve": Vector2(2.5, 5.5), # Reduced from 3.5, 7.5
-		"maze_path_scale": 0.45, # Reduced from 0.55
-		"maze_path_cap": 5.5, # Reduced from 7.0
-		"maze_base_scale": 0.42, # Reduced from 0.52
-		"maze_fallback_slack": 3.0, # Reduced from 4.5
-		"maze_ratio_span": 1.8, # Reduced from 2.0
-		"maze_path_floor": 0.95, # Reduced from 1.05
-		"maze_fallback_factor": 1.12 # Reduced from 1.18
-	},
-	GAME_STATE.LevelType.MAZE_COINS: {
-		"scale_start": 0.98, # Reduced from 1.08
-		"scale_end": 0.78, # Reduced from 0.86
-		"buffer_bias": 0.08, # Reduced from 0.18
-		"flat_bonus": 1.4, # Reduced from 2.2
-		"maze_slack_curve": Vector2(3.0, 6.5), # Reduced from 4.0, 8.5
-		"maze_path_scale": 0.50, # Reduced from 0.60
-		"maze_path_cap": 6.0, # Reduced from 7.5
-		"maze_base_scale": 0.48, # Reduced from 0.58
-		"maze_fallback_slack": 3.5, # Reduced from 5.0
-		"maze_ratio_span": 2.0, # Reduced from 2.2
-		"maze_path_floor": 0.98, # Reduced from 1.08
-		"maze_fallback_factor": 1.15 # Reduced from 1.22
-	},
-	GAME_STATE.LevelType.MAZE_KEYS: {
-		"scale_start": 1.02, # Reduced from 1.12
-		"scale_end": 0.82, # Reduced from 0.90
-		"buffer_bias": 0.14, # Reduced from 0.24
-		"flat_bonus": 2.0, # Reduced from 2.8
-		"maze_slack_curve": Vector2(3.5, 7.5), # Reduced from 4.5, 9.5
-		"maze_path_scale": 0.55, # Reduced from 0.65
-		"maze_path_cap": 6.5, # Reduced from 8.0
-		"maze_base_scale": 0.52, # Reduced from 0.62
-		"maze_fallback_slack": 4.0, # Reduced from 5.5
-		"maze_ratio_span": 2.2, # Reduced from 2.4
-		"maze_path_floor": 1.02, # Reduced from 1.12
-		"maze_fallback_factor": 1.18 # Reduced from 1.28
-	},
-	GAME_STATE.LevelType.KEYS: {
-		"scale_start": 2.7, # x2.5 time multiplier
-		"scale_end": 2.4, # x2.5 time multiplier
-		"buffer_bias": 0.15, # Increased buffer
-		"flat_bonus": 3.0 # Increased flat bonus for no coins
-	}
-}
-
-const BASE_TIME_PER_LEVEL := 22.0
-var _difficulty: StringName = &"regular"
-
-# ---- Автокалибровка по реальному запасу времени ----
 const SURPLUS_WINDOW := 8
 const SURPLUS_GAIN := 0.65
+
+var _difficulty: StringName = &"regular"
 var _recent_surplus: Array[float] = []
 
 func set_difficulty(level: String) -> void:
-	if DIFFICULTY_PRESETS.has(level):
+	if TIMER_CONFIG.has_difficulty(level):
 		_difficulty = level
 	else:
 		push_warning("Unknown difficulty '%s', keeping '%s'." % [level, _difficulty])
 
 func _get_preset() -> Dictionary:
-	return DIFFICULTY_PRESETS[_difficulty]
-
-func _level_multiplier(level: int) -> float:
-	var p := _get_preset()
-	var mult_max: float = float(p["mult_max"])
-	var mult_min: float = float(p["mult_min"])
-	var half_life: float = max(float(p["half_life"]), 0.0001)
-	var decay: float = pow(0.5, float(max(level, 1) - 1) / half_life)
-	return mult_min + (mult_max - mult_min) * decay
-
-func _buffer_cap_sec(level: int) -> float:
-	var p := _get_preset()
-	var start: float = float(p["buf_cap_start"])
-	var endv: float = float(p["buf_cap_end"])
-	var half_life: float = max(float(p["cap_half_life"]), 0.0001)
-	var decay: float = pow(0.5, float(max(level, 1) - 1) / half_life)
-	return endv + (start - endv) * decay
-
-func _target_surplus_sec(level: int) -> float:
-	var t: float = clamp((float(level) - 1.0) / 6.0, 0.0, 1.0)
-	return lerp(6.0, 2.0, t)
-
-func _route_detour_factor(coin_count: int) -> float:
-	var n: float = float(max(coin_count, 0))
-	var detour: float = log(1.0 + n) / log(2.0)
-	return 1.0 + 0.05 * detour
+	return TIMER_CONFIG.get_difficulty(_difficulty)
 
 func _avg_surplus() -> float:
 	if _recent_surplus.is_empty():
@@ -143,9 +34,8 @@ func register_level_result(time_left_sec: float) -> void:
 	if _recent_surplus.size() > SURPLUS_WINDOW:
 		_recent_surplus.pop_front()
 
-
 func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_start: Vector2 = LEVEL_UTILS.PLAYER_START, level_type: int = GAME_STATE.LevelType.OBSTACLES_COINS, maze_path_length: float = 0.0) -> float:
-	var p := _get_preset()
+	var preset := _get_preset()
 	var total_distance: float = 0.0
 	var current_pos: Vector2 = player_start
 	if coins.size() > 0:
@@ -154,9 +44,10 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 			current_pos = coin.position
 	total_distance += current_pos.distance_to(exit_pos)
 
-	var speed: float = float(p["speed"])
-	var type_profile = _get_type_profile(level_type)
-	var maze_overhead = _maze_overhead(level_type, maze_path_length, player_start, exit_pos, speed)
+	var speed: float = float(preset["speed"])
+	var type_profile := TIMER_CONFIG.get_type_profile(level_type)
+	var is_maze := level_type == GAME_STATE.LevelType.MAZE or level_type == GAME_STATE.LevelType.MAZE_COINS or level_type == GAME_STATE.LevelType.MAZE_KEYS
+	var maze_overhead := TIMER_CALC.maze_overhead(is_maze, type_profile, maze_path_length, player_start, exit_pos, speed)
 	var base_path: float = float(maze_overhead.get("base_path", 0.0))
 	if base_path > 0.0:
 		total_distance = max(total_distance, base_path)
@@ -167,27 +58,24 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 		total_distance *= lerp(1.0, trim, trim_t)
 	total_distance *= float(maze_overhead["factor"])
 
-	var base_time: float = (total_distance / speed) * _route_detour_factor(coins.size())
-	var per_coin_sec: float = float(p["per_coin_sec"])
+	var base_time: float = (total_distance / speed) * TIMER_CALC.route_detour_factor(coins.size())
+	var per_coin_sec: float = float(preset["per_coin_sec"])
 	var pickup_time: float = float(coins.size()) * per_coin_sec
-	
-	# Special handling for keys levels with no coins - add extra time since no speed boosts
+
 	if level_type == GAME_STATE.LevelType.KEYS and coins.size() == 0:
-		base_time *= 1.5 # 50% more time since no speed boosts available
-	
-	# Add time bonus for each key in keys levels
+		base_time *= 1.5
+
 	if level_type == GAME_STATE.LevelType.KEYS:
-		var key_bonus = 1.5 # 1.5 seconds per key
-		# We need to get the key count from the level generation context
-		# This is a simplified approach - in practice you'd pass key count as parameter
-		var estimated_key_count = max(3, level) # Estimate based on level
+		var key_bonus = 1.5
+		var estimated_key_count = max(3, level)
 		base_time += estimated_key_count * key_bonus
-	var mult: float = _level_multiplier(level)
-	var preset_scale: float = float(p["global_scale"])
-	var min_time: float = float(p["min_time"])
+
+	var mult: float = TIMER_CALC.level_multiplier(level, preset)
+	var preset_scale: float = float(preset["global_scale"])
+	var min_time: float = float(preset["min_time"])
 
 	var multiplicative_buffer: float = base_time * max(mult - 1.0, 0.0)
-	var cap_sec: float = _buffer_cap_sec(level)
+	var cap_sec: float = TIMER_CALC.buffer_cap_sec(level, preset)
 	var capped_buffer: float = min(multiplicative_buffer, cap_sec)
 	var buffer_bias: float = float(type_profile.get("buffer_bias", 0.0))
 	if buffer_bias < 0.0:
@@ -199,12 +87,12 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 	planned += float(type_profile.get("flat_bonus", 0.0))
 	planned += float(maze_overhead.get("slack", 0.0))
 
-	var type_scale = _level_type_scale(level_type, level)
+	var type_scale = TIMER_CALC.level_type_scale(type_profile, level)
 	planned *= type_scale
 
 	var avg_surplus = _avg_surplus()
 	if avg_surplus > 0.0:
-		var target = _target_surplus_sec(level)
+		var target = TIMER_CALC.target_surplus_sec(level)
 		var over: float = max(avg_surplus - target, 0.0)
 		var max_cut: float = max(0.4 * planned, cap_sec * 1.5)
 		var cut: float = clamp(over * SURPLUS_GAIN, 0.0, max_cut)
@@ -217,62 +105,16 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 	return result
 
 func get_time_for_level(level: int, level_type: int = GAME_STATE.LevelType.OBSTACLES_COINS) -> float:
-	var p := _get_preset()
-	var mult: float = _level_multiplier(level)
-	var preset_scale: float = float(p["global_scale"])
-	var min_time: float = float(p["min_time"])
-	var approx: float = BASE_TIME_PER_LEVEL * mult * preset_scale * _level_type_scale(level_type, level)
+	var preset := _get_preset()
+	var mult: float = TIMER_CALC.level_multiplier(level, preset)
+	var preset_scale: float = float(preset["global_scale"])
+	var min_time: float = float(preset["min_time"])
+	var type_profile := TIMER_CONFIG.get_type_profile(level_type)
+	var approx: float = TIMER_CONFIG.BASE_TIME_PER_LEVEL * mult * preset_scale * TIMER_CALC.level_type_scale(type_profile, level)
 	var avg_surplus = _avg_surplus()
 	if avg_surplus > 0.0:
-		var target = _target_surplus_sec(level)
+		var target = TIMER_CALC.target_surplus_sec(level)
 		var over: float = max(avg_surplus - target, 0.0)
 		var cut: float = clamp(over * 0.5, 0.0, 0.4 * approx)
 		approx = max(approx - cut, min_time)
 	return max(approx, min_time)
-
-func _level_type_scale(level_type: int, level: int) -> float:
-	var profile = _get_type_profile(level_type)
-	var start: float = float(profile.get("scale_start", 1.0))
-	var endv: float = float(profile.get("scale_end", start))
-	var t = clamp((float(level) - 1.0) / 8.0, 0.0, 1.0)
-	return lerp(start, endv, t)
-
-func _get_type_profile(level_type: int) -> Dictionary:
-	if LEVEL_TYPE_TUNING.has(level_type):
-		return LEVEL_TYPE_TUNING[level_type]
-	return {
-		"scale_start": 1.0,
-		"scale_end": 1.0,
-		"buffer_bias": 0.0,
-		"flat_bonus": 0.0
-	}
-
-func _maze_overhead(level_type: int, maze_path_length: float, player_start: Vector2, exit_pos: Vector2, speed: float) -> Dictionary:
-	var is_maze = level_type == GAME_STATE.LevelType.MAZE or level_type == GAME_STATE.LevelType.MAZE_COINS or level_type == GAME_STATE.LevelType.MAZE_KEYS
-	if not is_maze:
-		return {"factor": 1.0, "slack": 0.0, "base_path": 0.0}
-	var straight: float = player_start.distance_to(exit_pos)
-	var profile = _get_type_profile(level_type)
-	var fallback_factor: float = float(profile.get("maze_fallback_factor", 1.35))
-	var base_path: float = 0.0
-	if straight > 0.0:
-		base_path = straight * fallback_factor
-	if maze_path_length > 0.0:
-		var floor_scale: float = float(profile.get("maze_path_floor", 1.0))
-		base_path = max(maze_path_length, straight * floor_scale)
-		var ratio = clamp(maze_path_length / max(straight, 1.0), 1.0, 4.5)
-		var base_scale: float = float(profile.get("maze_base_scale", 0.6))
-		var factor = 1.0 + (ratio - 1.0) * base_scale
-		var ratio_span: float = max(float(profile.get("maze_ratio_span", 2.5)), 0.5)
-		var ratio_t = clamp((ratio - 1.0) / ratio_span, 0.0, 1.0)
-		var slack_curve: Vector2 = profile.get("maze_slack_curve", Vector2.ZERO)
-		var slack = 0.0
-		if slack_curve != Vector2.ZERO:
-			slack += lerp(slack_curve.x, slack_curve.y, ratio_t)
-		var path_scale: float = float(profile.get("maze_path_scale", 0.8))
-		var path_cap: float = float(profile.get("maze_path_cap", 8.0))
-		var path_bonus = clamp((maze_path_length - straight) / max(speed, 1.0), 0.0, path_cap)
-		slack += path_bonus * path_scale
-		return {"factor": factor, "slack": slack, "base_path": base_path}
-	var fallback_slack: float = float(profile.get("maze_fallback_slack", 5.0))
-	return {"factor": fallback_factor, "slack": fallback_slack, "base_path": base_path}
