@@ -5,6 +5,11 @@ class_name KeyUIManager
 const NEUTRAL_COLOR := Color(1, 1, 1, 1)
 const DEFAULT_KEY_COLOR := Color(0.9, 0.9, 0.2, 1.0)
 const DEFAULT_DOOR_COLOR := Color(0.35, 0.35, 0.75, 1.0)
+const CHECKBOX_SIZE := Vector2(28, 28)
+const CHECKBOX_BORDER_COLOR := Color(1, 1, 1, 1)
+const CHECKBOX_PRESSED_ALPHA := 0.25
+const CHECKBOX_HOVER_ALPHA := 0.12
+const CHECKBOX_BASE_ALPHA := 0.05
 
 var key_container: Control = null
 var key_status_container: Control = null
@@ -155,7 +160,27 @@ func _create_status_checkbox() -> CheckBox:
 	checkbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	checkbox.button_pressed = false
 	checkbox.modulate = NEUTRAL_COLOR
+	checkbox.custom_minimum_size = CHECKBOX_SIZE
+	_apply_checkbox_theme(checkbox)
 	return checkbox
+
+func _apply_checkbox_theme(checkbox: CheckBox) -> void:
+	var base_style := StyleBoxFlat.new()
+	base_style.bg_color = Color(1, 1, 1, CHECKBOX_BASE_ALPHA)
+	base_style.border_color = CHECKBOX_BORDER_COLOR
+	base_style.set_border_width_all(2)
+	base_style.set_corner_radius_all(4)
+	var hover_style: StyleBoxFlat = base_style.duplicate()
+	hover_style.bg_color = Color(1, 1, 1, CHECKBOX_HOVER_ALPHA)
+	var pressed_style: StyleBoxFlat = base_style.duplicate()
+	pressed_style.bg_color = Color(1, 1, 1, CHECKBOX_PRESSED_ALPHA)
+	var disabled_style: StyleBoxFlat = base_style.duplicate()
+	disabled_style.bg_color = Color(1, 1, 1, CHECKBOX_BASE_ALPHA)
+	checkbox.add_theme_stylebox_override("normal", base_style)
+	checkbox.add_theme_stylebox_override("hover", hover_style)
+	checkbox.add_theme_stylebox_override("pressed", pressed_style)
+	checkbox.add_theme_stylebox_override("disabled", disabled_style)
+	checkbox.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
 func _clear_key_checkboxes() -> void:
 	if key_status_container:
