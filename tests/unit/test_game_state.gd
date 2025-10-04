@@ -21,7 +21,7 @@ func test_reset_to_start_restores_defaults() -> void:
 	assert_eq(state.current_level, 1, "level")
 	assert_eq(state.victories, 0, "victories")
 	assert_eq(state.current_state, GameState.GameStateType.PLAYING, "state")
-	assert_near(state.current_level_size, 0.75, 0.0001, "level size")
+	assert_near(state.current_level_size, 0.85, 0.0001, "level size")
 	assert_eq(state.get_level_progress_text(), "Level: 1/7")
 	state.free()
 
@@ -32,7 +32,7 @@ func test_advance_level_increments_until_reset() -> void:
 		assert_false(finished, "advance should not finish campaign early")
 		assert_eq(state.current_level, expected_level)
 		assert_eq(state.victories, expected_level - 1)
-	assert_near(state.current_level_size, 0.75 + (state.victories * state.level_size_increment), 0.0001)
+	assert_near(state.current_level_size, 0.85 + (state.victories * state.level_size_increment), 0.0001)
 	state.free()
 
 func test_advance_level_wraps_after_final_stage() -> void:
@@ -43,7 +43,7 @@ func test_advance_level_wraps_after_final_stage() -> void:
 	assert_true(finished)
 	assert_eq(state.current_level, 1)
 	assert_eq(state.victories, 0)
-	assert_near(state.current_level_size, 0.75, 0.0001)
+	assert_near(state.current_level_size, 0.85, 0.0001)
 	state.free()
 
 func test_drop_progress_on_loss_clears_progress() -> void:
@@ -54,7 +54,7 @@ func test_drop_progress_on_loss_clears_progress() -> void:
 	state.drop_progress_on_loss()
 	assert_eq(state.current_level, 1)
 	assert_eq(state.victories, 0)
-	assert_near(state.current_level_size, 0.75, 0.0001)
+	assert_near(state.current_level_size, 0.85, 0.0001)
 	state.free()
 
 func test_set_level_type_updates_current() -> void:
@@ -68,7 +68,7 @@ func test_get_next_level_size_handles_final_level() -> void:
 	var state := _make_state()
 	state.current_level = 7
 	var next_size := state.get_next_level_size()
-	assert_near(next_size, 0.75, 0.0001)
+	assert_near(next_size, 0.85, 0.0001)
 	state.free()
 
 func test_challenge_sequence_cycles_modes() -> void:

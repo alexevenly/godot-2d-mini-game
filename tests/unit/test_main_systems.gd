@@ -86,6 +86,8 @@ class UIStub:
 	func update_key_status_display(_count: int) -> void:
 		pass
 
+	func mark_key_collected(_door_id: int) -> void:
+		pass
 class StatisticsLoggerStub:
 	extends RefCounted
 

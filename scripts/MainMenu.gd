@@ -46,6 +46,11 @@ func _ready():
 	# Update difficulty label
 	_update_difficulty_label()
 
+	if Engine.has_meta("limited_field_of_view"):
+		limited_field_of_view_checkbox.button_pressed = bool(Engine.get_meta("limited_field_of_view"))
+	else:
+		Engine.set_meta("limited_field_of_view", limited_field_of_view_checkbox.button_pressed)
+
 func _on_practice_pressed():
 	var metadata = level_type_option.get_item_metadata(level_type_option.selected)
 	if metadata == null:
@@ -80,8 +85,7 @@ func _start_game_with_mode(level_type: int) -> void:
 		timer_manager.set_difficulty(difficulty_names[current_difficulty_index])
 	var game_state = get_node_or_null("/root/Main/GameState")
 	Engine.set_meta("level_type_selection", level_type)
+	Engine.set_meta("limited_field_of_view", limited_field_of_view_checkbox.button_pressed)
 	if game_state:
 		game_state.set_level_type(level_type)
-		# Set limited field of view mode
-		Engine.set_meta("limited_field_of_view", limited_field_of_view_checkbox.button_pressed)
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")

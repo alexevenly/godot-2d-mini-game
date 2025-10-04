@@ -1,13 +1,13 @@
 class_name Main
 extends Node2D
 
-const LevelController = preload("res://scripts/main/LevelController.gd")
-const UIController = preload("res://scripts/main/UIController.gd")
-const StatisticsLogger = preload("res://scripts/main/StatisticsLogger.gd")
-const GameFlowController = preload("res://scripts/main/GameFlowController.gd")
-const LevelGenerator = preload("res://scripts/LevelGenerator.gd")
-const TimerManager = preload("res://scripts/TimerManager.gd")
-const GameState = preload("res://scripts/GameState.gd")
+const LEVEL_CONTROLLER := preload("res://scripts/main/LevelController.gd")
+const UI_CONTROLLER := preload("res://scripts/main/UIController.gd")
+const STATISTICS_LOGGER := preload("res://scripts/main/StatisticsLogger.gd")
+const GAME_FLOW_CONTROLLER := preload("res://scripts/main/GameFlowController.gd")
+const LEVEL_GENERATOR := preload("res://scripts/LevelGenerator.gd")
+const TIMER_MANAGER := preload("res://scripts/TimerManager.gd")
+const GAME_STATE := preload("res://scripts/GameState.gd")
 
 @onready var player: CharacterBody2D = $Player
 @onready var timer: Timer = $Timer
@@ -21,11 +21,11 @@ const GameState = preload("res://scripts/GameState.gd")
 @onready var menu_button: Button = $UI/MenuButton
 @onready var key_container: Control = $UI/KeyContainer
 @onready var key_status_container: Control = $UI/KeyContainer/KeyStatus
-@onready var level_generator: LevelGenerator = $LevelGenerator
-@onready var timer_manager: TimerManager = $TimerManager
+@onready var level_generator: LEVEL_GENERATOR = $LevelGenerator
+@onready var timer_manager: TIMER_MANAGER = $TimerManager
 @onready var play_area: ColorRect = $PlayArea
 @onready var boundaries: Node2D = $Boundaries
-@onready var game_state: GameState = $GameState
+@onready var game_state: GAME_STATE = $GameState
 
 var game_time: float = 30.0
 var total_coins: int = 0
@@ -33,25 +33,26 @@ var collected_coins: int = 0
 var previous_coin_count: int = 0
 var total_keys: int = 0
 var collected_keys_count: int = 0
+var collected_key_ids: Dictionary = {}
 var exit_active: bool = false
 var exit: Area2D = null
 var prevent_game_over: bool = false
 var level_start_time: float = 0.0
 var level_initializing: bool = false
 
-var ui_controller: UIController = null
-var level_controller: LevelController = null
-var statistics_logger: StatisticsLogger = null
-var game_flow_controller: GameFlowController = null
+var ui_controller: UI_CONTROLLER = null
+var level_controller: LEVEL_CONTROLLER = null
+var statistics_logger: STATISTICS_LOGGER = null
+var game_flow_controller: GAME_FLOW_CONTROLLER = null
 
 func _ready() -> void:
-	ui_controller = UIController.new()
-	ui_controller.setup(self, timer_label, coin_label, level_progress_label, speed_label, game_over_label, win_label, restart_button, menu_button, key_container, key_status_container)
-	level_controller = LevelController.new()
+	ui_controller = UI_CONTROLLER.new()
+	ui_controller.setup(self, timer_label, coin_label, level_progress_label, game_over_label, win_label, restart_button, menu_button, key_container, key_status_container, speed_label)
+	level_controller = LEVEL_CONTROLLER.new()
 	level_controller.setup(self, ui_controller)
-	statistics_logger = StatisticsLogger.new()
+	statistics_logger = STATISTICS_LOGGER.new()
 	statistics_logger.setup(self, timer_manager, level_controller)
-	game_flow_controller = GameFlowController.new()
+	game_flow_controller = GAME_FLOW_CONTROLLER.new()
 	game_flow_controller.setup(self, ui_controller, level_controller, statistics_logger)
 	level_controller.set_game_flow_controller(game_flow_controller)
 	timer.timeout.connect(_on_timer_timeout)
@@ -89,8 +90,8 @@ func _process(delta: float) -> void:
 func _on_coin_collected(body: Node, coin: Area2D) -> void:
 	level_controller.handle_coin_collected(body, coin)
 
-func _on_key_collected(_door_id: int) -> void:
-	level_controller.handle_key_collected()
+func _on_key_collected(door_id: int) -> void:
+	level_controller.handle_key_collected(door_id)
 
 func _on_timer_timeout() -> void:
 	game_flow_controller.on_timer_timeout()

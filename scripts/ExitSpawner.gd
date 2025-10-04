@@ -1,6 +1,6 @@
 extends Node2D
 
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
+const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
 const MIN_EXIT_DISTANCE = 0.4 # 40% of level diagonal (more reasonable for small levels)
 
 var exit = null
@@ -14,7 +14,7 @@ func generate_exit(level_size: float, obstacles: Array, min_exit_distance_ratio:
 	var attempts = 0
 
 	# Get level dimensions using common utilities
-	var dimensions = LevelUtils.get_scaled_level_dimensions(current_level_size)
+	var dimensions = LEVEL_UTILS.get_scaled_level_dimensions(current_level_size)
 	var level_width = dimensions.width
 	var level_height = dimensions.height
 	var offset_x = dimensions.offset_x
@@ -22,13 +22,13 @@ func generate_exit(level_size: float, obstacles: Array, min_exit_distance_ratio:
 
 	while attempts < max_attempts:
 		# Get position using common utilities with more variety
-		var pos = LevelUtils.get_grid_position(current_level_size, 6, 4, 80, 50)
+		var pos = LEVEL_UTILS.get_grid_position(current_level_size, 6, 4, 80, 50)
 
 		# Check minimum distance from player (configurable ratio of level diagonal)
 		var level_diagonal = Vector2(level_width, level_height).length()
 		var min_distance = level_diagonal * min_exit_distance_ratio
 
-		if pos.distance_to(LevelUtils.PLAYER_START) >= min_distance:
+		if pos.distance_to(LEVEL_UTILS.PLAYER_START) >= min_distance:
 			# Check distance from obstacles
 			var valid = true
 			for obstacle in obstacles:
@@ -53,7 +53,7 @@ func generate_exit(level_size: float, obstacles: Array, min_exit_distance_ratio:
 func is_exit_position_valid(pos: Vector2, level_width: int, level_height: int) -> bool:
 	# Check that exit (64x64) is fully within the level boundaries
 	var margin = 32 # Half of exit size
-	return LevelUtils.is_position_within_bounds(pos, level_width, level_height, margin)
+	return LEVEL_UTILS.is_position_within_bounds(pos, level_width, level_height, margin)
 
 func create_exit_at(pos: Vector2, main_scene = null):
 	exit = Area2D.new()

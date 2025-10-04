@@ -1,10 +1,10 @@
 extends Object
 class_name CoinNavigation
 
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
+const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
 
 static func build_navigation_context(level_size: float, obstacles: Array, cell_size: float, player_diameter: float, path_width_scale: float) -> Dictionary:
-	var dimensions := LevelUtils.get_scaled_level_dimensions(level_size)
+	var dimensions := LEVEL_UTILS.get_scaled_level_dimensions(level_size)
 	var level_width: float = float(dimensions.width)
 	var level_height: float = float(dimensions.height)
 	var offset := Vector2(dimensions.offset_x, dimensions.offset_y)
@@ -32,7 +32,7 @@ static func build_navigation_context(level_size: float, obstacles: Array, cell_s
 				blocked[y][x] = true
 
 	for obstacle in obstacles:
-		var rect := LevelUtils.get_obstacle_rect(obstacle)
+		var rect := LEVEL_UTILS.get_obstacle_rect(obstacle)
 		_mark_rect_blocked(blocked, rect, offset, cols, rows, cell_size, clearance)
 
 	return {

@@ -1,7 +1,7 @@
 class_name StatisticsLogger
 extends RefCounted
 
-const GameLogger = preload("res://scripts/Logger.gd")
+const LOGGER := preload("res://scripts/Logger.gd")
 
 var main = null
 var timer_manager = null
@@ -24,11 +24,11 @@ func init_logging() -> void:
 		statistics_file.store_line("Level,Size,MapWidth,MapHeight,CoinsTotal,CoinsCollected,TimeGiven,TimeUsed,TimeLeft,Distance,CompletionRate")
 		statistics_file.flush()
 	else:
-		Logger.log_error("Could not create statistics file", [filename])
+		LOGGER.log_error("Could not create statistics file", [filename])
 
 func log_level_statistics() -> void:
 	if statistics_file == null:
-		Logger.log_error("Statistics file was null while logging level statistics")
+		LOGGER.log_error("Statistics file was null while logging level statistics")
 		return
 	var distance: float = 0.0
 	var completion_time: float = Time.get_ticks_msec() / 1000.0 - main.level_start_time
@@ -57,4 +57,4 @@ func log_level_statistics() -> void:
 	if timer_manager:
 		timer_manager.register_level_result(time_left)
 	else:
-		Logger.log_error("TimerManager not found while logging statistics")
+		LOGGER.log_error("TimerManager not found while logging statistics")

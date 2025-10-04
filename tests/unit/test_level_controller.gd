@@ -28,6 +28,7 @@ class MainStub:
 	var previous_coin_count := 0
 	var exit_active := false
 	var collected_keys_count := 0
+	var collected_key_ids := {}
 	var total_keys := 0
 	var level_generator: Variant = null
 
@@ -89,12 +90,14 @@ func test_handle_key_collected_clamps_total() -> void:
 	controller.main = main
 	var ui = controller.ui_controller
 	main.total_keys = 1
-	controller.handle_key_collected()
+	controller.handle_key_collected(7)
 	assert_eq(main.collected_keys_count, 1)
-	assert_eq(ui.last_keys, 1)
-	controller.handle_key_collected()
+	assert_eq(int(main.collected_key_ids.get(7, 0)), 1)
+	assert_eq(ui.last_marked_key, 7)
+	controller.handle_key_collected(7)
 	assert_eq(main.collected_keys_count, 1)
-	assert_eq(ui.last_keys, 1)
+	assert_eq(int(main.collected_key_ids.get(7, 0)), 1)
+	assert_eq(ui.last_marked_key, 7)
 
 func test_clear_level_objects_queues_matching_children_and_clears_generator() -> void:
 	var main := track_node(MainStub.new())
