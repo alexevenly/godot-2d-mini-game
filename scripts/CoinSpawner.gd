@@ -1,10 +1,10 @@
 extends Node2D
 
-const Logger = preload("res://scripts/Logger.gd")
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
-const LevelNodeFactory = preload("res://scripts/level_generators/LevelNodeFactory.gd")
-const CoinNavigation = preload("res://scripts/coin/CoinNavigation.gd")
-const CoinPlacementValidator = preload("res://scripts/coin/CoinPlacementValidator.gd")
+const LOGGER := preload("res://scripts/Logger.gd")
+const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
+const LEVEL_NODE_FACTORY := preload("res://scripts/level_generators/LevelNodeFactory.gd")
+const COIN_NAVIGATION := preload("res://scripts/coin/CoinNavigation.gd")
+const COIN_PLACEMENT_VALIDATOR := preload("res://scripts/coin/CoinPlacementValidator.gd")
 
 const NAV_CELL_SIZE := 16.0
 const PLAYER_DIAMETER := 32.0
@@ -14,7 +14,7 @@ var coins: Array[Area2D] = []
 var current_level_size: float = 1.0
 
 func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, player_start: Vector2, use_full_map_coverage: bool = true, main_scene: Node = null, level: int = 1, preserved_coin_count: int = 0) -> Array:
-	Logger.log_generation("CoinSpawner: generating coins (size %.2f, level %d)" % [level_size, level])
+	LOGGER.log_generation("CoinSpawner: generating coins (size %.2f, level %d)" % [level_size, level])
 	current_level_size = level_size
 	clear_coins()
 
@@ -29,11 +29,11 @@ func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, play
 
 	coin_count = clamp(coin_count, 6, 40)
 
-	Logger.log_generation("CoinSpawner target count %d (mult %.2f, preserved %d)" % [coin_count, level_multiplier, preserved_coin_count])
+	LOGGER.log_generation("CoinSpawner target count %d (mult %.2f, preserved %d)" % [coin_count, level_multiplier, preserved_coin_count])
 	if not use_full_map_coverage:
-		Logger.log_generation("CoinSpawner using centered coverage grid")
+		LOGGER.log_generation("CoinSpawner using centered coverage grid")
 
-	var navigation_ctx := CoinNavigation.build_navigation_context(current_level_size, obstacles, NAV_CELL_SIZE, PLAYER_DIAMETER, PATH_WIDTH_SCALE)
+	var navigation_ctx := COIN_NAVIGATION.build_navigation_context(current_level_size, obstacles, NAV_CELL_SIZE, PLAYER_DIAMETER, PATH_WIDTH_SCALE)
 
 	var grid_cols: int = 8 if use_full_map_coverage else 6
 	var grid_rows: int = 6 if use_full_map_coverage else 5
@@ -49,7 +49,7 @@ func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, play
 			var relax: float = clamp(float(coin_attempts) / 60.0, 0.0, 1.0)
 
 			var coin := _create_coin(grid_cols, grid_rows)
-			if CoinPlacementValidator.is_valid_position(coin.position, coins, obstacles, exit_pos, relax) and CoinNavigation.has_clear_path(navigation_ctx, player_start, coin.position):
+			if COIN_PLACEMENT_VALIDATOR.is_valid_position(coin.position, coins, obstacles, exit_pos, relax) and COIN_NAVIGATION.has_clear_path(navigation_ctx, player_start, coin.position):
 				_add_coin(coin, main_scene)
 				placed = true
 			else:
@@ -61,7 +61,7 @@ func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, play
 
 		if not placed:
 			var coin_fallback := _create_coin(grid_cols, grid_rows)
-			if CoinPlacementValidator.is_valid_position(coin_fallback.position, coins, obstacles, exit_pos, 1.0) and CoinNavigation.has_clear_path(navigation_ctx, player_start, coin_fallback.position):
+			if COIN_PLACEMENT_VALIDATOR.is_valid_position(coin_fallback.position, coins, obstacles, exit_pos, 1.0) and COIN_NAVIGATION.has_clear_path(navigation_ctx, player_start, coin_fallback.position):
 				_add_coin(coin_fallback, main_scene)
 			else:
 				coin_fallback.queue_free()
@@ -69,7 +69,7 @@ func generate_coins(level_size: float, obstacles: Array, exit_pos: Vector2, play
 		if attempts_total >= max_attempts_total:
 			break
 
-	Logger.log_generation("CoinSpawner placed %d coins" % coins.size())
+	LOGGER.log_generation("CoinSpawner placed %d coins" % coins.size())
 	return coins
 
 func clear_coins():
@@ -79,8 +79,8 @@ func clear_coins():
 	coins.clear()
 
 func _create_coin(grid_cols: int, grid_rows: int) -> Area2D:
-	var pos := LevelUtils.get_grid_position(current_level_size, grid_cols, grid_rows, 40, 30)
-	var coin := LevelNodeFactory.create_coin_node(coins.size(), pos)
+	var pos := LEVEL_UTILS.get_grid_position(current_level_size, grid_cols, grid_rows, 40, 30)
+	var coin := LEVEL_NODE_FACTORY.create_coin_node(coins.size(), pos)
 	coin.position = pos
 	return coin
 

@@ -5,7 +5,7 @@ extends Node2D
 @export var ray_count := 720
 @export var update_interval := 0.05
 @export var invert_border_margin := 512.0
-@export var overlay_z_index := 6000
+@export var overlay_z_index: int = 3200 : set = set_overlay_z_index
 @export var debug_logging := false
 
 var player: Node2D = null
@@ -17,8 +17,7 @@ var _excluded_rids: Array[RID] = []
 var _log_file: FileAccess = null
 
 func _ready() -> void:
-	z_as_relative = false
-	z_index = overlay_z_index
+	set_overlay_z_index(overlay_z_index)
 	_create_overlay()
 	_refresh_ray_angles()
 	_update_excluded_rids()
@@ -46,6 +45,13 @@ func set_visibility_radius(radius: float) -> void:
 	if _fog_polygon:
 		_fog_polygon.invert_border = _compute_invert_border()
 	_update_visibility_polygon(true)
+
+func set_overlay_z_index(value: int) -> void:
+	overlay_z_index = _clamp_overlay_z(value)
+	z_as_relative = false
+	z_index = overlay_z_index
+	if _fog_polygon:
+		_fog_polygon.z_index = overlay_z_index
 
 func set_darkness_color(color: Color) -> void:
 	darkness_color = color
@@ -94,6 +100,11 @@ func _create_overlay() -> void:
 
 func _compute_invert_border() -> float:
 	return max(visibility_radius + invert_border_margin, visibility_radius * 1.5)
+
+func _clamp_overlay_z(value: int) -> int:
+	var min_limit := RenderingServer.CANVAS_ITEM_Z_MIN
+	var max_limit := RenderingServer.CANVAS_ITEM_Z_MAX
+	return clamp(value, min_limit, max_limit)
 
 func _refresh_ray_angles() -> void:
 	var clamped_count: int = max(ray_count, 32)

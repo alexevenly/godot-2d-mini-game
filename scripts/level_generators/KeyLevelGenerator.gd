@@ -2,9 +2,9 @@ extends RefCounted
 
 class_name KeyLevelGenerator
 
-const Logger = preload("res://scripts/Logger.gd")
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
-const LevelNodeFactory = preload("res://scripts/level_generators/LevelNodeFactory.gd")
+const LOGGER := preload("res://scripts/Logger.gd")
+const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
+const LEVEL_NODE_FACTORY := preload("res://scripts/level_generators/LevelNodeFactory.gd")
 
 const BARRIER_COLOR := Color(0.18, 0.21, 0.32, 1)
 const DOOR_EDGE_MARGIN := 45.0
@@ -18,7 +18,7 @@ func _init(level_context, obstacle_helper):
 	obstacle_utils = obstacle_helper
 
 func generate(main_scene, level: int, player_start_position: Vector2) -> void:
-	var dims = LevelUtils.get_scaled_level_dimensions(context.current_level_size)
+	var dims = LEVEL_UTILS.get_scaled_level_dimensions(context.current_level_size)
 	var level_width: float = float(dims.width)
 	var level_height: float = float(dims.height)
 	var offset = Vector2(dims.offset_x, dims.offset_y)
@@ -94,21 +94,21 @@ func generate(main_scene, level: int, player_start_position: Vector2) -> void:
 		var keys_needed = int(layout.get("keys_needed", 0))
 		if initially_open and keys_needed > 0:
 			keys_needed = 0
-		var door = LevelNodeFactory.create_door_node(door_index_offset + layout_index, keys_needed, initially_open, gap_height, door_width, group_color)
+		var door = LEVEL_NODE_FACTORY.create_door_node(door_index_offset + layout_index, keys_needed, initially_open, gap_height, door_width, group_color)
 		door.position = Vector2(center_x - door_width * 0.5, door_top)
 		context.doors.append(door)
 		context.add_generated_node(door, main_scene)
 
 		var top_segment_height = max(door_top - offset.y, 0.0)
 		if top_segment_height > 0.0:
-			var top_segment = LevelNodeFactory.create_barrier_segment(context.key_barriers.size(), door_width, top_segment_height, BARRIER_COLOR)
+			var top_segment = LEVEL_NODE_FACTORY.create_barrier_segment(context.key_barriers.size(), door_width, top_segment_height, BARRIER_COLOR)
 			top_segment.position = Vector2(center_x - door_width * 0.5, offset.y)
 			context.key_barriers.append(top_segment)
 			context.add_generated_node(top_segment, main_scene)
 
 		var bottom_segment_height = max(offset.y + level_height - door_bottom, 0.0)
 		if bottom_segment_height > 0.0:
-			var bottom_segment = LevelNodeFactory.create_barrier_segment(context.key_barriers.size(), door_width, bottom_segment_height, BARRIER_COLOR)
+			var bottom_segment = LEVEL_NODE_FACTORY.create_barrier_segment(context.key_barriers.size(), door_width, bottom_segment_height, BARRIER_COLOR)
 			bottom_segment.position = Vector2(center_x - door_width * 0.5, door_bottom)
 			context.key_barriers.append(bottom_segment)
 			context.add_generated_node(bottom_segment, main_scene)
@@ -126,10 +126,10 @@ func generate(main_scene, level: int, player_start_position: Vector2) -> void:
 		var key_requirement = max(door.required_keys, 1)
 		for key_pos in assigned_keys:
 			key_positions.append(key_pos)
-			var key_node = LevelNodeFactory.create_key_node(context.key_items.size(), door, key_pos, key_requirement, group_color)
+			var key_node = LEVEL_NODE_FACTORY.create_key_node(context.key_items.size(), door, key_pos, key_requirement, group_color)
 			context.key_items.append(key_node)
 			context.add_generated_node(key_node, main_scene)
-		Logger.log_generation("Keys level door %d at %.1f, %.1f requires %d keys" % [door_index_offset + layout_index, center_x, door_center.y, door.required_keys])
+		LOGGER.log_generation("Keys level door %d at %.1f, %.1f requires %d keys" % [door_index_offset + layout_index, center_x, door_center.y, door.required_keys])
 
 	if not key_positions.is_empty():
 		obstacle_utils.clear_near_points(key_positions, 90.0)
@@ -145,7 +145,7 @@ func generate(main_scene, level: int, player_start_position: Vector2) -> void:
 
 func _generate_key_level_obstacles(level_size: float, main_scene, level: int, offset: Vector2, _level_width: float, level_height: float, door_layouts: Array, spawn_override: Vector2) -> void:
 	if context.obstacle_spawner == null or not is_instance_valid(context.obstacle_spawner):
-		Logger.log_error("ObstacleSpawner unavailable for key level")
+		LOGGER.log_error("ObstacleSpawner unavailable for key level")
 		return
 
 	context.obstacles = context.obstacle_spawner.generate_obstacles(level_size, true, main_scene, level)
@@ -220,7 +220,7 @@ func _enforce_door_spacing(door_layouts: Array, offset: Vector2, level_width: fl
 		var required_span: float = total_width + desired_gap * float(separators)
 		if required_span > available_span and available_span > total_width:
 			desired_gap = max(min_gap * 0.6, (available_span - total_width) / float(separators))
-			Logger.log_generation("Compressed door spacing from %.1f to %.1f to fit width" % [min_gap, desired_gap])
+			LOGGER.log_generation("Compressed door spacing from %.1f to %.1f to fit width" % [min_gap, desired_gap])
 	var total_spacing: float = desired_gap * float(separators)
 	var available_width: float = max(right_bound - left_bound, 0.0)
 	var start_offset: float = 0.0
@@ -277,7 +277,7 @@ func _pick_keys_for_door(
 		var collides_with_obstacle = false
 		for obstacle in context.obstacles:
 			if obstacle and is_instance_valid(obstacle):
-				var obstacle_rect = LevelUtils.get_obstacle_rect(obstacle)
+				var obstacle_rect = LEVEL_UTILS.get_obstacle_rect(obstacle)
 				if obstacle_rect.has_point(candidate):
 					collides_with_obstacle = true
 					break

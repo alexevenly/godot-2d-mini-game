@@ -1,7 +1,7 @@
 extends Object
 class_name ObstacleUtilities
 
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
+const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
 
 var context
 
@@ -17,7 +17,7 @@ func clear_in_rects(rects: Array) -> void:
 			if not to_remove.has(obstacle):
 				to_remove.append(obstacle)
 			continue
-		var obstacle_rect = LevelUtils.get_obstacle_rect(obstacle)
+		var obstacle_rect = LEVEL_UTILS.get_obstacle_rect(obstacle)
 		for rect in rects:
 			if rect is Rect2 and obstacle_rect.intersects(rect):
 				if not to_remove.has(obstacle):

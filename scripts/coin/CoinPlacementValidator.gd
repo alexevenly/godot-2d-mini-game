@@ -1,7 +1,7 @@
 extends Object
 class_name CoinPlacementValidator
 
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
+const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
 
 static func is_valid_position(position: Vector2, existing_coins: Array, obstacles: Array, exit_pos: Vector2, relax: float) -> bool:
 	var player_margin_strict: float = 24.0
@@ -16,11 +16,11 @@ static func is_valid_position(position: Vector2, existing_coins: Array, obstacle
 	var min_coin_gap: float = lerp(min_coin_gap_strict, min_coin_gap_relaxed, relax)
 	var exit_gap: float = lerp(exit_gap_strict, exit_gap_relaxed, relax)
 
-	if position.distance_to(LevelUtils.PLAYER_START) < (60.0 - 20.0 * relax):
+	if position.distance_to(LEVEL_UTILS.PLAYER_START) < (60.0 - 20.0 * relax):
 		return false
 
 	for obstacle in obstacles:
-		var rect: Rect2 = LevelUtils.get_obstacle_rect(obstacle)
+		var rect: Rect2 = LEVEL_UTILS.get_obstacle_rect(obstacle)
 		var grown := rect.grow(player_margin + coin_radius)
 		if grown.has_point(position):
 			return false

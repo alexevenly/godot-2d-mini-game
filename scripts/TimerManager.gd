@@ -1,8 +1,8 @@
 class_name TimerManager
 extends Node2D
 
-const GameState = preload("res://scripts/GameState.gd")
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
+const GAME_STATE := preload("res://scripts/GameState.gd")
+const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
 
 # ---- ПРЕСЕТЫ (ужаты под твои данные) ----
 const DIFFICULTY_PRESETS := {
@@ -30,7 +30,7 @@ const DIFFICULTY_PRESETS := {
 }
 
 const LEVEL_TYPE_TUNING := {
-	GameState.LevelType.OBSTACLES_COINS: {
+	GAME_STATE.LevelType.OBSTACLES_COINS: {
 		"scale_start": 0.78,
 		"scale_end": 0.48,
 		"buffer_bias": - 0.45,
@@ -38,7 +38,7 @@ const LEVEL_TYPE_TUNING := {
 		"route_trim": 0.82,
 		"trim_ramp": 4.0
 	},
-	GameState.LevelType.MAZE: {
+	GAME_STATE.LevelType.MAZE: {
 		"scale_start": 0.95, # Reduced from 1.05
 		"scale_end": 0.75, # Reduced from 0.82
 		"buffer_bias": 0.05, # Reduced from 0.12
@@ -52,7 +52,7 @@ const LEVEL_TYPE_TUNING := {
 		"maze_path_floor": 0.95, # Reduced from 1.05
 		"maze_fallback_factor": 1.12 # Reduced from 1.18
 	},
-	GameState.LevelType.MAZE_COINS: {
+	GAME_STATE.LevelType.MAZE_COINS: {
 		"scale_start": 0.98, # Reduced from 1.08
 		"scale_end": 0.78, # Reduced from 0.86
 		"buffer_bias": 0.08, # Reduced from 0.18
@@ -66,7 +66,7 @@ const LEVEL_TYPE_TUNING := {
 		"maze_path_floor": 0.98, # Reduced from 1.08
 		"maze_fallback_factor": 1.15 # Reduced from 1.22
 	},
-	GameState.LevelType.MAZE_KEYS: {
+	GAME_STATE.LevelType.MAZE_KEYS: {
 		"scale_start": 1.02, # Reduced from 1.12
 		"scale_end": 0.82, # Reduced from 0.90
 		"buffer_bias": 0.14, # Reduced from 0.24
@@ -80,7 +80,7 @@ const LEVEL_TYPE_TUNING := {
 		"maze_path_floor": 1.02, # Reduced from 1.12
 		"maze_fallback_factor": 1.18 # Reduced from 1.28
 	},
-	GameState.LevelType.KEYS: {
+	GAME_STATE.LevelType.KEYS: {
 		"scale_start": 2.7, # x2.5 time multiplier
 		"scale_end": 2.4, # x2.5 time multiplier
 		"buffer_bias": 0.15, # Increased buffer
@@ -144,7 +144,7 @@ func register_level_result(time_left_sec: float) -> void:
 		_recent_surplus.pop_front()
 
 
-func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_start: Vector2 = LevelUtils.PLAYER_START, level_type: int = GameState.LevelType.OBSTACLES_COINS, maze_path_length: float = 0.0) -> float:
+func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_start: Vector2 = LEVEL_UTILS.PLAYER_START, level_type: int = GAME_STATE.LevelType.OBSTACLES_COINS, maze_path_length: float = 0.0) -> float:
 	var p := _get_preset()
 	var total_distance: float = 0.0
 	var current_pos: Vector2 = player_start
@@ -160,7 +160,7 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 	var base_path: float = float(maze_overhead.get("base_path", 0.0))
 	if base_path > 0.0:
 		total_distance = max(total_distance, base_path)
-	if level_type == GameState.LevelType.OBSTACLES_COINS and level > 2:
+	if level_type == GAME_STATE.LevelType.OBSTACLES_COINS and level > 2:
 		var trim = clamp(float(type_profile.get("route_trim", 1.0)), 0.5, 1.0)
 		var ramp = max(float(type_profile.get("trim_ramp", 3.0)), 0.001)
 		var trim_t = clamp((float(level) - 2.0) / ramp, 0.0, 1.0)
@@ -172,11 +172,11 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 	var pickup_time: float = float(coins.size()) * per_coin_sec
 	
 	# Special handling for keys levels with no coins - add extra time since no speed boosts
-	if level_type == GameState.LevelType.KEYS and coins.size() == 0:
+	if level_type == GAME_STATE.LevelType.KEYS and coins.size() == 0:
 		base_time *= 1.5 # 50% more time since no speed boosts available
 	
 	# Add time bonus for each key in keys levels
-	if level_type == GameState.LevelType.KEYS:
+	if level_type == GAME_STATE.LevelType.KEYS:
 		var key_bonus = 1.5 # 1.5 seconds per key
 		# We need to get the key count from the level generation context
 		# This is a simplified approach - in practice you'd pass key count as parameter
@@ -216,7 +216,7 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 		result = min_time + distance_time + pickup_time
 	return result
 
-func get_time_for_level(level: int, level_type: int = GameState.LevelType.OBSTACLES_COINS) -> float:
+func get_time_for_level(level: int, level_type: int = GAME_STATE.LevelType.OBSTACLES_COINS) -> float:
 	var p := _get_preset()
 	var mult: float = _level_multiplier(level)
 	var preset_scale: float = float(p["global_scale"])
@@ -248,7 +248,7 @@ func _get_type_profile(level_type: int) -> Dictionary:
 	}
 
 func _maze_overhead(level_type: int, maze_path_length: float, player_start: Vector2, exit_pos: Vector2, speed: float) -> Dictionary:
-	var is_maze = level_type == GameState.LevelType.MAZE or level_type == GameState.LevelType.MAZE_COINS or level_type == GameState.LevelType.MAZE_KEYS
+	var is_maze = level_type == GAME_STATE.LevelType.MAZE or level_type == GAME_STATE.LevelType.MAZE_COINS or level_type == GAME_STATE.LevelType.MAZE_KEYS
 	if not is_maze:
 		return {"factor": 1.0, "slack": 0.0, "base_path": 0.0}
 	var straight: float = player_start.distance_to(exit_pos)

@@ -1,10 +1,11 @@
 extends Object
 class_name MazeGenerator
 
-const Logger = preload("res://scripts/Logger.gd")
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
-const MazeUtils = preload("res://scripts/level_generators/MazeUtils.gd")
-const LevelNodeFactory = preload("res://scripts/level_generators/LevelNodeFactory.gd")
+const LOGGER := preload("res://scripts/Logger.gd")
+const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
+const MAZE_UTILS := preload("res://scripts/level_generators/MazeUtils.gd")
+const LEVEL_NODE_FACTORY := preload("res://scripts/level_generators/LevelNodeFactory.gd")
+const MAZE_REACHABILITY_JOB: GDScript = preload("res://scripts/level_generators/MazeReachabilityJob.gd")
 
 const WALL_COLOR := Color(0.15, 0.18, 0.28, 1)
 const PLAYER_COLLISION_SIZE := 32.0
@@ -47,7 +48,7 @@ func _log_debug(message: String) -> void:
 
 func generate_maze_level(include_coins: bool, main_scene, player_start_position: Vector2) -> void:
 	_setup_debug_logging()
-	var dims = LevelUtils.get_scaled_level_dimensions(context.current_level_size)
+	var dims = LEVEL_UTILS.get_scaled_level_dimensions(context.current_level_size)
 	var level_width: float = float(dims.width)
 	var level_height: float = float(dims.height)
 	var offset = Vector2(dims.offset_x, dims.offset_y)
@@ -66,26 +67,26 @@ func generate_maze_level(include_coins: bool, main_scene, player_start_position:
 	if context.current_level_size >= 1.2:
 		start_cell = _get_random_maze_cell(cols, rows)
 	else:
-		start_cell = MazeUtils.world_to_maze_cell(player_start_position, maze_offset, cell_size)
-		start_cell = MazeUtils.ensure_odd_cell(start_cell, cols, rows)
+		start_cell = MAZE_UTILS.world_to_maze_cell(player_start_position, maze_offset, cell_size)
+		start_cell = MAZE_UTILS.ensure_odd_cell(start_cell, cols, rows)
 
-	var grid = MazeUtils.init_maze_grid(cols, rows)
-	MazeUtils.carve_maze(grid, start_cell, cols, rows)
+	var grid = MAZE_UTILS.init_maze_grid(cols, rows)
+	MAZE_UTILS.carve_maze(grid, start_cell, cols, rows)
 	_spawn_maze_walls(grid, maze_offset, cell_size, main_scene)
 	_fill_unreachable_areas(grid, start_cell, maze_offset, cell_size, main_scene)
 
-	var farthest_data = MazeUtils.find_farthest_cell(grid, start_cell, cols, rows)
+	var farthest_data = MAZE_UTILS.find_farthest_cell(grid, start_cell, cols, rows)
 	var farthest: Vector2i = farthest_data["cell"]
 	var path_steps: int = farthest_data["distance"]
 	context.last_maze_path_length = float(max(path_steps, 1)) * cell_size
-	var exit_position = MazeUtils.maze_cell_to_world(farthest, maze_offset, cell_size)
+	var exit_position = MAZE_UTILS.maze_cell_to_world(farthest, maze_offset, cell_size)
 	context.exit_spawner.clear_exit()
 	context.exit_spawner.create_exit_at(exit_position, main_scene)
 	var exit_node = context.exit_spawner.get_exit()
 	if exit_node:
 		context.exit_pos = exit_node.position
 
-	context.set_player_spawn_override(MazeUtils.maze_cell_to_world(start_cell, maze_offset, cell_size))
+	context.set_player_spawn_override(MAZE_UTILS.maze_cell_to_world(start_cell, maze_offset, cell_size))
 
 	context.coins.clear()
 	if include_coins:
@@ -93,7 +94,7 @@ func generate_maze_level(include_coins: bool, main_scene, player_start_position:
 
 func generate_maze_keys_level(main_scene, level: int, player_start_position: Vector2) -> void:
 	_setup_debug_logging()
-	var dims = LevelUtils.get_scaled_level_dimensions(context.current_level_size)
+	var dims = LEVEL_UTILS.get_scaled_level_dimensions(context.current_level_size)
 	var level_width: float = float(dims.width)
 	var level_height: float = float(dims.height)
 	var offset = Vector2(dims.offset_x, dims.offset_y)
@@ -112,20 +113,20 @@ func generate_maze_keys_level(main_scene, level: int, player_start_position: Vec
 	if context.current_level_size >= 1.2:
 		start_cell = _get_random_maze_cell(cols, rows)
 	else:
-		start_cell = MazeUtils.world_to_maze_cell(player_start_position, maze_offset, cell_size)
-		start_cell = MazeUtils.ensure_odd_cell(start_cell, cols, rows)
+		start_cell = MAZE_UTILS.world_to_maze_cell(player_start_position, maze_offset, cell_size)
+		start_cell = MAZE_UTILS.ensure_odd_cell(start_cell, cols, rows)
 
-	var grid = MazeUtils.init_maze_grid(cols, rows)
-	MazeUtils.carve_maze(grid, start_cell, cols, rows)
+	var grid = MAZE_UTILS.init_maze_grid(cols, rows)
+	MAZE_UTILS.carve_maze(grid, start_cell, cols, rows)
 	_spawn_maze_walls(grid, maze_offset, cell_size, main_scene)
 	_fill_unreachable_areas(grid, start_cell, maze_offset, cell_size, main_scene)
 
-	var farthest_data = MazeUtils.find_farthest_cell(grid, start_cell, cols, rows)
+	var farthest_data = MAZE_UTILS.find_farthest_cell(grid, start_cell, cols, rows)
 	var exit_cell: Vector2i = farthest_data["cell"]
 	var path_steps: int = farthest_data["distance"]
 	context.last_maze_path_length = float(max(path_steps, 1)) * cell_size
 
-	var path: Array = MazeUtils.reconstruct_maze_path(grid, start_cell, exit_cell, cols, rows)
+	var path: Array = MAZE_UTILS.reconstruct_maze_path(grid, start_cell, exit_cell, cols, rows)
 	var path_index := {}
 	for i in range(path.size()):
 		var path_cell: Vector2i = path[i]
@@ -134,7 +135,7 @@ func generate_maze_keys_level(main_scene, level: int, player_start_position: Vec
 	context.coins.clear()
 	context.exit_spawner.clear_exit()
 
-	var exit_position = MazeUtils.maze_cell_to_world(exit_cell, maze_offset, cell_size)
+	var exit_position = MAZE_UTILS.maze_cell_to_world(exit_cell, maze_offset, cell_size)
 	context.exit_spawner.create_exit_at(exit_position, main_scene)
 	var exit_node = context.exit_spawner.get_exit()
 	if exit_node:
@@ -149,11 +150,11 @@ func generate_maze_keys_level(main_scene, level: int, player_start_position: Vec
 			var ia: int = int(path_index.get(a, 0))
 			var ib: int = int(path_index.get(b, 0))
 			return ia < ib)
-	var start_world = MazeUtils.maze_cell_to_world(start_cell, maze_offset, cell_size)
-	var exit_world = MazeUtils.maze_cell_to_world(exit_cell, maze_offset, cell_size)
+	var start_world = MAZE_UTILS.maze_cell_to_world(start_cell, maze_offset, cell_size)
+	var exit_world = MAZE_UTILS.maze_cell_to_world(exit_cell, maze_offset, cell_size)
 	var door_worlds: Array[Vector2] = []
 	for door_cell in door_cells:
-		door_worlds.append(MazeUtils.maze_cell_to_world(door_cell, maze_offset, cell_size))
+		door_worlds.append(MAZE_UTILS.maze_cell_to_world(door_cell, maze_offset, cell_size))
 	var key_world_positions: Array[Vector2] = []
 	var taken_cells: Array = []
 	var door_data: Array = []
@@ -188,7 +189,7 @@ func generate_maze_keys_level(main_scene, level: int, player_start_position: Vec
 					continue
 				if taken_cells.has(candidate):
 					continue
-				var world = MazeUtils.maze_cell_to_world(candidate, maze_offset, cell_size)
+				var world = MAZE_UTILS.maze_cell_to_world(candidate, maze_offset, cell_size)
 				var score = min(world.distance_to(door_world), world.distance_to(start_world))
 				score = min(score, world.distance_to(exit_world))
 				for existing_world in key_world_positions:
@@ -198,7 +199,7 @@ func generate_maze_keys_level(main_scene, level: int, player_start_position: Vec
 					fallback_cell = candidate
 			if fallback_cell != door_cell:
 				key_cells.append(fallback_cell)
-				var fallback_world = MazeUtils.maze_cell_to_world(fallback_cell, maze_offset, cell_size)
+				var fallback_world = MAZE_UTILS.maze_cell_to_world(fallback_cell, maze_offset, cell_size)
 				key_world_positions.append(fallback_world)
 		for cell in key_cells:
 			taken_cells.append(cell)
@@ -217,19 +218,19 @@ func generate_maze_keys_level(main_scene, level: int, player_start_position: Vec
 		var key_count: int = key_cells.size()
 		var door_color: Color = entry.get("color", context.get_group_color(i))
 		var initially_open: bool = key_count <= 0
-		var door = LevelNodeFactory.create_door_node(door_index_offset + i, key_count, initially_open, cell_size, cell_size, door_color)
+		var door = LEVEL_NODE_FACTORY.create_door_node(door_index_offset + i, key_count, initially_open, cell_size, cell_size, door_color)
 		door.position = maze_offset + Vector2(door_cell.x * cell_size, door_cell.y * cell_size)
 		context.doors.append(door)
 		context.add_generated_node(door, main_scene)
 		if key_count > 0:
 			for cell in key_cells:
-				var key_pos = MazeUtils.maze_cell_to_world(cell, maze_offset, cell_size)
-				var key_node = LevelNodeFactory.create_key_node(context.key_items.size(), door, key_pos, key_count, door_color)
+				var key_pos = MAZE_UTILS.maze_cell_to_world(cell, maze_offset, cell_size)
+				var key_node = LEVEL_NODE_FACTORY.create_key_node(context.key_items.size(), door, key_pos, key_count, door_color)
 				context.key_items.append(key_node)
 				context.add_generated_node(key_node, main_scene)
-		Logger.log_generation("Maze+Keys door %d at %s with %d keys" % [door_index_offset + i, str(door_cell), key_count])
+		LOGGER.log_generation("Maze+Keys door %d at %s with %d keys" % [door_index_offset + i, str(door_cell), key_count])
 
-	context.set_player_spawn_override(MazeUtils.maze_cell_to_world(start_cell, maze_offset, cell_size))
+	context.set_player_spawn_override(MAZE_UTILS.maze_cell_to_world(start_cell, maze_offset, cell_size))
 
 func _select_maze_door_cells(path: Array, start_cell: Vector2i, exit_cell: Vector2i, offset: Vector2, cell_size: float, desired: int) -> Array:
 	var candidates: Array = []
@@ -261,9 +262,9 @@ func _select_maze_door_cells(path: Array, start_cell: Vector2i, exit_cell: Vecto
 			if selected.has(cell):
 				continue
 			var keep := true
-			var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
+			var world = MAZE_UTILS.maze_cell_to_world(cell, offset, cell_size)
 			for chosen in selected:
-				var chosen_world = MazeUtils.maze_cell_to_world(chosen, offset, cell_size)
+				var chosen_world = MAZE_UTILS.maze_cell_to_world(chosen, offset, cell_size)
 				if chosen_world.distance_to(world) < min_spacing:
 					keep = false
 					break
@@ -281,12 +282,12 @@ func _select_maze_door_cells(path: Array, start_cell: Vector2i, exit_cell: Vecto
 	return selected
 
 func _maze_spread_score(cell: Vector2i, existing: Array, start_cell: Vector2i, exit_cell: Vector2i, offset: Vector2, cell_size: float) -> float:
-	var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
-	var start_world = MazeUtils.maze_cell_to_world(start_cell, offset, cell_size)
-	var exit_world = MazeUtils.maze_cell_to_world(exit_cell, offset, cell_size)
+	var world = MAZE_UTILS.maze_cell_to_world(cell, offset, cell_size)
+	var start_world = MAZE_UTILS.maze_cell_to_world(start_cell, offset, cell_size)
+	var exit_world = MAZE_UTILS.maze_cell_to_world(exit_cell, offset, cell_size)
 	var score = min(world.distance_to(start_world), world.distance_to(exit_world))
 	for chosen in existing:
-		var chosen_world = MazeUtils.maze_cell_to_world(chosen, offset, cell_size)
+		var chosen_world = MAZE_UTILS.maze_cell_to_world(chosen, offset, cell_size)
 		score = min(score, world.distance_to(chosen_world))
 	return score
 
@@ -344,13 +345,13 @@ func _select_maze_key_cells(
 		return []
 	var result: Array = []
 	var min_spacing: float = cell_size * 2.5 # Increased from 2.0
-	var door_world = MazeUtils.maze_cell_to_world(door_cell, offset, cell_size)
+	var door_world = MAZE_UTILS.maze_cell_to_world(door_cell, offset, cell_size)
 	var attempts: int = 0
 	while result.size() < desired and attempts < 80 and not candidates.is_empty():
 		var best_cell: Vector2i = candidates[0]
 		var best_score: float = - INF
 		for cell in candidates:
-			var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
+			var world = MAZE_UTILS.maze_cell_to_world(cell, offset, cell_size)
 			# Prioritize distance from door more heavily
 			var door_distance = world.distance_to(door_world)
 			var score = door_distance * 1.5 # Weight door distance more
@@ -366,14 +367,14 @@ func _select_maze_key_cells(
 				best_score = score
 				best_cell = cell
 		result.append(best_cell)
-		var best_world = MazeUtils.maze_cell_to_world(best_cell, offset, cell_size)
+		var best_world = MAZE_UTILS.maze_cell_to_world(best_cell, offset, cell_size)
 		key_world_positions.append(best_world)
 		taken_cells.append(best_cell)
 		var filtered: Array = []
 		for cell in candidates:
 			if cell == best_cell:
 				continue
-			var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
+			var world = MAZE_UTILS.maze_cell_to_world(cell, offset, cell_size)
 			# Increased minimum distance from door from 1.6 to 2.5
 			if best_world.distance_to(world) >= min_spacing and world.distance_to(door_world) >= cell_size * 2.5:
 				filtered.append(cell)
@@ -387,7 +388,7 @@ func _select_maze_key_cells(
 					continue
 				if cell == start_cell or cell == exit_cell or cell == door_cell:
 					continue
-				var world = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
+				var world = MAZE_UTILS.maze_cell_to_world(cell, offset, cell_size)
 				# Increased minimum distance from door from 1.4 to 2.0
 				if world.distance_to(door_world) < cell_size * 2.0:
 					continue
@@ -420,8 +421,8 @@ func _generate_maze_coins(grid: Array, start: Vector2i, exit_cell: Vector2i, off
 	var desired = clamp(int(candidates.size() / 8.0), 5, 20)
 	for i in range(min(desired, candidates.size())):
 		var cell = candidates[i]
-		var world_pos = MazeUtils.maze_cell_to_world(cell, offset, cell_size)
-		var coin = LevelNodeFactory.create_coin_node(context.coins.size(), world_pos)
+		var world_pos = MAZE_UTILS.maze_cell_to_world(cell, offset, cell_size)
+		var coin = LEVEL_NODE_FACTORY.create_coin_node(context.coins.size(), world_pos)
 		context.coins.append(coin)
 		context.add_generated_node(coin, main_scene)
 
@@ -441,142 +442,28 @@ func _get_random_maze_cell(cols: int, rows: int) -> Vector2i:
 	return Vector2i(int(cols / 2.0) | 1, int(rows / 2.0) | 1)
 
 func _fill_unreachable_areas(grid: Array, start_cell: Vector2i, offset: Vector2, cell_size: float, main_scene) -> void:
-	var rows = grid.size()
-	var cols = grid[0].size()
-	var reachable = _find_reachable_areas(grid, rows, cols, start_cell, offset, cell_size, main_scene)
-	var unreachable_count := 0
-
-	for y in range(rows):
-		for x in range(cols):
-			if not grid[y][x] and not reachable[y][x]:
-				unreachable_count += 1
-				var base := offset + Vector2(x * cell_size, y * cell_size)
-				var shadow: Node2D = LevelNodeFactory.create_maze_shadow_segment(context.maze_shadows.size(), cell_size, cell_size, BLACK_SHADOW_COLOR)
-				shadow.position = base
-				context.maze_shadows.append(shadow)
-				context.add_generated_node(shadow, main_scene)
-
-	if unreachable_count > 0:
-		_log_debug("Maze unreachable pockets filled: %d" % unreachable_count)
-	else:
-		_log_debug("Maze reachable everywhere from start cell %s" % str(start_cell))
-func _find_reachable_areas(grid: Array, rows: int, cols: int, start_cell: Vector2i, offset: Vector2, cell_size: float, main_scene) -> Array:
-	"""Find all reachable areas using flood fill"""
-	var reachable = []
-	for y in range(rows):
-		var row = []
-		row.resize(cols)
-		for x in range(cols):
-			row[x] = false
-		reachable.append(row)
-
-	var start_pos = start_cell
-	var needs_fallback: bool = (
-		start_pos.x < 0 or start_pos.x >= cols or
-		start_pos.y < 0 or start_pos.y >= rows or
-		grid[start_pos.y][start_pos.x]
+	var job = MAZE_REACHABILITY_JOB.new()
+	var logger_callable := Callable()
+	if _debug_logging:
+		logger_callable = Callable(self, "_log_debug")
+	job.setup(
+		context,
+		main_scene,
+		grid.duplicate(true),
+		start_cell,
+		offset,
+		cell_size,
+		PLAYER_COLLISION_SIZE,
+		BLACK_SHADOW_COLOR,
+		_debug_logging,
+		logger_callable
 	)
-	if needs_fallback:
-		start_pos = Vector2i(-1, -1)
-		for y in range(rows):
-			var found := false
-			for x in range(cols):
-				if not grid[y][x]:
-					start_pos = Vector2i(x, y)
-					found = true
-					break
-			if found:
-				break
-
-	if start_pos == Vector2i(-1, -1):
-		return reachable
-
-	var space_state := _get_space_state(main_scene)
-	var player_shape: RectangleShape2D = null
-	if space_state:
-		player_shape = RectangleShape2D.new()
-		player_shape.size = Vector2(PLAYER_COLLISION_SIZE, PLAYER_COLLISION_SIZE)
-		var start_world := MazeUtils.maze_cell_to_world(start_pos, offset, cell_size)
-		if not _can_player_fit_at(space_state, player_shape, start_world):
-			_log_debug("Start cell %s blocked for player footprint" % str(start_pos))
-			player_shape = null
-			space_state = null
+	if context and context is Node:
+		context.add_child(job)
+	elif main_scene and is_instance_valid(main_scene):
+		main_scene.call_deferred("add_child", job)
 	else:
-		_log_debug("Physics space unavailable while evaluating maze reachability")
-	# Flood fill from start position
-	var queue = [start_pos]
-	reachable[start_pos.y][start_pos.x] = true
-
-	while not queue.is_empty():
-		var current = queue.pop_front()
-		var directions = [Vector2i(0, 1), Vector2i(0, -1), Vector2i(1, 0), Vector2i(-1, 0)]
-
-		for dir in directions:
-			var next = current + dir
-			if (
-				next.x >= 0 and next.x < cols and
-				next.y >= 0 and next.y < rows and
-				not grid[next.y][next.x] and
-				not reachable[next.y][next.x]
-			):
-				if space_state and player_shape:
-					if not _can_traverse_between_cells(space_state, player_shape, current, next, offset, cell_size):
-						continue
-				reachable[next.y][next.x] = true
-				queue.append(next)
-
-	return reachable
-
-func _can_traverse_between_cells(
-	space_state: PhysicsDirectSpaceState2D,
-	player_shape: RectangleShape2D,
-	current: Vector2i,
-	next: Vector2i,
-	offset: Vector2,
-	cell_size: float
-) -> bool:
-	var from_world := MazeUtils.maze_cell_to_world(current, offset, cell_size)
-	var to_world := MazeUtils.maze_cell_to_world(next, offset, cell_size)
-	if not _can_player_fit_at(space_state, player_shape, to_world):
-		return false
-	var delta := to_world - from_world
-	var max_extent: float = max(player_shape.size.x, player_shape.size.y)
-	var step_distance: float = max(max_extent * 0.35, 6.0)
-	var steps: int = int(ceil(delta.length() / step_distance))
-	for i: int in range(1, steps):
-		var t: float = float(i) / float(steps)
-		var sample: Vector2 = from_world.lerp(to_world, t)
-		if not _can_player_fit_at(space_state, player_shape, sample):
-			return false
-	return true
-func _can_player_fit_at(
-	space_state: PhysicsDirectSpaceState2D,
-	player_shape: RectangleShape2D,
-	position: Vector2
-) -> bool:
-	if space_state == null or player_shape == null:
-		return true
-	var params := PhysicsShapeQueryParameters2D.new()
-	params.shape = player_shape
-	params.transform = Transform2D.IDENTITY
-	params.transform.origin = position
-	params.collide_with_areas = false
-	params.collide_with_bodies = true
-	params.margin = 0.05
-	var results = space_state.intersect_shape(params, 1)
-	return results.is_empty()
-func _get_space_state(main_scene) -> PhysicsDirectSpaceState2D:
-	if main_scene and is_instance_valid(main_scene):
-		var world: World2D = main_scene.get_world_2d()
-		if world:
-			return world.direct_space_state
-	var tree := Engine.get_main_loop()
-	if tree is SceneTree:
-		var scene_tree: SceneTree = tree
-		var root := scene_tree.root
-		if root and root.world_2d:
-			return root.world_2d.direct_space_state
-	return null
+		job.queue_free()
 func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scene) -> void:
 	var rows = grid.size()
 	var cols = grid[0].size()
@@ -589,22 +476,22 @@ func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scen
 				continue
 			var base := offset + Vector2(x * cell_size, y * cell_size)
 			if y == 0 or grid[y - 1][x]:
-				var top_wall = LevelNodeFactory.create_maze_wall_segment(context.maze_walls.size(), cell_size, thickness, WALL_COLOR)
+				var top_wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(context.maze_walls.size(), cell_size, thickness, WALL_COLOR)
 				top_wall.position = base + Vector2(0.0, -half_thickness)
 				context.maze_walls.append(top_wall)
 				context.add_generated_node(top_wall, main_scene)
 			if y == rows - 1 or grid[y + 1][x]:
-				var bottom_wall = LevelNodeFactory.create_maze_wall_segment(context.maze_walls.size(), cell_size, thickness, WALL_COLOR)
+				var bottom_wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(context.maze_walls.size(), cell_size, thickness, WALL_COLOR)
 				bottom_wall.position = base + Vector2(0.0, cell_size - half_thickness)
 				context.maze_walls.append(bottom_wall)
 				context.add_generated_node(bottom_wall, main_scene)
 			if x == 0 or grid[y][x - 1]:
-				var left_wall = LevelNodeFactory.create_maze_wall_segment(context.maze_walls.size(), thickness, cell_size, WALL_COLOR)
+				var left_wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(context.maze_walls.size(), thickness, cell_size, WALL_COLOR)
 				left_wall.position = base + Vector2(-half_thickness, 0.0)
 				context.maze_walls.append(left_wall)
 				context.add_generated_node(left_wall, main_scene)
 			if x == cols - 1 or grid[y][x + 1]:
-				var right_wall = LevelNodeFactory.create_maze_wall_segment(context.maze_walls.size(), thickness, cell_size, WALL_COLOR)
+				var right_wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(context.maze_walls.size(), thickness, cell_size, WALL_COLOR)
 				right_wall.position = base + Vector2(cell_size - half_thickness, 0.0)
 				context.maze_walls.append(right_wall)
 				context.add_generated_node(right_wall, main_scene)

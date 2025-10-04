@@ -1,13 +1,13 @@
 extends Node2D
 
-const Logger = preload("res://scripts/Logger.gd")
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
+const LOGGER := preload("res://scripts/Logger.gd")
+const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
 
 var obstacles = []
 var current_level_size = 1.0
 
 func generate_obstacles(level_size: float, use_full_map_coverage: bool = true, main_scene: Node = null, level: int = 1) -> Array:
-	Logger.log_generation("ObstacleSpawner: generating obstacles (size %.2f, level %d)" % [level_size, level])
+	LOGGER.log_generation("ObstacleSpawner: generating obstacles (size %.2f, level %d)" % [level_size, level])
 	current_level_size = level_size
 	clear_obstacles()
 
@@ -15,9 +15,9 @@ func generate_obstacles(level_size: float, use_full_map_coverage: bool = true, m
 	var base_obstacle_count = randi_range(40, 60) #
 	var level_multiplier = 1.0 + (level - 1) * 0.2 # +20% per level
 	var obstacle_count = int(base_obstacle_count * current_level_size * level_multiplier)
-	Logger.log_generation("ObstacleSpawner target count %d (mult %.2f)" % [obstacle_count, level_multiplier])
+	LOGGER.log_generation("ObstacleSpawner target count %d (mult %.2f)" % [obstacle_count, level_multiplier])
 	if not use_full_map_coverage:
-		Logger.log_generation("ObstacleSpawner using centered coverage grid")
+		LOGGER.log_generation("ObstacleSpawner using centered coverage grid")
 
 	var added_count := 0
 	var rejected_count := 0
@@ -36,7 +36,7 @@ func generate_obstacles(level_size: float, use_full_map_coverage: bool = true, m
 			obstacle.queue_free()
 			rejected_count += 1
 
-	Logger.log_generation("ObstacleSpawner placed %d obstacles (rejected %d)" % [added_count, rejected_count])
+	LOGGER.log_generation("ObstacleSpawner placed %d obstacles (rejected %d)" % [added_count, rejected_count])
 	return obstacles
 
 func create_obstacle(use_full_map_coverage: bool = true):
@@ -51,7 +51,7 @@ func create_obstacle(use_full_map_coverage: bool = true):
 	# Use more grid cells for full map coverage
 	var grid_cols = 8 if use_full_map_coverage else 6
 	var grid_rows = 6 if use_full_map_coverage else 5
-	var pos = LevelUtils.get_grid_position(current_level_size, grid_cols, grid_rows, 40, 40)
+	var pos = LEVEL_UTILS.get_grid_position(current_level_size, grid_cols, grid_rows, 40, 40)
 	obstacle.position = pos
 
 	# Create visual body
@@ -75,7 +75,7 @@ func create_obstacle(use_full_map_coverage: bool = true):
 
 func is_valid_obstacle_position(obstacle) -> bool:
 	# Check distance from player start (player size + 5% gap)
-	if obstacle.position.distance_to(LevelUtils.PLAYER_START) < 100:
+	if obstacle.position.distance_to(LEVEL_UTILS.PLAYER_START) < 100:
 		return false
 
 	# Check overlap with existing obstacles (ensure player can pass between them)

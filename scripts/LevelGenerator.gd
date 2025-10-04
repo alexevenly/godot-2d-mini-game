@@ -1,12 +1,12 @@
 class_name LevelGenerator
 extends Node2D
 
-const Logger = preload("res://scripts/Logger.gd")
-const LevelUtils = preload("res://scripts/LevelUtils.gd")
-const GameState = preload("res://scripts/GameState.gd")
-const ObstacleUtilities = preload("res://scripts/level_generators/ObstacleUtilities.gd")
-const KeyLevelGenerator = preload("res://scripts/level_generators/KeyLevelGenerator.gd")
-const MazeGenerator = preload("res://scripts/level_generators/MazeGenerator.gd")
+const LOGGER := preload("res://scripts/Logger.gd")
+const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
+const GAME_STATE := preload("res://scripts/GameState.gd")
+const OBSTACLE_UTILITIES := preload("res://scripts/level_generators/ObstacleUtilities.gd")
+const KEY_LEVEL_GENERATOR := preload("res://scripts/level_generators/KeyLevelGenerator.gd")
+const MAZE_GENERATOR := preload("res://scripts/level_generators/MazeGenerator.gd")
 
 const DOOR_GROUP_COLORS := [
 	Color(0.95, 0.49, 0.38, 1.0),
@@ -47,27 +47,27 @@ func _ready():
 
 func _ensure_helpers() -> void:
 	if obstacle_utils == null:
-		obstacle_utils = ObstacleUtilities.new(self)
+		obstacle_utils = OBSTACLE_UTILITIES.new(self)
 	if maze_generator == null:
-		maze_generator = MazeGenerator.new(self, obstacle_utils)
+		maze_generator = MAZE_GENERATOR.new(self, obstacle_utils)
 	if key_level_generator == null:
-		key_level_generator = KeyLevelGenerator.new(self, obstacle_utils)
+		key_level_generator = KEY_LEVEL_GENERATOR.new(self, obstacle_utils)
 
-func generate_level(level_size := 1.0, generate_obstacles := true, generate_coins := true, min_exit_distance_ratio := 0.4, use_full_map_coverage := true, main_scene: Node = null, level := 1, preserved_coin_count := 0, player_start_position: Vector2 = LevelUtils.PLAYER_START, level_type: int = GameState.LevelType.OBSTACLES_COINS):
-	Logger.log_generation("LevelGenerator starting (size %.2f, type %d)" % [level_size, level_type])
+func generate_level(level_size := 1.0, generate_obstacles := true, generate_coins := true, min_exit_distance_ratio := 0.4, use_full_map_coverage := true, main_scene: Node = null, level := 1, preserved_coin_count := 0, player_start_position: Vector2 = LEVEL_UTILS.PLAYER_START, level_type: int = GAME_STATE.LevelType.OBSTACLES_COINS):
+	LOGGER.log_generation("LevelGenerator starting (size %.2f, type %d)" % [level_size, level_type])
 	current_level_size = level_size
 	exit_pos = Vector2.ZERO
 	last_maze_path_length = 0.0
 	_ensure_helpers()
 	clear_existing_objects()
 	match level_type:
-		GameState.LevelType.KEYS:
+		GAME_STATE.LevelType.KEYS:
 			key_level_generator.generate(main_scene, level, player_start_position)
-		GameState.LevelType.MAZE:
+		GAME_STATE.LevelType.MAZE:
 			maze_generator.generate_maze_level(false, main_scene, player_start_position)
-		GameState.LevelType.MAZE_COINS:
+		GAME_STATE.LevelType.MAZE_COINS:
 			maze_generator.generate_maze_level(true, main_scene, player_start_position)
-		GameState.LevelType.MAZE_KEYS:
+		GAME_STATE.LevelType.MAZE_KEYS:
 			maze_generator.generate_maze_keys_level(main_scene, level, player_start_position)
 		_:
 			_generate_standard_level(level_size, generate_obstacles, generate_coins, min_exit_distance_ratio, use_full_map_coverage, main_scene, level, preserved_coin_count, player_start_position)
@@ -77,37 +77,37 @@ func _generate_standard_level(level_size: float, generate_obstacles: bool, gener
 	if generate_obstacles:
 		if obstacle_spawner and is_instance_valid(obstacle_spawner):
 			obstacles = obstacle_spawner.generate_obstacles(level_size, use_full_map_coverage, main_scene, level)
-			Logger.log_generation("LevelGenerator received %d obstacles" % obstacles.size())
+			LOGGER.log_generation("LevelGenerator received %d obstacles" % obstacles.size())
 		else:
-			Logger.log_error("ObstacleSpawner unavailable; recreating instance")
+			LOGGER.log_error("ObstacleSpawner unavailable; recreating instance")
 			obstacle_spawner = preload("res://scripts/ObstacleSpawner.gd").new()
 			obstacle_spawner.name = "ObstacleSpawner"
 			add_child(obstacle_spawner)
 			obstacles = obstacle_spawner.generate_obstacles(level_size, use_full_map_coverage, main_scene, level)
 	else:
-		Logger.log_generation("Obstacle generation disabled for this level")
+		LOGGER.log_generation("Obstacle generation disabled for this level")
 
 	if exit_spawner and is_instance_valid(exit_spawner):
 		var exit_node = exit_spawner.generate_exit(level_size, obstacles, min_exit_distance_ratio, main_scene)
 		if exit_node:
 			exit_pos = exit_node.position
 		else:
-			Logger.log_error("ExitSpawner failed to create exit")
+			LOGGER.log_error("ExitSpawner failed to create exit")
 	else:
-		Logger.log_error("ExitSpawner reference missing")
+		LOGGER.log_error("ExitSpawner reference missing")
 
 	if generate_coins_flag:
 		if coin_spawner and is_instance_valid(coin_spawner):
 			coins = coin_spawner.generate_coins(level_size, obstacles, exit_pos, player_start_position, use_full_map_coverage, main_scene, level, preserved_coin_count)
-			Logger.log_generation("LevelGenerator received %d coins" % coins.size())
+			LOGGER.log_generation("LevelGenerator received %d coins" % coins.size())
 		else:
-			Logger.log_error("CoinSpawner unavailable; recreating instance")
+			LOGGER.log_error("CoinSpawner unavailable; recreating instance")
 			coin_spawner = preload("res://scripts/CoinSpawner.gd").new()
 			coin_spawner.name = "CoinSpawner"
 			add_child(coin_spawner)
 			coins = coin_spawner.generate_coins(level_size, obstacles, exit_pos, player_start_position, use_full_map_coverage, main_scene, level, preserved_coin_count)
 	else:
-		Logger.log_generation("Coin generation disabled for this level")
+		LOGGER.log_generation("Coin generation disabled for this level")
 
 func get_generated_coins():
 	return coins

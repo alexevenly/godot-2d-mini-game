@@ -153,17 +153,20 @@ static func create_maze_wall_segment(name_index: int, width: float, height: floa
 	wall.add_child(collision)
 
 	return wall
+
 static func create_maze_shadow_segment(name_index: int, width: float, height: float, wall_color: Color) -> Node2D:
 	var container := Node2D.new()
 	container.name = "MazeShadow" + str(name_index)
 	container.z_as_relative = false
-	container.z_index = 5000
+	container.z_index = 3400
+
 	var body := ColorRect.new()
 	body.name = "ShadowBody"
 	body.offset_right = width
 	body.offset_bottom = height
 	body.color = wall_color
-	body.z_index = 5000
+	body.z_index = container.z_index
 	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	container.add_child(body)
+
 	return container
