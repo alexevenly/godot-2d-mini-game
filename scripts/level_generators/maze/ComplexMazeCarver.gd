@@ -8,6 +8,8 @@ const DOWN := 4
 
 const GRAPH := preload("res://scripts/level_generators/maze/ComplexMazeGraph.gd")
 
+const EXTRA_CONNECTION_RATIO := 0.22
+
 class Cell:
 	var grid_pos: Vector2i
 	var wall_left := true
@@ -24,13 +26,15 @@ var _unvisited: Array = []
 var _stack: Array = []
 var _start_cell: Cell = null
 
-func generate(columns: int, rows: int) -> Dictionary:
-	_columns = columns
-	_rows = rows
+func generate(columns: int, rows: int, allow_multiple_paths := true) -> Dictionary:
+	_columns = max(columns, 2)
+	_rows = max(rows, 2)
 	_init_collections()
 	_create_cells()
 	_create_centre()
 	_run_algorithm()
+	if allow_multiple_paths:
+		_add_extra_connections()
 	var exit_cell := GRAPH.pick_exit_cell(_cells, _columns, _rows, _start_cell)
 	var exit_grid := _make_exit_in_cell(exit_cell)
 	return {
@@ -131,6 +135,60 @@ func _remove_wall(cell: Cell, direction: int) -> void:
 			cell.wall_up = false
 		DOWN:
 			cell.wall_down = false
+
+func _add_extra_connections() -> void:
+	var candidates = _collect_closed_edges()
+	if candidates.is_empty():
+		return
+	candidates.shuffle()
+	var target = int(round(candidates.size() * EXTRA_CONNECTION_RATIO))
+	target = clamp(target, 1, candidates.size())
+	for i in range(target):
+		var entry: Dictionary = candidates[i]
+		var first: Cell = entry.get("cell")
+		var second: Cell = entry.get("neighbour")
+		var direction: int = entry.get("direction", LEFT)
+		if first == null or second == null:
+			continue
+		_remove_wall(first, direction)
+		_remove_wall(second, _opposite_direction(direction))
+
+func _collect_closed_edges() -> Array:
+	var edges: Array = []
+	for value in _cells.values():
+		var cell: Cell = value
+		if cell == null:
+			continue
+		var pos: Vector2i = cell.grid_pos
+		if pos.x > 0:
+			var left = _cells.get(Vector2i(pos.x - 1, pos.y))
+			if left and cell.wall_left and left.wall_right:
+				edges.append({
+					"cell": cell,
+					"neighbour": left,
+					"direction": LEFT
+				})
+		if pos.y > 0:
+			var up = _cells.get(Vector2i(pos.x, pos.y - 1))
+			if up and cell.wall_up and up.wall_down:
+				edges.append({
+					"cell": cell,
+					"neighbour": up,
+					"direction": UP
+				})
+	return edges
+
+func _opposite_direction(direction: int) -> int:
+	match direction:
+		LEFT:
+			return RIGHT
+		RIGHT:
+			return LEFT
+		UP:
+			return DOWN
+		DOWN:
+			return UP
+	return LEFT
 
 func _make_exit_in_cell(cell: Cell) -> Vector2i:
 	if cell == null: return Vector2i.ZERO

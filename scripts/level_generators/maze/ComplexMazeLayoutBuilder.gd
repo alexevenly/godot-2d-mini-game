@@ -17,30 +17,32 @@ func _init(level_context):
 	_wall_spawner = WALL_SPAWNER.new(_context)
 
 func build(main_scene, player_start_position: Vector2, debug_logger, player_collision_size: float, shadow_color: Color) -> Dictionary:
-	var _unused_start = player_start_position
 	var dims = LEVEL_UTILS.get_scaled_level_dimensions(_context.current_level_size)
 	var level_width: float = float(dims.width)
 	var level_height: float = float(dims.height)
 	var offset = Vector2(dims.offset_x, dims.offset_y)
 	var cell_size = _context.MAZE_BASE_CELL_SIZE
-	var max_grid_cols = int(floor(level_width / cell_size))
-	var max_grid_rows = int(floor(level_height / cell_size))
-	max_grid_cols = max(max_grid_cols | 1, 5)
-	max_grid_rows = max(max_grid_rows | 1, 5)
-	var cell_cols = int((max_grid_cols - 1) / 2)
-	var cell_rows = int((max_grid_rows - 1) / 2)
-	if cell_cols % 2 != 0: cell_cols = max(cell_cols - 1, 2)
-	if cell_rows % 2 != 0: cell_rows = max(cell_rows - 1, 2)
-	cell_cols = max(cell_cols, 2)
-	cell_rows = max(cell_rows, 2)
-	var carve_data = _carver.generate(cell_cols, cell_rows)
-	if carve_data.is_empty(): return {}
+	var grid_cols = int(floor(level_width / cell_size))
+	var grid_rows = int(floor(level_height / cell_size))
+	grid_cols = max(grid_cols | 1, 5)
+	grid_rows = max(grid_rows | 1, 5)
+	var cell_cols = max(int((grid_cols - 1) / 2), 2)
+	var cell_rows = max(int((grid_rows - 1) / 2), 2)
+	var allow_multiple_paths := true
+	if _context and _context.has_method("get"):
+		var flag = _context.get("complex_maze_allow_multiple_paths")
+		if flag != null:
+			allow_multiple_paths = bool(flag)
+	var carve_data = _carver.generate(cell_cols, cell_rows, allow_multiple_paths)
+	if carve_data.is_empty():
+		return {}
 	var grid: Array = carve_data.get("grid", [])
-	if grid.is_empty(): return {}
-	var grid_cols: int = carve_data.get("grid_cols", max_grid_cols)
-	var grid_rows: int = carve_data.get("grid_rows", max_grid_rows)
-	var maze_width = float(grid_cols) * cell_size
-	var maze_height = float(grid_rows) * cell_size
+	if grid.is_empty():
+		return {}
+	var maze_rows = grid.size()
+	var maze_cols = grid[0].size()
+	var maze_width = float(maze_cols) * cell_size
+	var maze_height = float(maze_rows) * cell_size
 	var maze_offset = offset + Vector2((level_width - maze_width) * 0.5, (level_height - maze_height) * 0.5)
 	var start_cell: Vector2i = carve_data.get("start_cell", Vector2i.ZERO)
 	var exit_cell: Vector2i = carve_data.get("exit_cell", Vector2i.ZERO)
@@ -61,8 +63,8 @@ func build(main_scene, player_start_position: Vector2, debug_logger, player_coll
 		_context.set_player_spawn_override(start_world)
 	return {
 		"grid": grid,
-		"cols": grid_cols,
-		"rows": grid_rows,
+		"cols": maze_cols,
+		"rows": maze_rows,
 		"cell_size": cell_size,
 		"maze_offset": maze_offset,
 		"start_cell": start_cell,

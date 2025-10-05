@@ -8,6 +8,8 @@ const OBSTACLE_UTILITIES := preload("res://scripts/level_generators/ObstacleUtil
 const KEY_LEVEL_GENERATOR := preload("res://scripts/level_generators/KeyLevelGenerator.gd")
 const MAZE_GENERATOR := preload("res://scripts/level_generators/MazeGenerator.gd")
 
+const CONFIG_PATH := "res://config/game.cfg"
+
 const DOOR_GROUP_COLORS := [
 	Color(0.95, 0.49, 0.38, 1.0),
 	Color(0.41, 0.68, 0.95, 1.0),
@@ -34,6 +36,10 @@ var player_spawn_override: Vector2 = Vector2.ZERO
 var has_player_spawn_override: bool = false
 var last_maze_path_length: float = 0.0
 
+var complex_maze_allow_multiple_paths: bool = true
+
+var _config_loaded := false
+
 @onready var obstacle_spawner = $ObstacleSpawner
 @onready var coin_spawner = $CoinSpawner
 @onready var exit_spawner = $ExitSpawner
@@ -46,12 +52,25 @@ func _ready():
 	_ensure_helpers()
 
 func _ensure_helpers() -> void:
+	if not _config_loaded:
+		_load_config()
 	if obstacle_utils == null:
 		obstacle_utils = OBSTACLE_UTILITIES.new(self)
 	if maze_generator == null:
 		maze_generator = MAZE_GENERATOR.new(self, obstacle_utils)
 	if key_level_generator == null:
 		key_level_generator = KEY_LEVEL_GENERATOR.new(self, obstacle_utils)
+
+func _load_config() -> void:
+	var cfg := ConfigFile.new()
+	var err := cfg.load(CONFIG_PATH)
+	if err != OK:
+		_config_loaded = true
+		return
+	var flag = cfg.get_value("maze", "complex_allow_multiple_paths", complex_maze_allow_multiple_paths)
+	if flag != null:
+		complex_maze_allow_multiple_paths = bool(flag)
+	_config_loaded = true
 
 func generate_level(level_size := 1.0, generate_obstacles := true, generate_coins := true, min_exit_distance_ratio := 0.4, use_full_map_coverage := true, main_scene: Node = null, level := 1, preserved_coin_count := 0, player_start_position: Vector2 = LEVEL_UTILS.PLAYER_START, level_type: int = GAME_STATE.LevelType.OBSTACLES_COINS):
 	LOGGER.log_generation("LevelGenerator starting (size %.2f, type %d)" % [level_size, level_type])
