@@ -160,7 +160,7 @@ func _create_status_checkbox() -> Button:
 	checkbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	checkbox.button_pressed = false
 	checkbox.text = ""
-	checkbox.flat = true
+	checkbox.flat = false
 	checkbox.modulate = NEUTRAL_COLOR
 	checkbox.custom_minimum_size = CHECKBOX_SIZE
 	checkbox.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
