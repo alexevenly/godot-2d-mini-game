@@ -26,8 +26,8 @@ func _init(level_context, _obstacle_helper):
 	_coin_distributor = MAZE_COIN_DISTRIBUTOR.new(context)
 	_debug_logger = MAZE_DEBUG_LOGGER.new()
 
-func generate_maze_level(include_coins: bool, main_scene, player_start_position: Vector2) -> void:
-	var layout := _build_layout(main_scene, player_start_position)
+func generate_maze_level(include_coins: bool, main_scene, player_start_position: Vector2, options: Dictionary = {}) -> void:
+	var layout := _build_layout(main_scene, player_start_position, options)
 	if layout.is_empty():
 		return
 	var grid: Array = layout.get("grid", [])
@@ -50,8 +50,8 @@ func generate_maze_level(include_coins: bool, main_scene, player_start_position:
 	if include_coins:
 		_coin_distributor.populate(grid, start_cell, farthest, maze_offset, cell_size, main_scene)
 
-func generate_maze_keys_level(main_scene, level: int, player_start_position: Vector2) -> void:
-	var layout := _build_layout(main_scene, player_start_position)
+func generate_maze_keys_level(main_scene, level: int, player_start_position: Vector2, options: Dictionary = {}) -> void:
+	var layout := _build_layout(main_scene, player_start_position, options)
 	if layout.is_empty():
 		return
 	var grid: Array = layout.get("grid", [])
@@ -162,8 +162,22 @@ func generate_maze_keys_level(main_scene, level: int, player_start_position: Vec
 				var key_node = LEVEL_NODE_FACTORY.create_key_node(context.key_items.size(), door, key_pos, key_count, door_color)
 				context.key_items.append(key_node)
 				context.add_generated_node(key_node, main_scene)
-		LOGGER.log_generation("Maze+Keys door %d at %s with %d keys" % [door_index_offset + i, str(door_cell), key_count])
+	LOGGER.log_generation("Maze+Keys door %d at %s with %d keys" % [door_index_offset + i, str(door_cell), key_count])
 
-func _build_layout(main_scene, player_start_position: Vector2) -> Dictionary:
+func generate_maze_complex_level(include_coins: bool, main_scene, player_start_position: Vector2) -> void:
+	generate_maze_level(include_coins, main_scene, player_start_position, _complex_layout_options())
+
+func generate_maze_complex_keys_level(main_scene, level: int, player_start_position: Vector2) -> void:
+	generate_maze_keys_level(main_scene, level, player_start_position, _complex_layout_options())
+
+func _build_layout(main_scene, player_start_position: Vector2, options: Dictionary = {}) -> Dictionary:
 	_debug_logger.configure()
-	return _layout_builder.build(main_scene, player_start_position, _debug_logger, PLAYER_COLLISION_SIZE, BLACK_SHADOW_COLOR)
+	return _layout_builder.build(main_scene, player_start_position, _debug_logger, PLAYER_COLLISION_SIZE, BLACK_SHADOW_COLOR, options)
+
+func _complex_layout_options() -> Dictionary:
+	return {
+		"cell_size": context.MAZE_COMPLEX_CELL_SIZE,
+		"wall_ratio": context.MAZE_COMPLEX_WALL_RATIO,
+		"connector_chance": context.MAZE_COMPLEX_CONNECTOR_CHANCE,
+		"random_start": true
+	}

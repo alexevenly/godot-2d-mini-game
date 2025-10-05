@@ -47,6 +47,9 @@ func determine_generation_flags(level_type: int) -> Dictionary:
 		level_type == GAME_STATE.LevelType.MAZE
 		or level_type == GAME_STATE.LevelType.MAZE_COINS
 		or level_type == GAME_STATE.LevelType.MAZE_KEYS
+		or level_type == GAME_STATE.LevelType.MAZE_COMPLEX
+		or level_type == GAME_STATE.LevelType.MAZE_COMPLEX_COINS
+		or level_type == GAME_STATE.LevelType.MAZE_COMPLEX_KEYS
 	):
 		generate_obstacles = false
 		generate_coins = false

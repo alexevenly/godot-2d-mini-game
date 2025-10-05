@@ -12,12 +12,15 @@ extends Control
 var difficulty_names = ["child", "regular", "hard", "challenge"]
 var current_difficulty_index = 1 # Start with "regular"
 var level_type_options = [
-	{"name": "Obstacles + Coins", "type": GameState.LevelType.OBSTACLES_COINS},
-	{"name": "Keys", "type": GameState.LevelType.KEYS},
-	{"name": "Maze", "type": GameState.LevelType.MAZE},
-	{"name": "Maze + Coins", "type": GameState.LevelType.MAZE_COINS},
-	{"name": "Maze + Keys", "type": GameState.LevelType.MAZE_KEYS},
-	{"name": "Random", "type": GameState.LevelType.RANDOM},
+{"name": "Obstacles + Coins", "type": GameState.LevelType.OBSTACLES_COINS},
+{"name": "Keys", "type": GameState.LevelType.KEYS},
+{"name": "Maze", "type": GameState.LevelType.MAZE},
+{"name": "Maze + Coins", "type": GameState.LevelType.MAZE_COINS},
+{"name": "Maze + Keys", "type": GameState.LevelType.MAZE_KEYS},
+{"name": "Maze Complex", "type": GameState.LevelType.MAZE_COMPLEX},
+{"name": "Maze Complex + Coins", "type": GameState.LevelType.MAZE_COMPLEX_COINS},
+{"name": "Maze Complex + Keys", "type": GameState.LevelType.MAZE_COMPLEX_KEYS},
+{"name": "Random", "type": GameState.LevelType.RANDOM},
 ]
 var current_level_type_index = 0
 

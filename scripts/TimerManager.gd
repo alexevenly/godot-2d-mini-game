@@ -46,7 +46,14 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 
 	var speed: float = float(preset["speed"])
 	var type_profile := TIMER_CONFIG.get_type_profile(level_type)
-	var is_maze := level_type == GAME_STATE.LevelType.MAZE or level_type == GAME_STATE.LevelType.MAZE_COINS or level_type == GAME_STATE.LevelType.MAZE_KEYS
+	var is_maze := (
+		level_type == GAME_STATE.LevelType.MAZE
+		or level_type == GAME_STATE.LevelType.MAZE_COINS
+		or level_type == GAME_STATE.LevelType.MAZE_KEYS
+		or level_type == GAME_STATE.LevelType.MAZE_COMPLEX
+		or level_type == GAME_STATE.LevelType.MAZE_COMPLEX_COINS
+		or level_type == GAME_STATE.LevelType.MAZE_COMPLEX_KEYS
+	)
 	var maze_overhead := TIMER_CALC.maze_overhead(is_maze, type_profile, maze_path_length, player_start, exit_pos, speed)
 	var base_path: float = float(maze_overhead.get("base_path", 0.0))
 	if base_path > 0.0:

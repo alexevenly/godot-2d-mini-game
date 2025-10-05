@@ -19,6 +19,9 @@ const DOOR_GROUP_COLORS := [
 
 const MAZE_BASE_CELL_SIZE := 64.0
 const MAZE_WALL_SIZE_RATIO := 0.18
+const MAZE_COMPLEX_CELL_SIZE := 48.0
+const MAZE_COMPLEX_WALL_RATIO := 0.12
+const MAZE_COMPLEX_CONNECTOR_CHANCE := 0.22
 
 var obstacles: Array = []
 var coins: Array[Area2D] = []
@@ -69,6 +72,12 @@ func generate_level(level_size := 1.0, generate_obstacles := true, generate_coin
 			maze_generator.generate_maze_level(true, main_scene, player_start_position)
 		GAME_STATE.LevelType.MAZE_KEYS:
 			maze_generator.generate_maze_keys_level(main_scene, level, player_start_position)
+		GAME_STATE.LevelType.MAZE_COMPLEX:
+			maze_generator.generate_maze_complex_level(false, main_scene, player_start_position)
+		GAME_STATE.LevelType.MAZE_COMPLEX_COINS:
+			maze_generator.generate_maze_complex_level(true, main_scene, player_start_position)
+		GAME_STATE.LevelType.MAZE_COMPLEX_KEYS:
+			maze_generator.generate_maze_complex_keys_level(main_scene, level, player_start_position)
 		_:
 			_generate_standard_level(level_size, generate_obstacles, generate_coins, min_exit_distance_ratio, use_full_map_coverage, main_scene, level, preserved_coin_count, player_start_position)
 	return 0
