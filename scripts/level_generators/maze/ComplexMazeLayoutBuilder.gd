@@ -16,18 +16,30 @@ func _init(level_context):
 	_carver = CARVER.new()
 	_wall_spawner = WALL_SPAWNER.new(_context)
 
-func build(main_scene, player_start_position: Vector2, debug_logger, player_collision_size: float, shadow_color: Color) -> Dictionary:
+func build(
+	main_scene,
+	player_start_position: Vector2,
+	debug_logger,
+	player_collision_size: float,
+	shadow_color: Color
+) -> Dictionary:
 	var dims = LEVEL_UTILS.get_scaled_level_dimensions(_context.current_level_size)
 	var level_width: float = float(dims.width)
 	var level_height: float = float(dims.height)
 	var offset = Vector2(dims.offset_x, dims.offset_y)
-	var cell_size = _context.MAZE_BASE_CELL_SIZE
-	var grid_cols = int(floor(level_width / cell_size))
-	var grid_rows = int(floor(level_height / cell_size))
-	grid_cols = max(grid_cols | 1, 5)
-	grid_rows = max(grid_rows | 1, 5)
-	var cell_cols = max(int((grid_cols - 1) / 2), 2)
-	var cell_rows = max(int((grid_rows - 1) / 2), 2)
+	var base_cell_size = _context.MAZE_BASE_CELL_SIZE * 0.5
+	var grid_cols = int(floor(level_width / base_cell_size))
+	var grid_rows = int(floor(level_height / base_cell_size))
+	if grid_cols < 3:
+		grid_cols = 3
+	if grid_rows < 3:
+		grid_rows = 3
+	if (grid_cols & 1) == 0:
+		grid_cols -= 1
+	if (grid_rows & 1) == 0:
+		grid_rows -= 1
+	var cell_cols = max(int((grid_cols - 1) / 2), 1)
+	var cell_rows = max(int((grid_rows - 1) / 2), 1)
 	var allow_multiple_paths := true
 	if _context and _context.has_method("get"):
 		var flag = _context.get("complex_maze_allow_multiple_paths")
@@ -41,6 +53,14 @@ func build(main_scene, player_start_position: Vector2, debug_logger, player_coll
 		return {}
 	var maze_rows = grid.size()
 	var maze_cols = grid[0].size()
+	var safe_cols = max(maze_cols, 1)
+	var safe_rows = max(maze_rows, 1)
+	var cell_size = min(
+		level_width / float(safe_cols),
+		level_height / float(safe_rows)
+	)
+	if cell_size <= 0.0:
+		cell_size = 8.0
 	var maze_width = float(maze_cols) * cell_size
 	var maze_height = float(maze_rows) * cell_size
 	var maze_offset = offset + Vector2((level_width - maze_width) * 0.5, (level_height - maze_height) * 0.5)

@@ -27,11 +27,11 @@ var _stack: Array = []
 var _start_cell: Cell = null
 
 func generate(columns: int, rows: int, allow_multiple_paths := true) -> Dictionary:
-	_columns = max(columns, 2)
-	_rows = max(rows, 2)
+	_columns = max(columns, 1)
+	_rows = max(rows, 1)
 	_init_collections()
 	_create_cells()
-	_create_centre()
+	_select_start_cell()
 	_run_algorithm()
 	if allow_multiple_paths:
 		_add_extra_connections()
@@ -39,7 +39,7 @@ func generate(columns: int, rows: int, allow_multiple_paths := true) -> Dictiona
 	var exit_grid := _make_exit_in_cell(exit_cell)
 	return {
 		"grid": _build_grid(),
-		"start_cell": _cell_to_grid_coords(_start_cell.grid_pos),
+		"start_cell": _cell_to_grid_coords(_start_cell.grid_pos) if _start_cell else Vector2i.ZERO,
 		"exit_cell": exit_grid,
 		"grid_cols": _columns * 2 + 1,
 		"grid_rows": _rows * 2 + 1
@@ -58,30 +58,22 @@ func _create_cells() -> void:
 			_cells[cell.grid_pos] = cell
 			_unvisited.append(cell)
 
-func _create_centre() -> void:
-	var left = int(_columns / 2) - 1
-	var right = int(_columns / 2)
-	var top = int(_rows / 2) - 1
-	var bottom = int(_rows / 2)
-	var centres = [
-		_cells.get(Vector2i(left, top)),
-		_cells.get(Vector2i(right, top)),
-		_cells.get(Vector2i(left, bottom)),
-		_cells.get(Vector2i(right, bottom))
-	]
-	for cell in centres:
-		if cell == null: continue
-		_remove_wall(cell, RIGHT if cell.grid_pos.x == left else LEFT)
-		_remove_wall(cell, DOWN if cell.grid_pos.y == top else UP)
-	var indices = [0, 1, 2, 3]
-	indices.shuffle()
-	_start_cell = centres[indices.pop_front()]
-	_remove_from_unvisited(_start_cell)
-	for idx in indices:
-		_remove_from_unvisited(centres[idx])
+func _select_start_cell() -> void:
+	if _cells.is_empty():
+		return
+	var center = Vector2i(_columns / 2, _rows / 2)
+	_start_cell = _cells.get(center)
+	if _start_cell == null:
+		var values: Array = _cells.values()
+		if values.size() > 0:
+			values.shuffle()
+			_start_cell = values[0]
+	if _start_cell:
+		_remove_from_unvisited(_start_cell)
 
 func _run_algorithm() -> void:
-	if _start_cell == null: return
+	if _start_cell == null:
+		return
 	var current = _start_cell
 	while _unvisited.size() > 0:
 		var neighbours = _get_unvisited_neighbours(current)
@@ -98,7 +90,8 @@ func _run_algorithm() -> void:
 
 func _get_unvisited_neighbours(cell: Cell) -> Array:
 	var result: Array = []
-	if cell == null: return result
+	if cell == null:
+		return result
 	var pos = cell.grid_pos
 	for offset in [Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, -1), Vector2i(0, 1)]:
 		var candidate: Cell = _cells.get(pos + offset)
@@ -107,10 +100,12 @@ func _get_unvisited_neighbours(cell: Cell) -> Array:
 	return result
 
 func _remove_from_unvisited(cell: Cell) -> void:
-	if cell and _unvisited.has(cell): _unvisited.erase(cell)
+	if cell and _unvisited.has(cell):
+		_unvisited.erase(cell)
 
 func _compare_walls(current: Cell, neighbour: Cell) -> void:
-	if current == null or neighbour == null: return
+	if current == null or neighbour == null:
+		return
 	if neighbour.grid_pos.x < current.grid_pos.x:
 		_remove_wall(neighbour, RIGHT)
 		_remove_wall(current, LEFT)
@@ -125,7 +120,8 @@ func _compare_walls(current: Cell, neighbour: Cell) -> void:
 		_remove_wall(current, UP)
 
 func _remove_wall(cell: Cell, direction: int) -> void:
-	if cell == null: return
+	if cell == null:
+		return
 	match direction:
 		LEFT:
 			cell.wall_left = false
@@ -191,7 +187,8 @@ func _opposite_direction(direction: int) -> int:
 	return LEFT
 
 func _make_exit_in_cell(cell: Cell) -> Vector2i:
-	if cell == null: return Vector2i.ZERO
+	if cell == null:
+		return Vector2i.ZERO
 	var grid_coords = _cell_to_grid_coords(cell.grid_pos)
 	var exit_coords = grid_coords
 	if cell.grid_pos.x == 0:
@@ -218,15 +215,21 @@ func _build_grid() -> Array:
 	for y in range(rows):
 		var row := []
 		row.resize(cols)
-		for x in range(cols): row[x] = true
+		for x in range(cols):
+			row[x] = true
 		grid.append(row)
 	for cell in _cells.values():
 		var typed: Cell = cell
-		if typed == null: continue
+		if typed == null:
+			continue
 		var grid_pos = _cell_to_grid_coords(typed.grid_pos)
 		grid[grid_pos.y][grid_pos.x] = false
-		if not typed.wall_left: grid[grid_pos.y][grid_pos.x - 1] = false
-		if not typed.wall_right: grid[grid_pos.y][grid_pos.x + 1] = false
-		if not typed.wall_up: grid[grid_pos.y - 1][grid_pos.x] = false
-		if not typed.wall_down: grid[grid_pos.y + 1][grid_pos.x] = false
+		if not typed.wall_left:
+			grid[grid_pos.y][grid_pos.x - 1] = false
+		if not typed.wall_right:
+			grid[grid_pos.y][grid_pos.x + 1] = false
+		if not typed.wall_up:
+			grid[grid_pos.y - 1][grid_pos.x] = false
+		if not typed.wall_down:
+			grid[grid_pos.y + 1][grid_pos.x] = false
 	return grid
