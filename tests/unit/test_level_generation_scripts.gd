@@ -6,6 +6,7 @@ const KeyLevelGenerator = preload("res://scripts/level_generators/KeyLevelGenera
 const MazeGenerator = preload("res://scripts/level_generators/MazeGenerator.gd")
 const MazeDoorAndKeyPlanner = preload("res://scripts/level_generators/maze/MazeDoorAndKeyPlanner.gd")
 const KeyDoorPlanner = preload("res://scripts/level_generators/key/KeyDoorPlanner.gd")
+const KeyPlacementUtils = preload("res://scripts/level_generators/key/KeyPlacementUtils.gd")
 const ObstacleSpawner = preload("res://scripts/ObstacleSpawner.gd")
 const CoinSpawner = preload("res://scripts/CoinSpawner.gd")
 const LevelUtils = preload("res://scripts/LevelUtils.gd")
@@ -109,7 +110,16 @@ func test_key_door_planner_respects_bounds_and_obstacles() -> void:
 	var keys := planner.pick_keys_for_door(door_center, 2, offset, level_width, level_height, spawn_override, exit_position, used_positions)
 	assert_eq(keys.size(), 2)
 	assert_eq(used_positions.size(), 2)
-	var bounds := planner._compute_key_bounds(offset, level_width, level_height, door_center.x)
+	var bounds := KeyPlacementUtils.compute_key_bounds(
+		offset,
+		level_width,
+		level_height,
+		door_center.x,
+		KeyDoorPlanner.KEY_CLEARANCE,
+		KeyDoorPlanner.KEY_SIZE,
+		KeyDoorPlanner.LEVEL_MARGIN,
+		KeyDoorPlanner.ACCESSIBLE_MARGIN_FALLBACK
+	)
 	var horizontal_min: float = bounds["min_x"]
 	var horizontal_max: float = bounds["max_x"]
 	var vertical_min: float = bounds["min_y"]

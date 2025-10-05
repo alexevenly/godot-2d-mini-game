@@ -2,14 +2,8 @@ extends RefCounted
 
 class_name KeyUIManager
 
-const NEUTRAL_COLOR := Color(1, 1, 1, 1)
-const DEFAULT_KEY_COLOR := Color(0.9, 0.9, 0.2, 1.0)
-const DEFAULT_DOOR_COLOR := Color(0.35, 0.35, 0.75, 1.0)
-const CHECKBOX_SIZE := Vector2(28, 28)
-const CHECKBOX_BORDER_COLOR := Color(1, 1, 1, 1)
-const CHECKBOX_PRESSED_ALPHA := 0.45
-const CHECKBOX_HOVER_ALPHA := 0.35
-const CHECKBOX_BASE_ALPHA := 0.25
+const CHECKBOX_FACTORY = preload("res://scripts/main/ui/KeyUICheckboxFactory.gd")
+const COLOR_RESOLVER = preload("res://scripts/main/ui/KeyUIColorResolver.gd")
 
 var key_container: Control = null
 var key_status_container: Control = null
@@ -24,7 +18,7 @@ var door_index_by_id: Dictionary = {}
 var door_colors_by_id: Dictionary = {}
 
 func setup_containers(
-key_container_ref: Control,
+	key_container_ref: Control,
 	key_status_container_ref: Control,
 	door_container_ref: Control = null,
 	door_status_container_ref: Control = null
@@ -39,11 +33,11 @@ func clear() -> void:
 	available_key_colors_by_door.clear()
 	collected_colors.clear()
 	target_collected_count = 0
-	_clear_key_checkboxes()
-	_clear_door_checkboxes()
+	_clear_keys()
+	_clear_doors()
 
 func build_from_keys(key_nodes: Array[Area2D]) -> void:
-	_clear_key_checkboxes()
+	_clear_keys()
 	available_key_colors_by_door.clear()
 	collected_colors.clear()
 	target_collected_count = 0
@@ -51,38 +45,38 @@ func build_from_keys(key_nodes: Array[Area2D]) -> void:
 		key_nodes = [] as Array[Area2D]
 	var total_keys: int = key_nodes.size()
 	if total_keys <= 0 or key_status_container == null:
-		_update_container_visibility(key_container, key_checkbox_nodes)
+		CHECKBOX_FACTORY.update_visibility(key_container, key_checkbox_nodes)
 		return
 	for index in range(total_keys):
-		var checkbox: Button = _create_status_checkbox()
+		var checkbox: Button = CHECKBOX_FACTORY.create_checkbox()
 		var key_node: Area2D = key_nodes[index] if index < key_nodes.size() else null
-		var metadata := _resolve_key_metadata(key_node, index)
+		var metadata := COLOR_RESOLVER.resolve_key_metadata(key_node, index, CHECKBOX_FACTORY.DEFAULT_KEY_COLOR)
 		var door_colors: Array = available_key_colors_by_door.get(metadata.id, [])
 		door_colors.append(metadata.color)
 		available_key_colors_by_door[metadata.id] = door_colors
 		key_status_container.add_child(checkbox)
 		key_checkbox_nodes.append(checkbox)
-	_update_container_visibility(key_container, key_checkbox_nodes)
+	CHECKBOX_FACTORY.update_visibility(key_container, key_checkbox_nodes)
 	_refresh_checkboxes()
 
 func build_from_doors(door_nodes: Array) -> void:
-	_clear_door_checkboxes()
+	_clear_doors()
 	if door_nodes == null:
 		door_nodes = [] as Array[StaticBody2D]
 	var total_doors: int = door_nodes.size()
 	if total_doors <= 0 or door_status_container == null:
-		_update_container_visibility(door_container, door_checkbox_nodes)
+		CHECKBOX_FACTORY.update_visibility(door_container, door_checkbox_nodes)
 		return
 	for index in range(total_doors):
-		var checkbox: Button = _create_status_checkbox()
+		var checkbox: Button = CHECKBOX_FACTORY.create_checkbox()
 		var door_body: StaticBody2D = door_nodes[index] if index < door_nodes.size() else null
-		var door_id: int = _resolve_door_identifier(door_body, index)
-		var door_color: Color = _resolve_door_color(door_body, DEFAULT_DOOR_COLOR)
+		var door_id: int = COLOR_RESOLVER.resolve_door_identifier(door_body, index)
+		var door_color: Color = COLOR_RESOLVER.resolve_door_color(door_body, CHECKBOX_FACTORY.DEFAULT_DOOR_COLOR)
 		door_index_by_id[door_id] = door_checkbox_nodes.size()
 		door_colors_by_id[door_id] = door_color
 		door_status_container.add_child(checkbox)
 		door_checkbox_nodes.append(checkbox)
-	_update_container_visibility(door_container, door_checkbox_nodes)
+	CHECKBOX_FACTORY.update_visibility(door_container, door_checkbox_nodes)
 
 func update_key_status_display(collected_keys: int) -> void:
 	target_collected_count = clamp(collected_keys, 0, key_checkbox_nodes.size())
@@ -90,7 +84,7 @@ func update_key_status_display(collected_keys: int) -> void:
 
 func mark_key_collected(door_id: int) -> void:
 	var color_queue: Array = available_key_colors_by_door.get(door_id, [])
-	var key_color: Color = DEFAULT_KEY_COLOR
+	var key_color: Color = CHECKBOX_FACTORY.DEFAULT_KEY_COLOR
 	if color_queue.size() > 0:
 		key_color = color_queue[0]
 		color_queue.remove_at(0)
@@ -104,7 +98,7 @@ func mark_door_opened(door_id: int, door_color: Color) -> void:
 	if target_index < 0:
 		if door_status_container == null:
 			return
-		var new_checkbox: Button = _create_status_checkbox()
+		var new_checkbox: Button = CHECKBOX_FACTORY.create_checkbox()
 		door_status_container.add_child(new_checkbox)
 		door_checkbox_nodes.append(new_checkbox)
 		target_index = door_checkbox_nodes.size() - 1
@@ -112,11 +106,11 @@ func mark_door_opened(door_id: int, door_color: Color) -> void:
 	var checkbox: Button = door_checkbox_nodes[target_index]
 	if checkbox == null or not is_instance_valid(checkbox):
 		return
-	var color_to_use: Color = door_color if typeof(door_color) == TYPE_COLOR else DEFAULT_DOOR_COLOR
+	var color_to_use: Color = door_color if typeof(door_color) == TYPE_COLOR else CHECKBOX_FACTORY.DEFAULT_DOOR_COLOR
 	door_colors_by_id[door_id] = color_to_use
 	checkbox.button_pressed = true
 	checkbox.modulate = color_to_use
-	_update_container_visibility(door_container, door_checkbox_nodes)
+	CHECKBOX_FACTORY.update_visibility(door_container, door_checkbox_nodes)
 
 func _refresh_checkboxes() -> void:
 	for index in range(key_checkbox_nodes.size()):
@@ -127,111 +121,16 @@ func _refresh_checkboxes() -> void:
 		checkbox.button_pressed = is_collected
 		if is_collected:
 			var color_index: int = min(index, collected_colors.size() - 1)
-			var collected_color: Color = collected_colors[color_index] if color_index >= 0 else DEFAULT_KEY_COLOR
+			var collected_color: Color = collected_colors[color_index] if color_index >= 0 else CHECKBOX_FACTORY.DEFAULT_KEY_COLOR
 			checkbox.modulate = collected_color
 		else:
-			checkbox.modulate = NEUTRAL_COLOR
-	_update_container_visibility(key_container, key_checkbox_nodes)
+			checkbox.modulate = CHECKBOX_FACTORY.NEUTRAL_COLOR
+	CHECKBOX_FACTORY.update_visibility(key_container, key_checkbox_nodes)
 
-func _create_status_checkbox() -> Button:
-	var checkbox: Button = Button.new()
-	checkbox.toggle_mode = true
-	checkbox.focus_mode = Control.FOCUS_NONE
-	checkbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	checkbox.button_pressed = false
-	checkbox.text = ""
-	checkbox.flat = false
-	checkbox.modulate = NEUTRAL_COLOR
-	checkbox.custom_minimum_size = CHECKBOX_SIZE
-	checkbox.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	checkbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	_apply_checkbox_theme(checkbox)
-	return checkbox
+func _clear_keys() -> void:
+	CHECKBOX_FACTORY.clear_container_nodes(key_status_container, key_checkbox_nodes)
 
-func _apply_checkbox_theme(checkbox: Button) -> void:
-	var base_style := StyleBoxFlat.new()
-	base_style.bg_color = Color(1, 1, 1, CHECKBOX_BASE_ALPHA)
-	base_style.border_color = CHECKBOX_BORDER_COLOR
-	base_style.set_border_width_all(2)
-	base_style.set_corner_radius_all(0)
-	base_style.set_content_margin_all(0)
-	var hover_style: StyleBoxFlat = base_style.duplicate()
-	hover_style.bg_color = Color(1, 1, 1, CHECKBOX_HOVER_ALPHA)
-	var pressed_style: StyleBoxFlat = base_style.duplicate()
-	pressed_style.bg_color = Color(1, 1, 1, CHECKBOX_PRESSED_ALPHA)
-	var disabled_style: StyleBoxFlat = base_style.duplicate()
-	disabled_style.bg_color = Color(1, 1, 1, CHECKBOX_BASE_ALPHA)
-	checkbox.add_theme_stylebox_override("normal", base_style)
-	checkbox.add_theme_stylebox_override("hover", hover_style)
-	checkbox.add_theme_stylebox_override("pressed", pressed_style)
-	checkbox.add_theme_stylebox_override("disabled", disabled_style)
-	checkbox.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-
-func _resolve_door_identifier(source, fallback: int) -> int:
-	if source and source.has_method("get"):
-		var door_value = source.get("door_id")
-		if door_value != null:
-			return int(door_value)
-	return fallback
-
-func _resolve_key_metadata(key_node: Area2D, fallback_id: int) -> Dictionary:
-	var door_id := fallback_id
-	var color := DEFAULT_KEY_COLOR
-	if key_node:
-		door_id = _resolve_door_identifier(key_node, fallback_id)
-		color = _resolve_key_color(key_node, DEFAULT_KEY_COLOR)
-	return {
-		"id": door_id,
-		"color": color
-	}
-
-func _resolve_key_color(key_node: Area2D, fallback: Color) -> Color:
-	if key_node == null:
-		return fallback
-	if key_node.has_meta("group_color"):
-		var meta_color = key_node.get_meta("group_color")
-		if typeof(meta_color) == TYPE_COLOR:
-			return meta_color
-	if key_node.has_method("get"):
-		var property_color = key_node.get("group_color")
-		if typeof(property_color) == TYPE_COLOR:
-			return property_color
-	return fallback
-
-func _resolve_door_color(door_body, fallback: Color) -> Color:
-	if door_body == null:
-		return fallback
-	if door_body.has_method("get_door_color"):
-		var door_color = door_body.get_door_color()
-		if typeof(door_color) == TYPE_COLOR:
-			return door_color
-	if door_body.has_meta("group_color"):
-		var meta_color = door_body.get_meta("group_color")
-		if typeof(meta_color) == TYPE_COLOR:
-			return meta_color
-	if door_body.has_method("get"):
-		var property_color = door_body.get("door_color")
-		if typeof(property_color) == TYPE_COLOR:
-			return property_color
-	return fallback
-
-func _clear_container_nodes(container: Control, nodes: Array) -> void:
-	if container:
-		for child in container.get_children():
-			var control_child: Control = child as Control
-			if control_child and is_instance_valid(control_child):
-				control_child.queue_free()
-	nodes.clear()
-	_update_container_visibility(container, nodes)
-
-func _clear_key_checkboxes() -> void:
-	_clear_container_nodes(key_status_container, key_checkbox_nodes)
-
-func _clear_door_checkboxes() -> void:
-	_clear_container_nodes(door_status_container, door_checkbox_nodes)
+func _clear_doors() -> void:
+	CHECKBOX_FACTORY.clear_container_nodes(door_status_container, door_checkbox_nodes)
 	door_index_by_id.clear()
 	door_colors_by_id.clear()
-
-func _update_container_visibility(container: Control, nodes: Array) -> void:
-	if container:
-		container.visible = nodes.size() > 0
