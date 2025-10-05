@@ -5,7 +5,7 @@ const GameLogger = preload("res://scripts/Logger.gd")
 
 # Game state management
 enum GameStateType {PLAYING, WON, LOST}
-enum LevelType {OBSTACLES_COINS, KEYS, MAZE, MAZE_COINS, MAZE_KEYS, RANDOM, CHALLENGE}
+enum LevelType {OBSTACLES_COINS, KEYS, MAZE, MAZE_COINS, MAZE_KEYS, MAZE_COMPLEX, MAZE_COMPLEX_COINS, MAZE_COMPLEX_KEYS, RANDOM, CHALLENGE}
 var current_state = GameStateType.PLAYING
 
 # Progressive level scaling
@@ -142,8 +142,18 @@ func _refresh_level_type(force_new: bool = false):
 	if previous_type != current_level_type:
 		GameLogger.log_game_mode("Current level type set to %s" % _get_level_type_label(current_level_type))
 
+
 func _pick_random_level_type() -> LevelType:
-	var options: Array = [LevelType.OBSTACLES_COINS, LevelType.KEYS, LevelType.MAZE, LevelType.MAZE_COINS, LevelType.MAZE_KEYS]
+	var options: Array = [
+		LevelType.OBSTACLES_COINS,
+		LevelType.KEYS,
+		LevelType.MAZE,
+		LevelType.MAZE_COINS,
+		LevelType.MAZE_KEYS,
+		LevelType.MAZE_COMPLEX,
+		LevelType.MAZE_COMPLEX_COINS,
+		LevelType.MAZE_COMPLEX_KEYS
+	]
 	if options.is_empty():
 		return LevelType.OBSTACLES_COINS
 	return options[randi() % options.size()]
@@ -160,6 +170,12 @@ func _get_level_type_label(level_type: LevelType) -> String:
 			return "Maze + Coins"
 		LevelType.MAZE_KEYS:
 			return "Maze + Keys"
+		LevelType.MAZE_COMPLEX:
+			return "Maze complex"
+		LevelType.MAZE_COMPLEX_COINS:
+			return "Maze complex + Coins"
+		LevelType.MAZE_COMPLEX_KEYS:
+			return "Maze complex + Keys"
 		LevelType.RANDOM:
 			return "Random"
 		LevelType.CHALLENGE:
@@ -167,7 +183,16 @@ func _get_level_type_label(level_type: LevelType) -> String:
 	return str(level_type)
 
 func _generate_challenge_sequence() -> void:
-	var base: Array = [LevelType.OBSTACLES_COINS, LevelType.KEYS, LevelType.MAZE, LevelType.MAZE_COINS, LevelType.MAZE_KEYS]
+	var base: Array = [
+		LevelType.OBSTACLES_COINS,
+		LevelType.KEYS,
+		LevelType.MAZE,
+		LevelType.MAZE_COINS,
+		LevelType.MAZE_KEYS,
+		LevelType.MAZE_COMPLEX,
+		LevelType.MAZE_COMPLEX_COINS,
+		LevelType.MAZE_COMPLEX_KEYS
+	]
 	base.shuffle()
 	var sequence: Array = []
 	for item in base:
@@ -182,3 +207,4 @@ func _generate_challenge_sequence() -> void:
 	while sequence.size() < 7:
 		sequence.append(base[(sequence.size() + attempts) % base.size()])
 	challenge_sequence = sequence
+

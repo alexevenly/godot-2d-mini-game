@@ -18,6 +18,9 @@ class MazeGeneratorStub extends RefCounted:
 	var last_spawn := Vector2.ZERO
 	var keys_call_count := 0
 	var last_key_level := 0
+	var complex_include_coins := false
+	var complex_keys_call_count := 0
+	var last_complex_level := 0
 
 	func generate_maze_level(include_coins: bool, main_scene, player_start_position: Vector2) -> void:
 		last_include_coins = include_coins
@@ -28,6 +31,17 @@ class MazeGeneratorStub extends RefCounted:
 		keys_call_count += 1
 		last_scene = main_scene
 		last_key_level = level
+		last_spawn = player_start_position
+
+	func generate_complex_maze_level(include_coins: bool, main_scene, player_start_position: Vector2) -> void:
+		complex_include_coins = include_coins
+		last_scene = main_scene
+		last_spawn = player_start_position
+
+	func generate_complex_maze_keys_level(main_scene, level: int, player_start_position: Vector2) -> void:
+		complex_keys_call_count += 1
+		last_scene = main_scene
+		last_complex_level = level
 		last_spawn = player_start_position
 
 class KeyGeneratorStub extends RefCounted:
@@ -93,6 +107,18 @@ func test_generate_level_dispatches_to_branch_generators() -> void:
 	_dispatch_generate(generator, 5, Vector2.ZERO, GameState.LevelType.MAZE_KEYS)
 	assert_eq(maze_stub.keys_call_count, 1)
 	assert_eq(maze_stub.last_key_level, 5)
+
+	_dispatch_generate(generator, 2, Vector2(7, 7), GameState.LevelType.MAZE_COMPLEX)
+	assert_false(maze_stub.complex_include_coins)
+	assert_vector_near(maze_stub.last_spawn, Vector2(7, 7), 0.0001)
+
+	_dispatch_generate(generator, 2, Vector2(8, 9), GameState.LevelType.MAZE_COMPLEX_COINS)
+	assert_true(maze_stub.complex_include_coins)
+	assert_vector_near(maze_stub.last_spawn, Vector2(8, 9), 0.0001)
+
+	_dispatch_generate(generator, 4, Vector2(3, 1), GameState.LevelType.MAZE_COMPLEX_KEYS)
+	assert_eq(maze_stub.complex_keys_call_count, 1)
+	assert_eq(maze_stub.last_complex_level, 4)
 
 func test_clear_existing_objects_resets_state_and_notifies_spawners() -> void:
 	var generator := track_node(LevelGenerator.new())
