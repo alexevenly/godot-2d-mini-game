@@ -310,6 +310,7 @@ func _build_grid() -> Array:
 			grid[grid_pos.y + 1][grid_pos.x] = false
 	return grid
 
+
 func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scene) -> void:
 	var rows = grid.size()
 	if rows <= 0:
@@ -317,31 +318,68 @@ func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scen
 	var cols = grid[0].size()
 	var thickness = cell_size * _context.MAZE_WALL_SIZE_RATIO
 	var half_thickness = thickness * 0.5
-	for y in range(rows):
-		for x in range(cols):
-			if grid[y][x]:
+	for y in range(rows + 1):
+		var x := 0
+		while x < cols:
+			while x < cols and not _needs_horizontal_wall(grid, y, x):
+				x += 1
+			if x >= cols:
+				break
+			var start = x
+			while x < cols and _needs_horizontal_wall(grid, y, x):
+				x += 1
+			var span = x - start
+			if span <= 0:
 				continue
-			var base := offset + Vector2(x * cell_size, y * cell_size)
-			if y == 0 or grid[y - 1][x]:
-				var top_wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(_context.maze_walls.size(), cell_size, thickness, WALL_COLOR)
-				top_wall.position = base + Vector2(0.0, -half_thickness)
-				_context.maze_walls.append(top_wall)
-				_context.add_generated_node(top_wall, main_scene)
-			if y == rows - 1 or grid[y + 1][x]:
-				var bottom_wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(_context.maze_walls.size(), cell_size, thickness, WALL_COLOR)
-				bottom_wall.position = base + Vector2(0.0, cell_size - half_thickness)
-				_context.maze_walls.append(bottom_wall)
-				_context.add_generated_node(bottom_wall, main_scene)
-			if x == 0 or grid[y][x - 1]:
-				var left_wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(_context.maze_walls.size(), thickness, cell_size, WALL_COLOR)
-				left_wall.position = base + Vector2(-half_thickness, 0.0)
-				_context.maze_walls.append(left_wall)
-				_context.add_generated_node(left_wall, main_scene)
-			if x == cols - 1 or grid[y][x + 1]:
-				var right_wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(_context.maze_walls.size(), thickness, cell_size, WALL_COLOR)
-				right_wall.position = base + Vector2(cell_size - half_thickness, 0.0)
-				_context.maze_walls.append(right_wall)
-				_context.add_generated_node(right_wall, main_scene)
+			var width = float(span) * cell_size
+			var wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(_context.maze_walls.size(), width, thickness, WALL_COLOR)
+			wall.position = offset + Vector2(start * cell_size, y * cell_size - half_thickness)
+			_context.maze_walls.append(wall)
+			_context.add_generated_node(wall, main_scene)
+	for column in range(cols + 1):
+		var y := 0
+		while y < rows:
+			while y < rows and not _needs_vertical_wall(grid, column, y):
+				y += 1
+			if y >= rows:
+				break
+			var start = y
+			while y < rows and _needs_vertical_wall(grid, column, y):
+				y += 1
+			var span = y - start
+			if span <= 0:
+				continue
+			var height = float(span) * cell_size
+			var wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(_context.maze_walls.size(), thickness, height, WALL_COLOR)
+			wall.position = offset + Vector2(column * cell_size - half_thickness, start * cell_size)
+			_context.maze_walls.append(wall)
+			_context.add_generated_node(wall, main_scene)
+
+func _needs_horizontal_wall(grid: Array, y: int, x: int) -> bool:
+	var rows = grid.size()
+	if rows <= 0:
+		return false
+	var cols = grid[0].size()
+	if x < 0 or x >= cols:
+		return false
+	if y <= 0:
+		return not grid[0][x]
+	if y >= rows:
+		return not grid[rows - 1][x]
+	return grid[y - 1][x] != grid[y][x]
+
+func _needs_vertical_wall(grid: Array, x: int, y: int) -> bool:
+	var rows = grid.size()
+	if rows <= 0:
+		return false
+	var cols = grid[0].size()
+	if y < 0 or y >= rows:
+		return false
+	if x <= 0:
+		return not grid[y][0]
+	if x >= cols:
+		return not grid[y][cols - 1]
+	return grid[y][x - 1] != grid[y][x]
 
 func _fill_unreachable_areas(main_scene, grid: Array, start_cell: Vector2i, offset: Vector2, cell_size: float, player_collision_size: float, shadow_color: Color, debug_logger) -> void:
 	var job = MAZE_REACHABILITY_JOB.new()

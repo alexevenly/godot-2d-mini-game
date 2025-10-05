@@ -8,7 +8,7 @@ const DEFAULT_PROFILE := {
 	"scale_end": 1.0,
 	"buffer_bias": 0.0,
 	"flat_bonus": 0.0
-}
+	}
 
 const DIFFICULTY_PRESETS := {
 	"child": {
@@ -32,7 +32,7 @@ const DIFFICULTY_PRESETS := {
 		"min_time": 8.0, "speed": 360.0, "per_coin_sec": 0.00, "global_scale": 0.88,
 		"buf_cap_start": 4.0, "buf_cap_end": 1.3, "cap_half_life": 1.8
 	}
-}
+	}
 
 const LEVEL_TYPE_TUNING := {
 	GAME_STATE.LevelType.OBSTACLES_COINS: {
@@ -85,13 +85,55 @@ const LEVEL_TYPE_TUNING := {
 		"maze_path_floor": 1.02, # Reduced from 1.12
 		"maze_fallback_factor": 1.18 # Reduced from 1.28
 	},
+	GAME_STATE.LevelType.MAZE_COMPLEX: {
+		"scale_start": 1.05,
+		"scale_end": 0.85,
+		"buffer_bias": 0.12,
+		"flat_bonus": 1.6,
+		"maze_slack_curve": Vector2(3.4, 7.0),
+		"maze_path_scale": 0.62,
+		"maze_path_cap": 7.2,
+		"maze_base_scale": 0.50,
+		"maze_fallback_slack": 4.2,
+		"maze_ratio_span": 2.3,
+		"maze_path_floor": 1.05,
+		"maze_fallback_factor": 1.20
+	},
+	GAME_STATE.LevelType.MAZE_COMPLEX_COINS: {
+		"scale_start": 1.08,
+		"scale_end": 0.88,
+		"buffer_bias": 0.16,
+		"flat_bonus": 2.2,
+		"maze_slack_curve": Vector2(3.8, 7.6),
+		"maze_path_scale": 0.66,
+		"maze_path_cap": 7.8,
+		"maze_base_scale": 0.55,
+		"maze_fallback_slack": 4.6,
+		"maze_ratio_span": 2.5,
+		"maze_path_floor": 1.08,
+		"maze_fallback_factor": 1.24
+	},
+	GAME_STATE.LevelType.MAZE_COMPLEX_KEYS: {
+		"scale_start": 1.12,
+		"scale_end": 0.92,
+		"buffer_bias": 0.20,
+		"flat_bonus": 2.9,
+		"maze_slack_curve": Vector2(4.2, 8.4),
+		"maze_path_scale": 0.72,
+		"maze_path_cap": 8.2,
+		"maze_base_scale": 0.60,
+		"maze_fallback_slack": 5.3,
+		"maze_ratio_span": 2.8,
+		"maze_path_floor": 1.12,
+		"maze_fallback_factor": 1.28
+	},
 	GAME_STATE.LevelType.KEYS: {
 		"scale_start": 2.7, # x2.5 time multiplier
 		"scale_end": 2.4, # x2.5 time multiplier
 		"buffer_bias": 0.15, # Increased buffer
 		"flat_bonus": 3.0 # Increased flat bonus for no coins
 	}
-}
+	}
 
 const BASE_TIME_PER_LEVEL := 22.0
 
