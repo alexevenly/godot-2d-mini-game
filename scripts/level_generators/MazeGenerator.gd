@@ -137,15 +137,20 @@ func generate_maze_keys_level(main_scene, level: int, player_start_position: Vec
 				key_cells.append(fallback_cell)
 				var fallback_world = MAZE_UTILS.maze_cell_to_world(fallback_cell, maze_offset, cell_size)
 				key_world_positions.append(fallback_world)
-		if key_cells.is_empty():
-			for path_cell in path:
-				if path_cell == start_cell or path_cell == exit_cell or path_cell == door_cell:
-					continue
-				if taken_cells.has(path_cell):
-					continue
-				key_cells.append(path_cell)
-				key_world_positions.append(MAZE_UTILS.maze_cell_to_world(path_cell, maze_offset, cell_size))
-				break
+			if key_cells.is_empty():
+				var door_path_index: int = int(path_index.get(door_cell, path.size()))
+				for idx in range(door_path_index):
+					var path_cell: Vector2i = path[idx]
+					if path_cell == start_cell or path_cell == exit_cell or path_cell == door_cell:
+						continue
+					if taken_cells.has(path_cell):
+						continue
+					key_cells.append(path_cell)
+					key_world_positions.append(MAZE_UTILS.maze_cell_to_world(path_cell, maze_offset, cell_size))
+					break
+				if key_cells.is_empty() and not taken_cells.has(start_cell):
+					key_cells.append(start_cell)
+					key_world_positions.append(start_world)
 		for cell in key_cells:
 			taken_cells.append(cell)
 		var color = context.get_group_color(i)
