@@ -7,16 +7,6 @@ const LEVEL_NODE_FACTORY := preload("res://scripts/level_generators/LevelNodeFac
 const MAZE_REACHABILITY_JOB: GDScript = preload("res://scripts/level_generators/MazeReachabilityJob.gd")
 const WALL_COLOR := Color(0.15, 0.18, 0.28, 1)
 
-var _context
-
-var _maze_columns := 0
-var _maze_rows := 0
-var _all_cells: Dictionary = {}
-var _unvisited: Array = []
-var _stack: Array = []
-var _centre_cells: Array = []
-var _start_cell: Cell = null
-
 const LEFT := 1
 const RIGHT := 2
 const UP := 3
@@ -28,9 +18,18 @@ class Cell:
 	var wall_right := true
 	var wall_up := true
 	var wall_down := true
-
 	func _init(pos: Vector2i):
 		grid_pos = pos
+
+var _context
+
+var _maze_columns := 0
+var _maze_rows := 0
+var _all_cells: Dictionary = {}
+var _unvisited: Array = []
+var _stack: Array = []
+var _centre_cells: Array = []
+var _start_cell: Cell = null
 
 func _init(level_context):
 	_context = level_context
@@ -141,7 +140,6 @@ func _run_algorithm() -> void:
 	if _start_cell == null:
 		return
 	var current = _start_cell
-var wait_target = max(_unvisited.size() - 1, 0)
 	while _unvisited.size() > 0:
 		var neighbours = _get_unvisited_neighbours(current)
 		if neighbours.size() > 0:
@@ -321,25 +319,25 @@ func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scen
 	var half_thickness = thickness * 0.5
 	for y in range(rows):
 		for x in range(cols):
-			if not grid[y][x]:
+			if grid[y][x]:
 				continue
 			var base := offset + Vector2(x * cell_size, y * cell_size)
-			if y == 0 or not grid[y - 1][x]:
+			if y == 0 or grid[y - 1][x]:
 				var top_wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(_context.maze_walls.size(), cell_size, thickness, WALL_COLOR)
 				top_wall.position = base + Vector2(0.0, -half_thickness)
 				_context.maze_walls.append(top_wall)
 				_context.add_generated_node(top_wall, main_scene)
-			if y == rows - 1 or not grid[y + 1][x]:
+			if y == rows - 1 or grid[y + 1][x]:
 				var bottom_wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(_context.maze_walls.size(), cell_size, thickness, WALL_COLOR)
 				bottom_wall.position = base + Vector2(0.0, cell_size - half_thickness)
 				_context.maze_walls.append(bottom_wall)
 				_context.add_generated_node(bottom_wall, main_scene)
-			if x == 0 or not grid[y][x - 1]:
+			if x == 0 or grid[y][x - 1]:
 				var left_wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(_context.maze_walls.size(), thickness, cell_size, WALL_COLOR)
 				left_wall.position = base + Vector2(-half_thickness, 0.0)
 				_context.maze_walls.append(left_wall)
 				_context.add_generated_node(left_wall, main_scene)
-			if x == cols - 1 or not grid[y][x + 1]:
+			if x == cols - 1 or grid[y][x + 1]:
 				var right_wall = LEVEL_NODE_FACTORY.create_maze_wall_segment(_context.maze_walls.size(), thickness, cell_size, WALL_COLOR)
 				right_wall.position = base + Vector2(cell_size - half_thickness, 0.0)
 				_context.maze_walls.append(right_wall)
