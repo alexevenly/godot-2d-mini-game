@@ -83,16 +83,16 @@ func test_obstacle_utilities_clears_near_points() -> void:
 	assert_false(context.obstacles.has(close_obstacle))
 	assert_true(context.obstacles.has(far_obstacle))
 
-func test_key_level_generator_sample_far_points_within_bounds() -> void:
-	var generator := KeyLevelGenerator.new({}, null)
+func test_key_placement_utils_sample_far_points_within_bounds() -> void:
 	seed(1)
-	var points := generator._sample_far_points(3, Vector2(10, 20), 200.0, 150.0, 40.0)
-	assert_eq(points.size(), 3)
+	var offset := Vector2(10, 20)
+	var width := 200.0
+	var height := 150.0
+	var points := KeyPlacementUtils.sample_far_points(4, offset, width, height, 60.0)
+	assert_eq(points.size(), 4)
 	for point in points:
-		assert_true(point.x >= 10.0)
-		assert_true(point.x <= 210.0)
-		assert_true(point.y >= 20.0)
-		assert_true(point.y <= 170.0)
+		assert_between(point.x, offset.x, offset.x + width)
+		assert_between(point.y, offset.y, offset.y + height)
 
 func test_key_door_planner_respects_bounds_and_obstacles() -> void:
 	var context := KeyPlannerContextStub.new()

@@ -24,3 +24,8 @@ Set `GODOT_BIN` to an existing executable if you prefer to use a previously inst
 If the execution environment does not have internet access, download the official **Godot 4.2 (or newer)** headless build beforehand on a machine with connectivity and place it at `bin/godot` (or expose it via `GODOT_BIN`). Make sure it is executable (`chmod +x bin/godot`).
 
 Once the binary is present, the test runner can be invoked in offline environments without further setup.
+
+## Test coverage highlights
+
+- `tests/unit/test_key_mode_generation.gd` exercises the nested key-ring planner, door spawner, and maze-with-keys pathing to ensure every barrier is blocking until its matching perimeter keys are collected.
+- `tests/unit/test_utils.gd` now includes typed helpers such as `assert_between`, `assert_instanceof`, and `assert_array_size` so suites can express intent clearly while keeping indentation consistent with tabs.

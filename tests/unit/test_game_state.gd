@@ -76,7 +76,7 @@ func test_challenge_sequence_cycles_modes() -> void:
 	state.set_level_type(GameState.LevelType.CHALLENGE)
 	assert_eq(state.selected_level_type, GameState.LevelType.CHALLENGE)
 	assert_eq(state.challenge_sequence.size(), 7)
-	var allowed := [GameState.LevelType.OBSTACLES_COINS, GameState.LevelType.KEYS, GameState.LevelType.MAZE, GameState.LevelType.MAZE_COINS, GameState.LevelType.MAZE_KEYS]
+	var allowed := [GameState.LevelType.OBSTACLES_COINS, GameState.LevelType.KEYS, GameState.LevelType.MAZE, GameState.LevelType.MAZE_COINS, GameState.LevelType.MAZE_KEYS, GameState.LevelType.MAZE_COMPLEX, GameState.LevelType.MAZE_COMPLEX_COINS]
 	for mode in state.challenge_sequence:
 		assert_true(allowed.has(mode))
 	var first_mode := state.get_current_level_type()

@@ -27,7 +27,7 @@ Select the desired level template in the main menu. Available options:
 | Level Type | Description |
 |------------|-------------|
 | **Obstacles + Coins** | Classic mode with random obstacles, coin placement, and an exit. |
-| **Keys** | Sequential, color-coded doors guard the exit. Obstacles populate each zone but clear around doorways and spawn, and keys appear before the door they unlock. |
+| **Keys** | Nested square arenas create multi-layer patrol routes. Each wall can host matching, color-coded doors that block progress until you collect the perimeter keys seeded before them. Obstacles populate each zone while clearing space around doorways and spawn. |
 | **Maze** | Generates a procedural maze and places the exit at one of the farthest reachable cells from the spawn point. |
 | **Maze + Coins** | Same maze generation as above, with coins scattered along reachable corridors. |
 | **Maze + Keys** | Maze layout with a locked door near the exit. Collect the matching keys along the solution path to clear the door and finish. |
@@ -57,7 +57,7 @@ Coins spawned by the standard generator are validated with a pathfinder to guara
 
 Key levels place doors across the arena. Locked doors require their assigned keys; each key is guaranteed to be reachable before the door it unlocks. Doors and keys now share matching colors to signal which collectibles unlock which barrier. Each door tracks how many keys remain, clears nearby obstacles for a smooth approach, and illuminates (disabling its collision) once its keys are collected to reveal the path toward the exit.
 
-Key levels also sprinkle obstacles throughout each gated segment to keep movement interesting while carving safe corridors near doors, spawn points, and recently placed keys.
+The dedicated **KEYS** mode now builds concentric square rings with consistent wall thickness so traversal requires walking the perimeter of each layer. Door planners can attach a second barrier to the same wall when there is enough space, and the door spawner keeps keys pinned to the surrounding walls while respecting obstacle spacing. Maze-based key modes continue to scatter doors along the solution path and now always spawn the matching keys so every barrier blocks progress until its key is collected.
 
 Automated tests cover the door planner's spacing and obstacle avoidance guarantees along with the HUD's dynamic key and door indicators so future tweaks can detect regressions quickly (`tests/unit/test_level_generation_scripts.gd`, `tests/unit/test_main_systems.gd`).
 
