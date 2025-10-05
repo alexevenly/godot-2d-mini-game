@@ -119,7 +119,7 @@ func generate(main_scene, level: int, player_start_position: Vector2) -> void:
 		var door_center = Vector2(center_x, (door_top + door_bottom) * 0.5)
 		var assigned_keys: Array = []
 		if keys_needed > 0:
-			assigned_keys = _pick_keys_for_door(door_center, keys_needed, offset, level_width, level_height, spawn_override, exit_position, used_key_positions)
+			assigned_keys = _pick_keys_for_door(door_center, door_width, keys_needed, offset, level_width, level_height, spawn_override, exit_position, used_key_positions)
 		var actual_keys = assigned_keys.size()
 		if actual_keys != keys_needed:
 			door.required_keys = actual_keys
@@ -181,6 +181,7 @@ func _enforce_door_spacing(door_layouts: Array, offset: Vector2, level_width: fl
 
 func _pick_keys_for_door(
 	door_center: Vector2,
+	door_width: float,
 	keys_needed: int,
 	offset: Vector2,
 	level_width: float,
@@ -189,4 +190,4 @@ func _pick_keys_for_door(
 	exit_position: Vector2,
 	used_positions: Array
 ) -> Array:
-	return _door_planner.pick_keys_for_door(door_center, keys_needed, offset, level_width, level_height, spawn_override, exit_position, used_positions)
+	return _door_planner.pick_keys_for_door(door_center, door_width, keys_needed, offset, level_width, level_height, spawn_override, exit_position, used_positions)

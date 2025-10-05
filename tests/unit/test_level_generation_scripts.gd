@@ -104,10 +104,11 @@ func test_key_door_planner_respects_bounds_and_obstacles() -> void:
 	var level_width := 800.0
 	var level_height := 600.0
 	var door_center := Vector2(620, 300)
+	var door_width := 52.0
 	var spawn_override := Vector2(100, 320)
 	var exit_position := Vector2(740, 320)
 	var used_positions: Array = []
-	var keys := planner.pick_keys_for_door(door_center, 2, offset, level_width, level_height, spawn_override, exit_position, used_positions)
+	var keys := planner.pick_keys_for_door(door_center, door_width, 2, offset, level_width, level_height, spawn_override, exit_position, used_positions)
 	assert_eq(keys.size(), 2)
 	assert_eq(used_positions.size(), 2)
 	var bounds := KeyPlacementUtils.compute_key_bounds(
@@ -115,6 +116,7 @@ func test_key_door_planner_respects_bounds_and_obstacles() -> void:
 		level_width,
 		level_height,
 		door_center.x,
+		door_width,
 		KeyDoorPlanner.KEY_CLEARANCE,
 		KeyDoorPlanner.KEY_SIZE,
 		KeyDoorPlanner.LEVEL_MARGIN,

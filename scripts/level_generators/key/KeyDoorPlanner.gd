@@ -21,6 +21,7 @@ func enforce_spacing(door_layouts: Array, offset: Vector2, level_width: float, m
 
 func pick_keys_for_door(
 	door_center: Vector2,
+	door_width: float,
 	keys_needed: int,
 	offset: Vector2,
 	level_width: float,
@@ -34,7 +35,7 @@ func pick_keys_for_door(
 		return result
 	var min_spacing: float = 150.0
 	var attempts: int = 0
-	var bounds := KEY_PLACEMENT.compute_key_bounds(offset, level_width, level_height, door_center.x, KEY_CLEARANCE, KEY_SIZE, LEVEL_MARGIN, ACCESSIBLE_MARGIN_FALLBACK)
+	var bounds := KEY_PLACEMENT.compute_key_bounds(offset, level_width, level_height, door_center.x, door_width, KEY_CLEARANCE, KEY_SIZE, LEVEL_MARGIN, ACCESSIBLE_MARGIN_FALLBACK)
 	var horizontal_min: float = bounds["min_x"]
 	var horizontal_max: float = bounds["max_x"]
 	var vertical_min: float = bounds["min_y"]
@@ -42,7 +43,7 @@ func pick_keys_for_door(
 	var evaluated_spacing_failures = 0
 	while result.size() < keys_needed and attempts < 260:
 		var candidate = KEY_PLACEMENT.random_key_position(horizontal_min, horizontal_max, vertical_min, vertical_max)
-		var evaluation = KEY_PLACEMENT.evaluate_candidate(candidate, door_center, bounds, spawn_override, exit_position, used_positions, result, KEY_CLEARANCE, KEY_SIZE, _context.obstacles)
+		var evaluation = KEY_PLACEMENT.evaluate_candidate(candidate, door_center, door_width, bounds, spawn_override, exit_position, used_positions, result, KEY_CLEARANCE, KEY_SIZE, _context.obstacles)
 		if evaluation.valid:
 			if evaluation.score >= min_spacing:
 				result.append(candidate)
@@ -60,7 +61,7 @@ func pick_keys_for_door(
 		while result.size() < keys_needed and fallback_attempts < 220:
 			var candidate = KEY_PLACEMENT.random_key_position(horizontal_min, horizontal_max, vertical_min, vertical_max)
 			fallback_attempts += 1
-			var evaluation = KEY_PLACEMENT.evaluate_candidate(candidate, door_center, bounds, spawn_override, exit_position, used_positions, result, KEY_CLEARANCE, KEY_SIZE, _context.obstacles)
+			var evaluation = KEY_PLACEMENT.evaluate_candidate(candidate, door_center, door_width, bounds, spawn_override, exit_position, used_positions, result, KEY_CLEARANCE, KEY_SIZE, _context.obstacles)
 			if not evaluation.valid:
 				continue
 			if evaluation.score < relaxed_spacing:
@@ -69,7 +70,7 @@ func pick_keys_for_door(
 			used_positions.append(candidate)
 	if result.size() < keys_needed:
 		var remaining: int = keys_needed - result.size()
-		var door_clearance_limit: float = door_center.x - (KEY_CLEARANCE + KEY_SIZE)
+		var door_clearance_limit: float = door_center.x - (door_width * 0.5 + KEY_CLEARANCE + KEY_SIZE)
 		var fallback_max_x: float = min(horizontal_max, door_clearance_limit)
 		var fallback_min_x: float = min(horizontal_min, fallback_max_x)
 		fallback_min_x = max(offset.x + 4.0, fallback_min_x)
@@ -80,10 +81,10 @@ func pick_keys_for_door(
 			var anchor_x: float = clamp(anchor_x_target, fallback_min_x, fallback_max_x)
 			var anchor_y: float = clamp(vertical_min + float(i) * 40.0, vertical_min, vertical_max)
 			var fallback: Vector2 = Vector2(anchor_x, anchor_y)
-			if not KEY_PLACEMENT.is_candidate_within_bounds(fallback, door_center, fallback_min_x, fallback_max_x, KEY_CLEARANCE, KEY_SIZE):
+			if not KEY_PLACEMENT.is_candidate_within_bounds(fallback, door_center, door_width, fallback_min_x, fallback_max_x, KEY_CLEARANCE, KEY_SIZE):
 				var adjusted_x: float = clamp(door_clearance_limit, fallback_min_x, fallback_max_x)
 				fallback.x = adjusted_x
-				if not KEY_PLACEMENT.is_candidate_within_bounds(fallback, door_center, fallback_min_x, fallback_max_x, KEY_CLEARANCE, KEY_SIZE):
+			if not KEY_PLACEMENT.is_candidate_within_bounds(fallback, door_center, door_width, fallback_min_x, fallback_max_x, KEY_CLEARANCE, KEY_SIZE):
 					continue
 			if KEY_PLACEMENT.is_blocked_by_obstacle(fallback, _context.obstacles):
 				var shifted_y: float = fallback.y

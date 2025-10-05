@@ -85,31 +85,33 @@ static func random_key_position(min_x: float, max_x: float, min_y: float, max_y:
 	)
 
 static func evaluate_candidate(
-	candidate: Vector2,
-	door_center: Vector2,
-	bounds: Dictionary,
-	spawn_override: Vector2,
-	exit_position: Vector2,
-	used_positions: Array,
-	existing: Array,
-	key_clearance: float,
-	key_size: float,
-	obstacles: Array
+		candidate: Vector2,
+		door_center: Vector2,
+		door_width: float,
+		bounds: Dictionary,
+		spawn_override: Vector2,
+		exit_position: Vector2,
+		used_positions: Array,
+		existing: Array,
+		key_clearance: float,
+		key_size: float,
+		obstacles: Array
 ) -> Dictionary:
 	var min_x: float = bounds.get("min_x", 0.0)
 	var max_x: float = bounds.get("max_x", 0.0)
-	if not is_candidate_within_bounds(candidate, door_center, min_x, max_x, key_clearance, key_size):
+	if not is_candidate_within_bounds(candidate, door_center, door_width, min_x, max_x, key_clearance, key_size):
 		return {"valid": false, "score": 0.0}
 	if is_blocked_by_obstacle(candidate, obstacles):
 		return {"valid": false, "score": 0.0}
 	var score = spacing_score(candidate, door_center, spawn_override, exit_position, used_positions, existing)
 	return {"valid": true, "score": score}
 
-static func compute_key_bounds(offset: Vector2, level_width: float, level_height: float, door_center_x: float, key_clearance: float, key_size: float, level_margin: float, fallback_margin: float) -> Dictionary:
+static func compute_key_bounds(offset: Vector2, level_width: float, level_height: float, door_center_x: float, door_width: float, key_clearance: float, key_size: float, level_margin: float, fallback_margin: float) -> Dictionary:
 	var vertical_min: float = offset.y + level_margin
 	var vertical_max: float = offset.y + level_height - level_margin
 	var horizontal_min: float = offset.x + level_margin
-	var horizontal_max: float = door_center_x - (key_clearance + key_size)
+	var door_half: float = door_width * 0.5
+	var horizontal_max: float = door_center_x - (door_half + key_clearance + key_size)
 	var level_right_limit: float = offset.x + level_width - level_margin
 	horizontal_max = min(horizontal_max, level_right_limit)
 	if horizontal_max <= horizontal_min:
@@ -122,11 +124,12 @@ static func compute_key_bounds(offset: Vector2, level_width: float, level_height
 		"max_y": vertical_max
 	}
 
-static func is_candidate_within_bounds(candidate: Vector2, door_center: Vector2, min_x: float, max_x: float, key_clearance: float, key_size: float) -> bool:
+static func is_candidate_within_bounds(candidate: Vector2, door_center: Vector2, door_width: float, min_x: float, max_x: float, key_clearance: float, key_size: float) -> bool:
 	if candidate.x < min_x or candidate.x > max_x:
 		return false
 	var right_edge = candidate.x + key_size
-	return right_edge <= door_center.x - key_clearance
+	var door_left_edge: float = door_center.x - door_width * 0.5
+	return right_edge <= door_left_edge - key_clearance
 
 static func is_blocked_by_obstacle(candidate: Vector2, obstacles: Array) -> bool:
 	for obstacle in obstacles:
