@@ -46,7 +46,13 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 
 	var speed: float = float(preset["speed"])
 	var type_profile := TIMER_CONFIG.get_type_profile(level_type)
-	var is_maze := level_type == GAME_STATE.LevelType.MAZE or level_type == GAME_STATE.LevelType.MAZE_COINS or level_type == GAME_STATE.LevelType.MAZE_KEYS
+	var is_maze := (
+		level_type == GAME_STATE.LevelType.MAZE or
+		level_type == GAME_STATE.LevelType.MAZE_COINS or
+		level_type == GAME_STATE.LevelType.MAZE_KEYS or
+		level_type == GAME_STATE.LevelType.MAZE_COMPLEX or
+		level_type == GAME_STATE.LevelType.MAZE_COMPLEX_COINS
+	)
 	var maze_overhead := TIMER_CALC.maze_overhead(is_maze, type_profile, maze_path_length, player_start, exit_pos, speed)
 	var base_path: float = float(maze_overhead.get("base_path", 0.0))
 	if base_path > 0.0:
@@ -89,6 +95,12 @@ func calculate_level_time(level: int, coins: Array, exit_pos: Vector2, player_st
 
 	var type_scale = TIMER_CALC.level_type_scale(type_profile, level)
 	planned *= type_scale
+	
+	# Apply limited field of view bonus for complex mazes
+	if (level_type == GAME_STATE.LevelType.MAZE_COMPLEX or
+		level_type == GAME_STATE.LevelType.MAZE_COMPLEX_COINS):
+		if Engine.has_meta("limited_field_of_view") and bool(Engine.get_meta("limited_field_of_view")):
+			planned *= 1.75 # 75% more time for limited FOV
 
 	var avg_surplus = _avg_surplus()
 	if avg_surplus > 0.0:

@@ -23,14 +23,19 @@ func build(
 	var level_width: float = float(dims.width)
 	var level_height: float = float(dims.height)
 	var offset = Vector2(dims.offset_x, dims.offset_y)
-	var cell_size = _context.MAZE_BASE_CELL_SIZE
+	var cell_size = _context.get_maze_cell_size() if _context.has_method("get_maze_cell_size") else _context.MAZE_BASE_CELL_SIZE
 	var cols = int(floor(level_width / cell_size))
 	var rows = int(floor(level_height / cell_size))
 	cols = max(cols | 1, 5)
 	rows = max(rows | 1, 5)
 	var maze_width = cols * cell_size
 	var maze_height = rows * cell_size
-	var maze_offset = offset + Vector2((level_width - maze_width) * 0.5, (level_height - maze_height) * 0.5)
+	# For complex modes we want full coverage of the level area; when the context
+	# provides override cell size, stretch to cover the entire level rectangle.
+	var full_cover = _context.has_method("is_maze_full_cover") and _context.is_maze_full_cover()
+	var maze_offset = offset
+	if not full_cover:
+		maze_offset = offset + Vector2((level_width - maze_width) * 0.5, (level_height - maze_height) * 0.5)
 	var start_cell: Vector2i = _choose_start_cell(player_start_position, maze_offset, cell_size, cols, rows)
 	var grid = MAZE_UTILS.init_maze_grid(cols, rows)
 	MAZE_UTILS.carve_maze(grid, start_cell, cols, rows)
@@ -57,7 +62,8 @@ func _choose_start_cell(player_start_position: Vector2, maze_offset: Vector2, ce
 func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scene) -> void:
 	var rows = grid.size()
 	var cols = grid[0].size()
-	var thickness = cell_size * _context.MAZE_WALL_SIZE_RATIO
+	var ratio: float = _context.get_maze_wall_size_ratio() if _context.has_method("get_maze_wall_size_ratio") else _context.MAZE_WALL_SIZE_RATIO
+	var thickness = cell_size * ratio
 	var half_thickness = thickness * 0.5
 	for y in range(rows):
 		for x in range(cols):

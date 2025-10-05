@@ -7,6 +7,7 @@ const GAME_STATE := preload("res://scripts/GameState.gd")
 const OBSTACLE_UTILITIES := preload("res://scripts/level_generators/ObstacleUtilities.gd")
 const KEY_LEVEL_GENERATOR := preload("res://scripts/level_generators/KeyLevelGenerator.gd")
 const MAZE_GENERATOR := preload("res://scripts/level_generators/MazeGenerator.gd")
+const COMPLEX_MAZE_GENERATOR := preload("res://scripts/level_generators/ComplexMazeGenerator.gd")
 
 const DOOR_GROUP_COLORS := [
 	Color(0.95, 0.49, 0.38, 1.0),
@@ -33,6 +34,21 @@ var key_barriers: Array = []
 var player_spawn_override: Vector2 = Vector2.ZERO
 var has_player_spawn_override: bool = false
 var last_maze_path_length: float = 0.0
+var complex_maze_exit: Node = null
+
+# Optional overrides for maze rendering parameters (per-mode)
+var _maze_cell_size_override: float = -1.0
+var _maze_wall_ratio_override: float = -1.0
+var _maze_full_cover_override: bool = false
+
+func get_maze_cell_size() -> float:
+	return _maze_cell_size_override if _maze_cell_size_override > 0.0 else MAZE_BASE_CELL_SIZE
+
+func get_maze_wall_size_ratio() -> float:
+	return _maze_wall_ratio_override if _maze_wall_ratio_override > 0.0 else MAZE_WALL_SIZE_RATIO
+
+func is_maze_full_cover() -> bool:
+	return _maze_full_cover_override
 
 @onready var obstacle_spawner = $ObstacleSpawner
 @onready var coin_spawner = $CoinSpawner
@@ -41,6 +57,7 @@ var last_maze_path_length: float = 0.0
 var maze_generator
 var key_level_generator
 var obstacle_utils
+var complex_maze_generator
 
 func _ready():
 	_ensure_helpers()
@@ -52,6 +69,8 @@ func _ensure_helpers() -> void:
 		maze_generator = MAZE_GENERATOR.new(self, obstacle_utils)
 	if key_level_generator == null:
 		key_level_generator = KEY_LEVEL_GENERATOR.new(self, obstacle_utils)
+	if complex_maze_generator == null:
+		complex_maze_generator = COMPLEX_MAZE_GENERATOR.new(self)
 
 func generate_level(level_size := 1.0, generate_obstacles := true, generate_coins := true, min_exit_distance_ratio := 0.4, use_full_map_coverage := true, main_scene: Node = null, level := 1, preserved_coin_count := 0, player_start_position: Vector2 = LEVEL_UTILS.PLAYER_START, level_type: int = GAME_STATE.LevelType.OBSTACLES_COINS):
 	LOGGER.log_generation("LevelGenerator starting (size %.2f, type %d)" % [level_size, level_type])
@@ -69,9 +88,28 @@ func generate_level(level_size := 1.0, generate_obstacles := true, generate_coin
 			maze_generator.generate_maze_level(true, main_scene, player_start_position)
 		GAME_STATE.LevelType.MAZE_KEYS:
 			maze_generator.generate_maze_keys_level(main_scene, level, player_start_position)
+		GAME_STATE.LevelType.MAZE_COMPLEX:
+			complex_maze_generator.generate_complex_maze(false, false, main_scene, level, player_start_position)
+		GAME_STATE.LevelType.MAZE_COMPLEX_COINS:
+			complex_maze_generator.generate_complex_maze(true, false, main_scene, level, player_start_position)
 		_:
 			_generate_standard_level(level_size, generate_obstacles, generate_coins, min_exit_distance_ratio, use_full_map_coverage, main_scene, level, preserved_coin_count, player_start_position)
 	return 0
+
+func _apply_complex_maze_overrides() -> void:
+	# Higher-density maze with thinner borders (thin wall lines)
+	# Ensure passages are wider than player (player collision ~32)
+	# Choose cell size >= 40 and thin lines ~5% of cell
+	_maze_cell_size_override = max(40.0, MAZE_BASE_CELL_SIZE * 0.625)
+	_maze_wall_ratio_override = 0.05
+	_maze_full_cover_override = true
+
+func _clear_complex_maze_overrides() -> void:
+	_maze_cell_size_override = -1.0
+	_maze_wall_ratio_override = -1.0
+	_maze_full_cover_override = false
+	if exit_spawner and is_instance_valid(exit_spawner):
+		exit_spawner.set_exit_size(64)
 
 func _generate_standard_level(level_size: float, generate_obstacles: bool, generate_coins_flag: bool, min_exit_distance_ratio: float, use_full_map_coverage: bool, main_scene, level: int, preserved_coin_count: int, player_start_position: Vector2) -> void:
 	if generate_obstacles:
@@ -119,6 +157,9 @@ func get_generated_doors():
 	return doors
 
 func get_generated_exit():
+	# Return complex maze exit if available, otherwise use exit spawner
+	if complex_maze_exit and is_instance_valid(complex_maze_exit):
+		return complex_maze_exit
 	if exit_spawner:
 		return exit_spawner.get_exit()
 	return null
@@ -161,6 +202,7 @@ func clear_existing_objects():
 	exit_pos = Vector2.ZERO
 	has_player_spawn_override = false
 	player_spawn_override = Vector2.ZERO
+	complex_maze_exit = null
 
 func set_player_spawn_override(pos: Vector2) -> void:
 	has_player_spawn_override = true
@@ -178,3 +220,6 @@ func get_group_color(index: int) -> Color:
 	if DOOR_GROUP_COLORS.is_empty():
 		return Color(0.9, 0.9, 0.2, 1.0)
 	return DOOR_GROUP_COLORS[index % DOOR_GROUP_COLORS.size()]
+
+func set_exit_reference(exit_node: Node) -> void:
+	complex_maze_exit = exit_node

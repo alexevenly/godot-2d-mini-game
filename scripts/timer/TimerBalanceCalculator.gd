@@ -44,6 +44,14 @@ static func maze_overhead(is_maze: bool, profile: Dictionary, maze_path_length: 
 		var ratio = clamp(maze_path_length / max(straight, 1.0), 1.0, 4.5)
 		var base_scale: float = float(profile.get("maze_base_scale", 0.6))
 		var factor = 1.0 + (ratio - 1.0) * base_scale
+		
+		# Apply exponential scaling for complex mazes
+		if profile.get("exponential_scaling", false):
+			var size_exponent: float = float(profile.get("size_exponent", 1.2))
+			var level_size = Engine.get_meta("current_level_size", 1.0)
+			var size_multiplier = pow(level_size, size_exponent)
+			factor *= size_multiplier
+		
 		var ratio_span: float = max(float(profile.get("maze_ratio_span", 2.5)), 0.5)
 		var ratio_t = clamp((ratio - 1.0) / ratio_span, 0.0, 1.0)
 		var slack_curve: Vector2 = profile.get("maze_slack_curve", Vector2.ZERO)

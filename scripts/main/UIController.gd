@@ -17,6 +17,7 @@ var key_status_container: Control = null
 var door_container: Control = null
 var door_status_container: Control = null
 var _key_ui_manager
+var path_indicator_label: Label = null
 
 var key_checkbox_nodes: Array[Button]:
 	get:
@@ -35,7 +36,8 @@ func setup(
 	key_status_container_ref: Control,
 	door_container_ref: Control,
 	door_status_container_ref: Control,
-	speed_label_ref: Label = null
+	speed_label_ref: Label = null,
+	path_indicator_ref: Label = null
 ) -> void:
 	main = main_ref
 	timer_label = timer_label_ref
@@ -50,6 +52,7 @@ func setup(
 	door_container = door_container_ref
 	door_status_container = door_status_container_ref
 	speed_label = speed_label_ref
+	path_indicator_label = path_indicator_ref
 	if _key_ui_manager == null:
 		_key_ui_manager = KEY_UI_MANAGER.new()
 	_key_ui_manager.setup_containers(key_container, key_status_container, door_container, door_status_container)
@@ -144,3 +147,17 @@ func set_endgame_buttons_visible(visible: bool) -> void:
 func set_restart_button_text(text: String) -> void:
 	if restart_button:
 		restart_button.text = text
+
+func update_path_indicator(is_multi_path: bool) -> void:
+	if path_indicator_label:
+		if is_multi_path:
+			path_indicator_label.text = "MULTI-PATH MAZE"
+			path_indicator_label.add_theme_color_override("font_color", Color(0.2, 0.8, 0.2)) # Green
+		else:
+			path_indicator_label.text = "SINGLE-PATH MAZE"
+			path_indicator_label.add_theme_color_override("font_color", Color(0.8, 0.2, 0.2)) # Red
+		path_indicator_label.visible = true
+
+func hide_path_indicator() -> void:
+	if path_indicator_label:
+		path_indicator_label.visible = false

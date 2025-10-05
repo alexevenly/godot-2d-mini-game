@@ -67,6 +67,15 @@ func generate_new_level() -> void:
 		coins = outcome.get("coins", [] as Array[Area2D])
 		keys = outcome.get("keys", [] as Array[Area2D])
 		doors = outcome.get("doors", [] as Array[StaticBody2D])
+		
+		# Update path indicator for complex maze modes
+		if (level_type == GAME_STATE.LevelType.MAZE_COMPLEX or
+			level_type == GAME_STATE.LevelType.MAZE_COMPLEX_COINS):
+			if main.level_generator.complex_maze_generator:
+				var is_multi_path = main.level_generator.complex_maze_generator.get_is_multi_path()
+				ui_controller.update_path_indicator(is_multi_path)
+		else:
+			ui_controller.hide_path_indicator()
 	else:
 		main.game_time = 30.0
 	main.level_initializing = false

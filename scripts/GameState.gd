@@ -5,7 +5,7 @@ const GameLogger = preload("res://scripts/Logger.gd")
 
 # Game state management
 enum GameStateType {PLAYING, WON, LOST}
-enum LevelType {OBSTACLES_COINS, KEYS, MAZE, MAZE_COINS, MAZE_KEYS, RANDOM, CHALLENGE}
+enum LevelType {OBSTACLES_COINS, KEYS, MAZE, MAZE_COINS, MAZE_KEYS, MAZE_COMPLEX, MAZE_COMPLEX_COINS, RANDOM, CHALLENGE}
 var current_state = GameStateType.PLAYING
 
 # Progressive level scaling
@@ -30,6 +30,7 @@ var selected_level_type: LevelType = LevelType.OBSTACLES_COINS
 var current_level_type: LevelType = LevelType.OBSTACLES_COINS
 var challenge_sequence: Array = []
 var challenge_stage_index: int = 0
+var challenge_lfov_flags: Array = []
 
 func _ready():
 	# Calculate level size increment
@@ -134,6 +135,10 @@ func _refresh_level_type(force_new: bool = false):
 			current_level_type = LevelType.OBSTACLES_COINS
 		else:
 			current_level_type = challenge_sequence[challenge_stage_index]
+		# Enforce LFOV per challenge stage regardless of main menu setting
+		if challenge_lfov_flags.size() == challenge_sequence.size():
+			var lfov: bool = bool(challenge_lfov_flags[challenge_stage_index])
+			Engine.set_meta("limited_field_of_view", lfov)
 	elif selected_level_type == LevelType.RANDOM:
 		if force_new or current_level_type == LevelType.RANDOM:
 			current_level_type = _pick_random_level_type()
@@ -143,7 +148,7 @@ func _refresh_level_type(force_new: bool = false):
 		GameLogger.log_game_mode("Current level type set to %s" % _get_level_type_label(current_level_type))
 
 func _pick_random_level_type() -> LevelType:
-	var options: Array = [LevelType.OBSTACLES_COINS, LevelType.KEYS, LevelType.MAZE, LevelType.MAZE_COINS, LevelType.MAZE_KEYS]
+	var options: Array = [LevelType.OBSTACLES_COINS, LevelType.KEYS, LevelType.MAZE, LevelType.MAZE_COINS, LevelType.MAZE_KEYS, LevelType.MAZE_COMPLEX, LevelType.MAZE_COMPLEX_COINS]
 	if options.is_empty():
 		return LevelType.OBSTACLES_COINS
 	return options[randi() % options.size()]
@@ -160,6 +165,10 @@ func _get_level_type_label(level_type: LevelType) -> String:
 			return "Maze + Coins"
 		LevelType.MAZE_KEYS:
 			return "Maze + Keys"
+		LevelType.MAZE_COMPLEX:
+			return "Maze complex"
+		LevelType.MAZE_COMPLEX_COINS:
+			return "Maze complex + Coins"
 		LevelType.RANDOM:
 			return "Random"
 		LevelType.CHALLENGE:
@@ -167,18 +176,42 @@ func _get_level_type_label(level_type: LevelType) -> String:
 	return str(level_type)
 
 func _generate_challenge_sequence() -> void:
-	var base: Array = [LevelType.OBSTACLES_COINS, LevelType.KEYS, LevelType.MAZE, LevelType.MAZE_COINS, LevelType.MAZE_KEYS]
-	base.shuffle()
-	var sequence: Array = []
-	for item in base:
-		sequence.append(item)
-	var attempts: int = 0
-	while sequence.size() < 7 and attempts < 60:
-		var candidate = base[randi() % base.size()]
-		if sequence.is_empty() or sequence[sequence.size() - 1] != candidate:
-			sequence.append(candidate)
-		else:
-			attempts += 1
-	while sequence.size() < 7:
-		sequence.append(base[(sequence.size() + attempts) % base.size()])
-	challenge_sequence = sequence
+	# Define 7 stages and whether each should use LFOV (true) during challenge
+	var types: Array = [
+		LevelType.KEYS, # no LFOV
+		LevelType.MAZE, # LFOV
+		LevelType.MAZE_COINS, # LFOV
+		LevelType.MAZE_KEYS, # LFOV
+		LevelType.MAZE_COMPLEX, # no LFOV
+		LevelType.MAZE_COMPLEX, # LFOV enforced
+		LevelType.MAZE_COMPLEX_COINS # no LFOV
+	]
+	var lfov: Array = [
+		false,
+		true,
+		true,
+		true,
+		false,
+		true,
+		false
+	]
+	# Shuffle indices to keep pairing between type and LFOV
+	var indices: Array = []
+	for i in range(types.size()):
+		indices.append(i)
+	indices.shuffle()
+	var seq: Array = []
+	var flags: Array = []
+	for i in indices:
+		seq.append(types[i])
+		flags.append(lfov[i])
+	challenge_sequence = seq
+	challenge_lfov_flags = flags
+
+func get_current_challenge_lfov() -> bool:
+	if selected_level_type != LevelType.CHALLENGE:
+		return Engine.has_meta("limited_field_of_view") and bool(Engine.get_meta("limited_field_of_view"))
+	if challenge_lfov_flags.size() != challenge_sequence.size():
+		return Engine.has_meta("limited_field_of_view") and bool(Engine.get_meta("limited_field_of_view"))
+	var idx = clamp(current_level - 1, 0, challenge_lfov_flags.size() - 1)
+	return bool(challenge_lfov_flags[idx])

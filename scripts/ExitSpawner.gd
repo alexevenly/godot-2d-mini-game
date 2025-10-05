@@ -5,6 +5,10 @@ const MIN_EXIT_DISTANCE = 0.4 # 40% of level diagonal (more reasonable for small
 
 var exit = null
 var current_level_size = 1.0
+var exit_size: int = 64
+
+func set_exit_size(size: int) -> void:
+	exit_size = max(16, size)
 
 func generate_exit(level_size: float, obstacles: Array, min_exit_distance_ratio: float = 0.4, main_scene = null) -> Node2D:
 	current_level_size = level_size
@@ -51,8 +55,8 @@ func generate_exit(level_size: float, obstacles: Array, min_exit_distance_ratio:
 	return exit
 
 func is_exit_position_valid(pos: Vector2, level_width: int, level_height: int) -> bool:
-	# Check that exit (64x64) is fully within the level boundaries
-	var margin = 32 # Half of exit size
+	# Check that exit is fully within the level boundaries
+	var margin: int = int(exit_size / 2)
 	return LEVEL_UTILS.is_position_within_bounds(pos, level_width, level_height, margin)
 
 func create_exit_at(pos: Vector2, main_scene = null):
@@ -63,8 +67,8 @@ func create_exit_at(pos: Vector2, main_scene = null):
 	# Create visual body
 	var body = ColorRect.new()
 	body.name = "ExitBody"
-	body.offset_right = 64
-	body.offset_bottom = 64
+	body.offset_right = exit_size
+	body.offset_bottom = exit_size
 	body.color = Color(0.4, 0.4, 0.4, 1) # Start gray (inactive)
 	exit.add_child(body)
 
@@ -72,18 +76,19 @@ func create_exit_at(pos: Vector2, main_scene = null):
 	var collision = CollisionShape2D.new()
 	collision.name = "ExitCollision"
 	var shape = RectangleShape2D.new()
-	shape.size = Vector2(64, 64)
+	shape.size = Vector2(exit_size, exit_size)
 	collision.shape = shape
-	collision.position = Vector2(32, 32)
+	collision.position = Vector2(exit_size * 0.5, exit_size * 0.5)
 	exit.add_child(collision)
 
 	# Create label
 	var label = Label.new()
 	label.name = "ExitLabel"
-	label.offset_left = 8
-	label.offset_top = 20
-	label.offset_right = 56
-	label.offset_bottom = 44
+	var pad: int = max(4, int(exit_size * 0.125))
+	label.offset_left = pad
+	label.offset_top = pad
+	label.offset_right = exit_size - pad
+	label.offset_bottom = exit_size - pad
 	label.text = "EXIT"
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER

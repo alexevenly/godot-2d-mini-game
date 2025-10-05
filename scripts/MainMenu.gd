@@ -1,5 +1,7 @@
 extends Control
 
+const GameState = preload("res://scripts/GameState.gd")
+
 @onready var practice_button = $VBoxContainer/PracticeButton
 @onready var challenge_button = $VBoxContainer/ChallengeButton
 @onready var exit_button = $VBoxContainer/ExitButton
@@ -17,6 +19,8 @@ var level_type_options = [
 	{"name": "Maze", "type": GameState.LevelType.MAZE},
 	{"name": "Maze + Coins", "type": GameState.LevelType.MAZE_COINS},
 	{"name": "Maze + Keys", "type": GameState.LevelType.MAZE_KEYS},
+	{"name": "Maze complex", "type": GameState.LevelType.MAZE_COMPLEX},
+	{"name": "Maze complex + Coins", "type": GameState.LevelType.MAZE_COMPLEX_COINS},
 	{"name": "Random", "type": GameState.LevelType.RANDOM},
 ]
 var current_level_type_index = 0

@@ -38,8 +38,8 @@ const LEVEL_TYPE_TUNING := {
 	GAME_STATE.LevelType.OBSTACLES_COINS: {
 		"scale_start": 0.78,
 		"scale_end": 0.48,
-		"buffer_bias": -0.45,
-		"flat_bonus": -1.8,
+		"buffer_bias": - 0.45,
+		"flat_bonus": - 1.8,
 		"route_trim": 0.82,
 		"trim_ramp": 4.0
 	},
@@ -84,6 +84,38 @@ const LEVEL_TYPE_TUNING := {
 		"maze_ratio_span": 2.2, # Reduced from 2.4
 		"maze_path_floor": 1.02, # Reduced from 1.12
 		"maze_fallback_factor": 1.18 # Reduced from 1.28
+	},
+	GAME_STATE.LevelType.MAZE_COMPLEX: {
+		"scale_start": 1.8,
+		"scale_end": 1.4,
+		"buffer_bias": 0.45,
+		"flat_bonus": 8.0,
+		"maze_slack_curve": Vector2(10.0, 20.0),
+		"maze_path_scale": 1.0,
+		"maze_path_cap": 16.0,
+		"maze_base_scale": 1.1,
+		"maze_fallback_slack": 12.0,
+		"maze_ratio_span": 3.5,
+		"maze_path_floor": 1.4,
+		"maze_fallback_factor": 1.6,
+		"exponential_scaling": true,
+		"size_exponent": 1.3
+	},
+	GAME_STATE.LevelType.MAZE_COMPLEX_COINS: {
+		"scale_start": 1.9,
+		"scale_end": 1.7,
+		"buffer_bias": 0.52,
+		"flat_bonus": 10.0,
+		"maze_slack_curve": Vector2(12.0, 24.0),
+		"maze_path_scale": 1.1,
+		"maze_path_cap": 18.0,
+		"maze_base_scale": 1.2,
+		"maze_fallback_slack": 14.0,
+		"maze_ratio_span": 4.0,
+		"maze_path_floor": 1.5,
+		"maze_fallback_factor": 1.7,
+		"exponential_scaling": true,
+		"size_exponent": 1.35
 	},
 	GAME_STATE.LevelType.KEYS: {
 		"scale_start": 2.7, # x2.5 time multiplier

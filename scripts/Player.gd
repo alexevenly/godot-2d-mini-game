@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 const SPEED := 150.0
+const GAME_STATE := preload("res://scripts/GameState.gd")
 const CONFIG_PATH := "res://config/game.cfg"
 
 # Configurable speed boost settings
@@ -13,6 +14,7 @@ const CONFIG_PATH := "res://config/game.cfg"
 @onready var player_body: Control = $PlayerBody
 
 var current_speed: float = SPEED
+var base_speed: float = SPEED
 var current_boost_value: float = 0.0
 var boost_increment: float = 0.0
 var max_boost_value: float = 0.0
@@ -29,7 +31,8 @@ func _ready():
 	_load_config()
 	_setup_boost_parameters()
 	_setup_ghost_container()
-	current_speed = SPEED
+	_update_speed_for_game_mode()
+	current_speed = base_speed
 
 func _load_config():
 	var cfg := ConfigFile.new()
@@ -106,11 +109,11 @@ func _update_boost(delta: float) -> void:
 			current_boost_value = 0.0
 
 	if current_boost_value <= 0.0:
-		current_speed = SPEED
+		current_speed = base_speed
 		_advance_ghost_trail(delta, 0.0)
 		return
 
-	current_speed = SPEED * (1.0 + current_boost_value)
+	current_speed = base_speed * (1.0 + current_boost_value)
 	_advance_ghost_trail(delta, current_boost_value)
 
 func _advance_ghost_trail(delta: float, boost_value: float) -> void:
@@ -170,13 +173,13 @@ func apply_speed_boost():
 		max_boost_value = boost_increment
 
 	current_boost_value = min(current_boost_value + boost_increment, max_boost_value)
-	current_speed = SPEED * (1.0 + current_boost_value)
+	current_speed = base_speed * (1.0 + current_boost_value)
 	ghost_spawn_timer = 0.0
 
 func reset_speed_boost():
 	"""Reset player speed and boost state to default values"""
 	current_boost_value = 0.0
-	current_speed = SPEED
+	current_speed = base_speed
 	ghost_spawn_timer = 0.0
 
 func get_boost_count() -> int:
@@ -184,3 +187,19 @@ func get_boost_count() -> int:
 	if max_boost_value <= 0.0:
 		return 0
 	return int(current_boost_value / boost_increment) if boost_increment > 0.0 else 0
+
+func _update_speed_for_game_mode() -> void:
+	"""Update base speed based on current game mode"""
+	var game_state = get_node_or_null("/root/Main/GameState")
+	if not game_state:
+		base_speed = SPEED
+		return
+	
+	var level_type = game_state.get_current_level_type()
+	match level_type:
+		GAME_STATE.LevelType.MAZE_COMPLEX:
+			base_speed = SPEED * 1.2 # Slower for complex maze navigation
+		GAME_STATE.LevelType.MAZE_COMPLEX_COINS:
+			base_speed = SPEED * 1.25 # Slightly faster than pure complex
+		_:
+			base_speed = SPEED # Default speed for other modes

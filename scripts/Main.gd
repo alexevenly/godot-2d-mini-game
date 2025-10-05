@@ -11,6 +11,7 @@ const GAME_STATE := preload("res://scripts/GameState.gd")
 
 @onready var player: CharacterBody2D = $Player
 @onready var timer: Timer = $Timer
+@onready var path_indicator_label: Label = $UI/PathIndicatorLabel
 @onready var timer_label: Label = $UI/TimerLabel
 @onready var coin_label: Label = $UI/CoinLabel
 @onready var level_progress_label: Label = $UI/LevelProgressLabel
@@ -62,7 +63,8 @@ func _ready() -> void:
 		key_status_container,
 		door_container,
 		door_status_container,
-		speed_label
+		speed_label,
+		path_indicator_label
 	)
 	level_controller = LEVEL_CONTROLLER.new()
 	level_controller.setup(self, ui_controller)
