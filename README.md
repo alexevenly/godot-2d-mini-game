@@ -59,6 +59,8 @@ Key levels place doors across the arena. Locked doors require their assigned key
 
 Key levels also sprinkle obstacles throughout each gated segment to keep movement interesting while carving safe corridors near doors, spawn points, and recently placed keys.
 
+Automated tests cover the door planner's spacing and obstacle avoidance guarantees along with the HUD's dynamic key and door indicators so future tweaks can detect regressions quickly (`tests/unit/test_level_generation_scripts.gd`, `tests/unit/test_main_systems.gd`).
+
 ### Maze Generation
 
 Maze levels carve a depth-first search maze over the scaled play area, centre the grid, and ensure the player spawns inside a walkable cell. The exit is positioned on one of the farthest cells from that spawn. In the `Maze + Coins` variant, coins are distributed across distant open cells while avoiding the spawn and exit.

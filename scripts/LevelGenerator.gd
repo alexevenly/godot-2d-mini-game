@@ -135,43 +135,29 @@ func is_exit_position_valid(pos, level_width, level_height):
 	var margin = 32
 	return pos.x >= margin and pos.x <= level_width - margin and pos.y >= margin and pos.y <= level_height - margin
 
+func _queue_free_nodes(nodes: Array) -> void:
+	for node in nodes:
+		if is_instance_valid(node):
+			node.queue_free()
+	nodes.clear()
+
+func _clear_spawner(spawner: Node, method_name: String) -> void:
+	if spawner and is_instance_valid(spawner) and spawner.has_method(method_name):
+		spawner.call(method_name)
+
 func clear_existing_objects():
-	for node in doors:
-		if is_instance_valid(node):
-			node.queue_free()
-	doors.clear()
-	for node in key_barriers:
-		if is_instance_valid(node):
-			node.queue_free()
-	key_barriers.clear()
-	for node in key_items:
-		if is_instance_valid(node):
-			node.queue_free()
-	key_items.clear()
-	for node in maze_walls:
-		if is_instance_valid(node):
-			node.queue_free()
-	maze_walls.clear()
-	for node in maze_shadows:
-		if is_instance_valid(node):
-			node.queue_free()
-	maze_shadows.clear()
+	_queue_free_nodes(doors)
+	_queue_free_nodes(key_barriers)
+	_queue_free_nodes(key_items)
+	_queue_free_nodes(maze_walls)
+	_queue_free_nodes(maze_shadows)
 
-	if obstacle_spawner and is_instance_valid(obstacle_spawner):
-		obstacle_spawner.clear_obstacles()
-	if coin_spawner and is_instance_valid(coin_spawner):
-		coin_spawner.clear_coins()
-	if exit_spawner and is_instance_valid(exit_spawner):
-		exit_spawner.clear_exit()
+	_clear_spawner(obstacle_spawner, "clear_obstacles")
+	_clear_spawner(coin_spawner, "clear_coins")
+	_clear_spawner(exit_spawner, "clear_exit")
 
-	for obstacle in obstacles:
-		if is_instance_valid(obstacle):
-			obstacle.queue_free()
-	obstacles.clear()
-	for coin in coins:
-		if is_instance_valid(coin):
-			coin.queue_free()
-	coins.clear()
+	_queue_free_nodes(obstacles)
+	_queue_free_nodes(coins)
 	exit_pos = Vector2.ZERO
 	has_player_spawn_override = false
 	player_spawn_override = Vector2.ZERO
