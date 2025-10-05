@@ -4,7 +4,7 @@ class_name MazeLayoutBuilder
 const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
 const MAZE_UTILS := preload("res://scripts/level_generators/MazeUtils.gd")
 const LEVEL_NODE_FACTORY := preload("res://scripts/level_generators/LevelNodeFactory.gd")
-const MAZE_REACHABILITY_JOB: GDScript = preload("res://scripts/level_generators/MazeReachabilityJob.gd")
+const REACHABILITY := preload("res://scripts/level_generators/maze/MazeReachabilityHelper.gd")
 const WALL_COLOR := Color(0.15, 0.18, 0.28, 1)
 
 var _context
@@ -35,7 +35,17 @@ func build(
 	var grid = MAZE_UTILS.init_maze_grid(cols, rows)
 	MAZE_UTILS.carve_maze(grid, start_cell, cols, rows)
 	_spawn_maze_walls(grid, maze_offset, cell_size, main_scene)
-	_fill_unreachable_areas(main_scene, grid, start_cell, maze_offset, cell_size, player_collision_size, shadow_color, debug_logger)
+	REACHABILITY.spawn_job(
+		_context,
+		main_scene,
+		grid,
+		start_cell,
+		maze_offset,
+		cell_size,
+		player_collision_size,
+		shadow_color,
+		debug_logger
+	)
 	var start_world = MAZE_UTILS.maze_cell_to_world(start_cell, maze_offset, cell_size)
 	_context.set_player_spawn_override(start_world)
 	return {
@@ -85,39 +95,6 @@ func _spawn_maze_walls(grid: Array, offset: Vector2, cell_size: float, main_scen
 				_context.maze_walls.append(right_wall)
 				_context.add_generated_node(right_wall, main_scene)
 
-func _fill_unreachable_areas(
-	main_scene,
-	grid: Array,
-	start_cell: Vector2i,
-	offset: Vector2,
-	cell_size: float,
-	player_collision_size: float,
-	shadow_color: Color,
-	debug_logger
-) -> void:
-	var job = MAZE_REACHABILITY_JOB.new()
-	var logger_callable := Callable()
-	var debug_enabled: bool = debug_logger and debug_logger.is_enabled()
-	if debug_enabled:
-		logger_callable = Callable(debug_logger, "log")
-	job.setup(
-		_context,
-		main_scene,
-		grid.duplicate(true),
-		start_cell,
-		offset,
-		cell_size,
-		player_collision_size,
-		shadow_color,
-		debug_enabled,
-		logger_callable
-	)
-	if _context and _context is Node:
-		_context.add_child(job)
-	elif main_scene and is_instance_valid(main_scene):
-		main_scene.call_deferred("add_child", job)
-	else:
-		job.queue_free()
 
 func _get_random_maze_cell(cols: int, rows: int) -> Vector2i:
 	var attempts = 0
