@@ -70,6 +70,8 @@ func build(main_scene, player_start_position: Vector2, debug_logger, player_coll
 	_fill_unreachable_areas(main_scene, grid, exit_data.start_cell, maze_offset, cell_size, player_collision_size, shadow_color, debug_logger)
 	var start_grid = _cell_to_grid_coords(_start_cell.grid_pos)
 	var start_world = MAZE_UTILS.maze_cell_to_world(start_grid, maze_offset, cell_size)
+	if _context and _context.has_method("set_player_spawn_override"):
+		_context.set_player_spawn_override(start_world)
 	return {
 		"grid": grid,
 		"cols": grid_cols,
