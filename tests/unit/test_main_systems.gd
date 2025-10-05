@@ -211,7 +211,7 @@ func test_ui_controller_coin_and_key_updates() -> void:
 	assert_true(key_container.visible)
 	assert_eq(controller.key_checkbox_nodes.size(), 1)
 	controller.update_key_status_display(1)
-	var checkbox: CheckBox = controller.key_checkbox_nodes[0]
+	var checkbox: Button = controller.key_checkbox_nodes[0]
 	assert_true(checkbox.button_pressed)
 
 func test_ui_controller_updates_exit_visual_state() -> void:

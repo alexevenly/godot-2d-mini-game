@@ -145,12 +145,32 @@ func pick_keys_for_door(
 			result.append(candidate)
 			used_positions.append(candidate)
 	if result.size() < keys_needed:
-		for i in range(keys_needed - result.size()):
-			var anchor_x = clamp(door_center.x - (KEY_CLEARANCE + KEY_SIZE) - float(i) * (KEY_SIZE + 10.0), horizontal_min, horizontal_max)
-			var anchor_y = clamp(vertical_min + float(i) * 40.0, vertical_min, vertical_max)
-			var fallback = Vector2(anchor_x, anchor_y)
+		var remaining: int = keys_needed - result.size()
+		var door_clearance_limit: float = door_center.x - (KEY_CLEARANCE + KEY_SIZE)
+		var fallback_max_x: float = min(horizontal_max, door_clearance_limit)
+		var fallback_min_x: float = min(horizontal_min, fallback_max_x)
+		fallback_min_x = max(offset.x + 4.0, fallback_min_x)
+		if fallback_max_x < fallback_min_x:
+			fallback_max_x = fallback_min_x
+		for i in range(remaining):
+			var anchor_x_target: float = door_clearance_limit - float(i) * (KEY_SIZE + 10.0)
+			var anchor_x: float = clamp(anchor_x_target, fallback_min_x, fallback_max_x)
+			var anchor_y: float = clamp(vertical_min + float(i) * 40.0, vertical_min, vertical_max)
+			var fallback: Vector2 = Vector2(anchor_x, anchor_y)
+			if not _is_candidate_within_bounds(fallback, door_center, fallback_min_x, fallback_max_x):
+				var adjusted_x: float = clamp(door_clearance_limit, fallback_min_x, fallback_max_x)
+				fallback.x = adjusted_x
+				if not _is_candidate_within_bounds(fallback, door_center, fallback_min_x, fallback_max_x):
+					continue
 			if _is_blocked_by_obstacle(fallback):
-				fallback.y = clamp(fallback.y + 45.0, vertical_min, vertical_max)
+				var shifted_y: float = fallback.y
+				var adjustment_attempts: int = 0
+				while adjustment_attempts < 3 and _is_blocked_by_obstacle(fallback):
+					shifted_y = clamp(shifted_y + 45.0, vertical_min, vertical_max)
+					fallback.y = shifted_y
+					adjustment_attempts += 1
+				if _is_blocked_by_obstacle(fallback):
+					continue
 			result.append(fallback)
 			used_positions.append(fallback)
 	return result

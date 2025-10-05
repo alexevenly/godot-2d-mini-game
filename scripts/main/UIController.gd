@@ -18,9 +18,9 @@ var door_container: Control = null
 var door_status_container: Control = null
 var _key_ui_manager
 
-var key_checkbox_nodes: Array[CheckBox]:
+var key_checkbox_nodes: Array[Button]:
 	get:
-		return _key_ui_manager.key_checkbox_nodes if _key_ui_manager else [] as Array[CheckBox]
+		return _key_ui_manager.key_checkbox_nodes if _key_ui_manager else [] as Array[Button]
 
 func setup(
 	main_ref,

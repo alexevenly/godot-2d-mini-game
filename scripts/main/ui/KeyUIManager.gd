@@ -7,16 +7,16 @@ const DEFAULT_KEY_COLOR := Color(0.9, 0.9, 0.2, 1.0)
 const DEFAULT_DOOR_COLOR := Color(0.35, 0.35, 0.75, 1.0)
 const CHECKBOX_SIZE := Vector2(28, 28)
 const CHECKBOX_BORDER_COLOR := Color(1, 1, 1, 1)
-const CHECKBOX_PRESSED_ALPHA := 0.25
-const CHECKBOX_HOVER_ALPHA := 0.12
-const CHECKBOX_BASE_ALPHA := 0.05
+const CHECKBOX_PRESSED_ALPHA := 0.45
+const CHECKBOX_HOVER_ALPHA := 0.35
+const CHECKBOX_BASE_ALPHA := 0.25
 
 var key_container: Control = null
 var key_status_container: Control = null
 var door_container: Control = null
 var door_status_container: Control = null
-var key_checkbox_nodes: Array[CheckBox] = []
-var door_checkbox_nodes: Array[CheckBox] = []
+var key_checkbox_nodes: Array[Button] = []
+var door_checkbox_nodes: Array[Button] = []
 var available_key_colors_by_door: Dictionary = {}
 var collected_colors: Array[Color] = []
 var target_collected_count: int = 0
@@ -54,7 +54,7 @@ func build_from_keys(key_nodes: Array[Area2D]) -> void:
 		_update_container_visibility(key_container, key_checkbox_nodes)
 		return
 	for index in range(total_keys):
-		var checkbox: CheckBox = _create_status_checkbox()
+		var checkbox: Button = _create_status_checkbox()
 		var key_node: Area2D = key_nodes[index] if index < key_nodes.size() else null
 		var color: Color = DEFAULT_KEY_COLOR
 		if key_node and key_node.has_meta("group_color"):
@@ -81,7 +81,7 @@ func build_from_doors(door_nodes: Array) -> void:
 		_update_container_visibility(door_container, door_checkbox_nodes)
 		return
 	for index in range(total_doors):
-		var checkbox: CheckBox = _create_status_checkbox()
+		var checkbox: Button = _create_status_checkbox()
 		var door_body: StaticBody2D = door_nodes[index] if index < door_nodes.size() else null
 		var door_id: int = index
 		var door_color: Color = DEFAULT_DOOR_COLOR
@@ -124,12 +124,12 @@ func mark_door_opened(door_id: int, door_color: Color) -> void:
 	if target_index < 0:
 		if door_status_container == null:
 			return
-		var checkbox: CheckBox = _create_status_checkbox()
-		door_status_container.add_child(checkbox)
-		door_checkbox_nodes.append(checkbox)
+		var new_checkbox: Button = _create_status_checkbox()
+		door_status_container.add_child(new_checkbox)
+		door_checkbox_nodes.append(new_checkbox)
 		target_index = door_checkbox_nodes.size() - 1
 		door_index_by_id[door_id] = target_index
-	var checkbox: CheckBox = door_checkbox_nodes[target_index]
+	var checkbox: Button = door_checkbox_nodes[target_index]
 	if checkbox == null or not is_instance_valid(checkbox):
 		return
 	var color_to_use: Color = door_color if typeof(door_color) == TYPE_COLOR else DEFAULT_DOOR_COLOR
@@ -140,7 +140,7 @@ func mark_door_opened(door_id: int, door_color: Color) -> void:
 
 func _refresh_checkboxes() -> void:
 	for index in range(key_checkbox_nodes.size()):
-		var checkbox: CheckBox = key_checkbox_nodes[index]
+		var checkbox: Button = key_checkbox_nodes[index]
 		if checkbox == null or not is_instance_valid(checkbox):
 			continue
 		var is_collected: bool = index < target_collected_count
@@ -153,23 +153,28 @@ func _refresh_checkboxes() -> void:
 			checkbox.modulate = NEUTRAL_COLOR
 	_update_container_visibility(key_container, key_checkbox_nodes)
 
-func _create_status_checkbox() -> CheckBox:
-	var checkbox: CheckBox = CheckBox.new()
-	checkbox.disabled = true
+func _create_status_checkbox() -> Button:
+	var checkbox: Button = Button.new()
+	checkbox.toggle_mode = true
 	checkbox.focus_mode = Control.FOCUS_NONE
 	checkbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	checkbox.button_pressed = false
+	checkbox.text = ""
+	checkbox.flat = true
 	checkbox.modulate = NEUTRAL_COLOR
 	checkbox.custom_minimum_size = CHECKBOX_SIZE
+	checkbox.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	checkbox.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_apply_checkbox_theme(checkbox)
 	return checkbox
 
-func _apply_checkbox_theme(checkbox: CheckBox) -> void:
+func _apply_checkbox_theme(checkbox: Button) -> void:
 	var base_style := StyleBoxFlat.new()
 	base_style.bg_color = Color(1, 1, 1, CHECKBOX_BASE_ALPHA)
 	base_style.border_color = CHECKBOX_BORDER_COLOR
 	base_style.set_border_width_all(2)
-	base_style.set_corner_radius_all(4)
+	base_style.set_corner_radius_all(0)
+	base_style.set_content_margin_all(0)
 	var hover_style: StyleBoxFlat = base_style.duplicate()
 	hover_style.bg_color = Color(1, 1, 1, CHECKBOX_HOVER_ALPHA)
 	var pressed_style: StyleBoxFlat = base_style.duplicate()
