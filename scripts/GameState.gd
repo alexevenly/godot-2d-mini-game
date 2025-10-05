@@ -162,34 +162,34 @@ func _pick_random_level_type() -> LevelType:
 		LevelType.MAZE_KEYS,
 		LevelType.MAZE_COMPLEX,
 		LevelType.MAZE_COMPLEX_COINS,
-		LevelType.MAZE_COMPLEX_KEYS
+		LevelType.MAZE_COMPLEX_KEYS,
 	]
 	if options.is_empty():
-	return LevelType.OBSTACLES_COINS
+		return LevelType.OBSTACLES_COINS
 	return options[randi() % options.size()]
 
 func _get_level_type_label(level_type: LevelType) -> String:
 	match level_type:
 		LevelType.OBSTACLES_COINS:
-		return "Obstacles + Coins"
+			return "Obstacles + Coins"
 		LevelType.KEYS:
-		return "Keys"
+			return "Keys"
 		LevelType.MAZE:
-		return "Maze"
+			return "Maze"
 		LevelType.MAZE_COINS:
-		return "Maze + Coins"
+			return "Maze + Coins"
 		LevelType.MAZE_KEYS:
-		return "Maze + Keys"
+			return "Maze + Keys"
 		LevelType.MAZE_COMPLEX:
-		return "Maze Complex"
+			return "Maze Complex"
 		LevelType.MAZE_COMPLEX_COINS:
-		return "Maze Complex + Coins"
+			return "Maze Complex + Coins"
 		LevelType.MAZE_COMPLEX_KEYS:
-		return "Maze Complex + Keys"
+			return "Maze Complex + Keys"
 		LevelType.RANDOM:
-		return "Random"
+			return "Random"
 		LevelType.CHALLENGE:
-		return "Challenge"
+			return "Challenge"
 	return str(level_type)
 
 func _generate_challenge_sequence() -> void:
