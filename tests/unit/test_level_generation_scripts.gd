@@ -5,6 +5,7 @@ const ObstacleUtilities = preload("res://scripts/level_generators/ObstacleUtilit
 const KeyLevelGenerator = preload("res://scripts/level_generators/KeyLevelGenerator.gd")
 const MazeGenerator = preload("res://scripts/level_generators/MazeGenerator.gd")
 const MazeDoorAndKeyPlanner = preload("res://scripts/level_generators/maze/MazeDoorAndKeyPlanner.gd")
+const KeyDoorPlanner = preload("res://scripts/level_generators/key/KeyDoorPlanner.gd")
 const ObstacleSpawner = preload("res://scripts/ObstacleSpawner.gd")
 const CoinSpawner = preload("res://scripts/CoinSpawner.gd")
 const LevelUtils = preload("res://scripts/LevelUtils.gd")
@@ -24,6 +25,9 @@ class ObstacleContextStub extends RefCounted:
 
 	func _init():
 		obstacle_spawner = ObstacleSpawnerStub.new(obstacles)
+
+class KeyPlannerContextStub extends RefCounted:
+	var obstacles: Array = []
 
 func _make_obstacle(position: Vector2) -> StaticBody2D:
 	var obstacle := track_node(StaticBody2D.new())
@@ -88,6 +92,35 @@ func test_key_level_generator_sample_far_points_within_bounds() -> void:
 		assert_true(point.x <= 210.0)
 		assert_true(point.y >= 20.0)
 		assert_true(point.y <= 170.0)
+
+func test_key_door_planner_respects_bounds_and_obstacles() -> void:
+	var context := KeyPlannerContextStub.new()
+	var obstacle := _make_obstacle(Vector2(360, 300))
+	context.obstacles.append(obstacle)
+	var planner := KeyDoorPlanner.new(context)
+	seed(42)
+	var offset := Vector2.ZERO
+	var level_width := 800.0
+	var level_height := 600.0
+	var door_center := Vector2(620, 300)
+	var spawn_override := Vector2(100, 320)
+	var exit_position := Vector2(740, 320)
+	var used_positions: Array = []
+	var keys := planner.pick_keys_for_door(door_center, 2, offset, level_width, level_height, spawn_override, exit_position, used_positions)
+	assert_eq(keys.size(), 2)
+	assert_eq(used_positions.size(), 2)
+	var bounds := planner._compute_key_bounds(offset, level_width, level_height, door_center.x)
+	var horizontal_min: float = bounds["min_x"]
+	var horizontal_max: float = bounds["max_x"]
+	var vertical_min: float = bounds["min_y"]
+	var vertical_max: float = bounds["max_y"]
+	var obstacle_rect := LevelUtils.get_obstacle_rect(obstacle)
+	for key_pos in keys:
+		assert_true(key_pos.x >= horizontal_min)
+		assert_true(key_pos.x <= horizontal_max)
+		assert_true(key_pos.y >= vertical_min)
+		assert_true(key_pos.y <= vertical_max)
+		assert_false(obstacle_rect.has_point(key_pos))
 
 func test_maze_generator_select_key_cells_excludes_special_cells() -> void:
 	var planner := MazeDoorAndKeyPlanner.new()

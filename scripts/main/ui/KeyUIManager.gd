@@ -24,7 +24,7 @@ var door_index_by_id: Dictionary = {}
 var door_colors_by_id: Dictionary = {}
 
 func setup_containers(
-	key_container_ref: Control,
+key_container_ref: Control,
 	key_status_container_ref: Control,
 	door_container_ref: Control = null,
 	door_status_container_ref: Control = null
@@ -56,17 +56,10 @@ func build_from_keys(key_nodes: Array[Area2D]) -> void:
 	for index in range(total_keys):
 		var checkbox: Button = _create_status_checkbox()
 		var key_node: Area2D = key_nodes[index] if index < key_nodes.size() else null
-		var color: Color = DEFAULT_KEY_COLOR
-		if key_node and key_node.has_meta("group_color"):
-			color = key_node.get_meta("group_color")
-		var door_identifier: int = index
-		if key_node and key_node.has_method("get"):
-			var door_value = key_node.get("door_id")
-			if door_value != null:
-				door_identifier = int(door_value)
-		var door_colors: Array = available_key_colors_by_door.get(door_identifier, [])
-		door_colors.append(color)
-		available_key_colors_by_door[door_identifier] = door_colors
+		var metadata := _resolve_key_metadata(key_node, index)
+		var door_colors: Array = available_key_colors_by_door.get(metadata.id, [])
+		door_colors.append(metadata.color)
+		available_key_colors_by_door[metadata.id] = door_colors
 		key_status_container.add_child(checkbox)
 		key_checkbox_nodes.append(checkbox)
 	_update_container_visibility(key_container, key_checkbox_nodes)
@@ -83,21 +76,8 @@ func build_from_doors(door_nodes: Array) -> void:
 	for index in range(total_doors):
 		var checkbox: Button = _create_status_checkbox()
 		var door_body: StaticBody2D = door_nodes[index] if index < door_nodes.size() else null
-		var door_id: int = index
-		var door_color: Color = DEFAULT_DOOR_COLOR
-		if door_body:
-			if door_body.has_method("get"):
-				var door_id_value = door_body.get("door_id")
-				if door_id_value != null:
-					door_id = int(door_id_value)
-			if door_body.has_method("get_door_color"):
-				door_color = door_body.get_door_color()
-			elif door_body.has_meta("group_color"):
-				door_color = door_body.get_meta("group_color")
-			elif door_body.has_method("get"):
-				var door_color_value = door_body.get("door_color")
-				if typeof(door_color_value) == TYPE_COLOR:
-					door_color = door_color_value
+		var door_id: int = _resolve_door_identifier(door_body, index)
+		var door_color: Color = _resolve_door_color(door_body, DEFAULT_DOOR_COLOR)
 		door_index_by_id[door_id] = door_checkbox_nodes.size()
 		door_colors_by_id[door_id] = door_color
 		door_status_container.add_child(checkbox)
@@ -187,25 +167,70 @@ func _apply_checkbox_theme(checkbox: Button) -> void:
 	checkbox.add_theme_stylebox_override("disabled", disabled_style)
 	checkbox.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
 
-func _clear_key_checkboxes() -> void:
-	if key_status_container:
-		for child in key_status_container.get_children():
+func _resolve_door_identifier(source, fallback: int) -> int:
+	if source and source.has_method("get"):
+		var door_value = source.get("door_id")
+		if door_value != null:
+			return int(door_value)
+	return fallback
+
+func _resolve_key_metadata(key_node: Area2D, fallback_id: int) -> Dictionary:
+	var door_id := fallback_id
+	var color := DEFAULT_KEY_COLOR
+	if key_node:
+		door_id = _resolve_door_identifier(key_node, fallback_id)
+		color = _resolve_key_color(key_node, DEFAULT_KEY_COLOR)
+	return {
+		"id": door_id,
+		"color": color
+	}
+
+func _resolve_key_color(key_node: Area2D, fallback: Color) -> Color:
+	if key_node == null:
+		return fallback
+	if key_node.has_meta("group_color"):
+		var meta_color = key_node.get_meta("group_color")
+		if typeof(meta_color) == TYPE_COLOR:
+			return meta_color
+	if key_node.has_method("get"):
+		var property_color = key_node.get("group_color")
+		if typeof(property_color) == TYPE_COLOR:
+			return property_color
+	return fallback
+
+func _resolve_door_color(door_body, fallback: Color) -> Color:
+	if door_body == null:
+		return fallback
+	if door_body.has_method("get_door_color"):
+		var door_color = door_body.get_door_color()
+		if typeof(door_color) == TYPE_COLOR:
+			return door_color
+	if door_body.has_meta("group_color"):
+		var meta_color = door_body.get_meta("group_color")
+		if typeof(meta_color) == TYPE_COLOR:
+			return meta_color
+	if door_body.has_method("get"):
+		var property_color = door_body.get("door_color")
+		if typeof(property_color) == TYPE_COLOR:
+			return property_color
+	return fallback
+
+func _clear_container_nodes(container: Control, nodes: Array) -> void:
+	if container:
+		for child in container.get_children():
 			var control_child: Control = child as Control
 			if control_child and is_instance_valid(control_child):
 				control_child.queue_free()
-	key_checkbox_nodes.clear()
-	_update_container_visibility(key_container, key_checkbox_nodes)
+	nodes.clear()
+	_update_container_visibility(container, nodes)
+
+func _clear_key_checkboxes() -> void:
+	_clear_container_nodes(key_status_container, key_checkbox_nodes)
 
 func _clear_door_checkboxes() -> void:
-	if door_status_container:
-		for child in door_status_container.get_children():
-			var control_child: Control = child as Control
-			if control_child and is_instance_valid(control_child):
-				control_child.queue_free()
-	door_checkbox_nodes.clear()
+	_clear_container_nodes(door_status_container, door_checkbox_nodes)
 	door_index_by_id.clear()
 	door_colors_by_id.clear()
-	_update_container_visibility(door_container, door_checkbox_nodes)
 
 func _update_container_visibility(container: Control, nodes: Array) -> void:
 	if container:

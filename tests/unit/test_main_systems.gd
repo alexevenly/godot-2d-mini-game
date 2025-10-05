@@ -39,6 +39,15 @@ class LevelControllerStub:
 	func get_active_coins() -> Array[Area2D]:
 		return coins
 
+class DoorStub:
+	extends StaticBody2D
+
+	var door_id := 0
+	var door_color := Color(0.35, 0.35, 0.75, 1.0)
+
+	func get_door_color() -> Color:
+		return door_color
+
 class UIStub:
 	extends RefCounted
 
@@ -213,7 +222,18 @@ func test_ui_controller_coin_and_key_updates() -> void:
 	controller.update_key_status_display(1)
 	var checkbox: Button = controller.key_checkbox_nodes[0]
 	assert_true(checkbox.button_pressed)
-
+	var door := track_node(DoorStub.new())
+	door.door_id = 5
+	door.door_color = Color(0.2, 0.6, 0.8, 1.0)
+	controller.setup_door_ui([door])
+	assert_true(door_container.visible)
+	assert_eq(controller._key_ui_manager.door_index_by_id[5], 0)
+	controller.mark_door_opened(5, door.door_color)
+	var door_checkbox: Button = controller._key_ui_manager.door_checkbox_nodes[0]
+	assert_true(door_checkbox.button_pressed)
+	assert_eq(door_checkbox.modulate, door.door_color)
+	controller.mark_door_opened(42, Color(0.7, 0.3, 0.2, 1.0))
+	assert_true(controller._key_ui_manager.door_checkbox_nodes.size() >= 2)
 func test_ui_controller_updates_exit_visual_state() -> void:
 	var controller = UIController.new()
 	var main := track_node(Node.new())

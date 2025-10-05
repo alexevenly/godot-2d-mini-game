@@ -102,45 +102,36 @@ func pick_keys_for_door(
 		return result
 	var min_spacing: float = 150.0
 	var attempts: int = 0
-	var vertical_min = offset.y + LEVEL_MARGIN
-	var vertical_max = offset.y + level_height - LEVEL_MARGIN
-	var horizontal_min = offset.x + LEVEL_MARGIN
-	var horizontal_max = door_center.x - (KEY_CLEARANCE + KEY_SIZE)
-	var level_right_limit = offset.x + level_width - LEVEL_MARGIN
-	horizontal_max = min(horizontal_max, level_right_limit)
-	if horizontal_max <= horizontal_min:
-		horizontal_min = max(offset.x + ACCESSIBLE_MARGIN_FALLBACK, horizontal_max - 120.0)
-		horizontal_max = max(horizontal_min + 16.0, horizontal_max)
+	var bounds := _compute_key_bounds(offset, level_width, level_height, door_center.x)
+	var horizontal_min: float = bounds["min_x"]
+	var horizontal_max: float = bounds["max_x"]
+	var vertical_min: float = bounds["min_y"]
+	var vertical_max: float = bounds["max_y"]
 	var evaluated_spacing_failures = 0
 	while result.size() < keys_needed and attempts < 260:
 		var candidate = _random_key_position(horizontal_min, horizontal_max, vertical_min, vertical_max)
-		if not _is_candidate_within_bounds(candidate, door_center, horizontal_min, horizontal_max):
-			attempts += 1
-			continue
-		if _is_blocked_by_obstacle(candidate):
-			attempts += 1
-			continue
-		var score = _spacing_score(candidate, door_center, spawn_override, exit_position, used_positions, result)
-		if score < min_spacing:
+		var evaluation = _evaluate_candidate(candidate, door_center, bounds, spawn_override, exit_position, used_positions, result)
+		if evaluation.valid:
+			if evaluation.score >= min_spacing:
+				result.append(candidate)
+				used_positions.append(candidate)
+				continue
 			attempts += 1
 			evaluated_spacing_failures += 1
 			if evaluated_spacing_failures % 60 == 0 and min_spacing > 90.0:
 				min_spacing *= 0.9
-			continue
-		result.append(candidate)
-		used_positions.append(candidate)
+		else:
+			attempts += 1
 	if result.size() < keys_needed:
 		var relaxed_spacing = min(min_spacing, 110.0)
 		var fallback_attempts = 0
 		while result.size() < keys_needed and fallback_attempts < 220:
 			var candidate = _random_key_position(horizontal_min, horizontal_max, vertical_min, vertical_max)
 			fallback_attempts += 1
-			if not _is_candidate_within_bounds(candidate, door_center, horizontal_min, horizontal_max):
+			var evaluation = _evaluate_candidate(candidate, door_center, bounds, spawn_override, exit_position, used_positions, result)
+			if not evaluation.valid:
 				continue
-			if _is_blocked_by_obstacle(candidate):
-				continue
-			var score = _spacing_score(candidate, door_center, spawn_override, exit_position, used_positions, result)
-			if score < relaxed_spacing:
+			if evaluation.score < relaxed_spacing:
 				continue
 			result.append(candidate)
 			used_positions.append(candidate)
@@ -195,9 +186,44 @@ func _is_blocked_by_obstacle(candidate: Vector2) -> bool:
 				return true
 	return false
 
-func _spacing_score(
+func _compute_key_bounds(offset: Vector2, level_width: float, level_height: float, door_center_x: float) -> Dictionary:
+	var vertical_min: float = offset.y + LEVEL_MARGIN
+	var vertical_max: float = offset.y + level_height - LEVEL_MARGIN
+	var horizontal_min: float = offset.x + LEVEL_MARGIN
+	var horizontal_max: float = door_center_x - (KEY_CLEARANCE + KEY_SIZE)
+	var level_right_limit: float = offset.x + level_width - LEVEL_MARGIN
+	horizontal_max = min(horizontal_max, level_right_limit)
+	if horizontal_max <= horizontal_min:
+		horizontal_min = max(offset.x + ACCESSIBLE_MARGIN_FALLBACK, horizontal_max - 120.0)
+		horizontal_max = max(horizontal_min + 16.0, horizontal_max)
+	return {
+		"min_x": horizontal_min,
+		"max_x": horizontal_max,
+		"min_y": vertical_min,
+		"max_y": vertical_max
+	}
+
+func _evaluate_candidate(
 	candidate: Vector2,
 	door_center: Vector2,
+	bounds: Dictionary,
+	spawn_override: Vector2,
+	exit_position: Vector2,
+	used_positions: Array,
+	existing: Array
+) -> Dictionary:
+	var min_x: float = bounds.get("min_x", 0.0)
+	var max_x: float = bounds.get("max_x", 0.0)
+	if not _is_candidate_within_bounds(candidate, door_center, min_x, max_x):
+		return {"valid": false, "score": 0.0}
+	if _is_blocked_by_obstacle(candidate):
+		return {"valid": false, "score": 0.0}
+	var score = _spacing_score(candidate, door_center, spawn_override, exit_position, used_positions, existing)
+	return {"valid": true, "score": score}
+
+func _spacing_score(
+candidate: Vector2,
+door_center: Vector2,
 	spawn_override: Vector2,
 	exit_position: Vector2,
 	used_positions: Array,
