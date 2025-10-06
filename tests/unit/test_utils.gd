@@ -84,6 +84,31 @@ func assert_array_contains(collection: Array, value, message := "") -> void:
 		var detail := "Expected collection to contain %s" % str(value)
 		_register_failure(_compose_message(message, detail))
 
+func assert_between(value, min_value, max_value, message := "") -> void:
+	_assertions += 1
+	var lower: float = float(min(min_value, max_value))
+	var upper: float = float(max(min_value, max_value))
+	var numeric: float = float(value)
+	if numeric < lower or numeric > upper:
+		var detail := "Expected %.3f within [%.3f, %.3f]" % [numeric, lower, upper]
+		_register_failure(_compose_message(message, detail))
+
+func assert_instanceof(subject, expected_class, message := "") -> void:
+	_assertions += 1
+	var is_match := false
+	if subject is Object:
+		var target_name := str(expected_class)
+		is_match = subject.is_class(target_name)
+	if not is_match:
+		var detail := "Expected instance of %s" % str(expected_class)
+		_register_failure(_compose_message(message, detail))
+
+func assert_array_size(collection: Array, expected_size: int, message := "") -> void:
+	_assertions += 1
+	if collection.size() != expected_size:
+		var detail := "Expected array size %d but got %d" % [expected_size, collection.size()]
+		_register_failure(_compose_message(message, detail))
+
 func track_node(node: Node) -> Node:
 	_nodes_to_free.append(node)
 	return node
