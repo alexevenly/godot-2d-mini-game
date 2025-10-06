@@ -315,14 +315,15 @@ func _validate_map(grid: Array, start: Vector2i, exit_cell: Vector2i, door_infos
 	var final_reachable: Dictionary = _flood_fill_with_keys(grid, current_start, collected)
 	return final_reachable.has(exit_cell)
 
+
 func _spawn_from_grid(layout: Dictionary, dims: Dictionary, main_scene) -> void:
 	if context == null:
 		return
 	context.obstacles = []
 	context.doors = []
-	context.key_items = []
+	context.key_items.clear()
 	context.key_barriers = []
-	context.coins = []
+	context.coins.clear()
 	var grid: Array = layout.get("grid", [])
 	if grid.is_empty():
 		return
