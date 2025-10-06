@@ -8,6 +8,7 @@ const LEVEL_NODE_FACTORY := preload("res://scripts/level_generators/LevelNodeFac
 
 const MIN_GRID_SIZE := 12
 const MAX_GRID_SIZE := 20
+const MIN_CELL_SIZE := 32.0
 const MAX_GENERATION_ATTEMPTS := 32
 const OBSTACLE_RATIO := 0.12
 const COLORS := ["R", "Y", "B", "P"]
@@ -37,7 +38,7 @@ func get_last_generated_grid() -> Array:
 func generate(main_scene, level: int, player_start_position: Vector2) -> void:
 	var dims: Dictionary = LEVEL_UTILS.get_scaled_level_dimensions(context.current_level_size)
 	_reset_rng(level)
-	var layout: Dictionary = _build_level_layout(level)
+	var layout: Dictionary = _build_level_layout(level, dims)
 	if layout.is_empty():
 		LOGGER.log_error("KeyLevelGenerator failed to build solvable layout")
 		return
@@ -50,10 +51,14 @@ func _reset_rng(level: int) -> void:
 	else:
 		_rng.seed = hash([Time.get_ticks_usec(), level, randi()])
 
-func _build_level_layout(level: int) -> Dictionary:
+func _build_level_layout(level: int, dims: Dictionary) -> Dictionary:
+	var max_cols: int = int(floor(dims.width / MIN_CELL_SIZE))
+	var max_rows: int = int(floor(dims.height / MIN_CELL_SIZE))
+	max_cols = max(MIN_GRID_SIZE, min(MAX_GRID_SIZE, max_cols))
+	max_rows = max(MIN_GRID_SIZE, min(MAX_GRID_SIZE, max_rows))
 	for attempt in range(MAX_GENERATION_ATTEMPTS):
-		var width: int = _rng.randi_range(MIN_GRID_SIZE, MAX_GRID_SIZE)
-		var height: int = _rng.randi_range(MIN_GRID_SIZE, MAX_GRID_SIZE)
+		var width: int = _rng.randi_range(MIN_GRID_SIZE, max_cols)
+		var height: int = _rng.randi_range(MIN_GRID_SIZE, max_rows)
 		var grid: Array = _create_empty_grid(width, height)
 		var start: Vector2i = Vector2i(width / 2, height / 2)
 		var exit_cell: Variant = _choose_exit_cell(width, height, start)
