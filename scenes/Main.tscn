@@ -14,10 +14,19 @@
 size = Vector2(32, 32)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7"]
-size = Vector2(1024, 20)
+size = Vector2(1024, 10)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8"]
-size = Vector2(20, 600)
+size = Vector2(10, 600)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_9"]
+size = Vector2(140, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_10"]
+size = Vector2(40, 160)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_11"]
+size = Vector2(160, 36)
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_0h8x7")
@@ -82,11 +91,11 @@ script = ExtResource("4_3k0a9")
 [node name="Boundaries" type="Node2D" parent="."]
 
 [node name="TopWall" type="StaticBody2D" parent="Boundaries"]
-position = Vector2(512, -10)
+position = Vector2(512, -5)
 
 [node name="TopWallBody" type="ColorRect" parent="Boundaries/TopWall"]
 offset_left = -512.0
-offset_top = -20.0
+offset_top = -10.0
 offset_right = 512.0
 color = Color(0.2, 0.2, 0.2, 1)
 
@@ -94,23 +103,23 @@ color = Color(0.2, 0.2, 0.2, 1)
 shape = SubResource("RectangleShape2D_7")
 
 [node name="BottomWall" type="StaticBody2D" parent="Boundaries"]
-position = Vector2(512, 610)
+position = Vector2(512, 605)
 
 [node name="BottomWallBody" type="ColorRect" parent="Boundaries/BottomWall"]
 offset_left = -512.0
 offset_top = 600.0
 offset_right = 512.0
-offset_bottom = 620.0
+offset_bottom = 610.0
 color = Color(0.2, 0.2, 0.2, 1)
 
 [node name="BottomWallCollision" type="CollisionShape2D" parent="Boundaries/BottomWall"]
 shape = SubResource("RectangleShape2D_7")
 
 [node name="LeftWall" type="StaticBody2D" parent="Boundaries"]
-position = Vector2(-10, 300)
+position = Vector2(-5, 300)
 
 [node name="LeftWallBody" type="ColorRect" parent="Boundaries/LeftWall"]
-offset_left = -20.0
+offset_left = -10.0
 offset_top = -300.0
 offset_bottom = 300.0
 color = Color(0.2, 0.2, 0.2, 1)
@@ -119,17 +128,59 @@ color = Color(0.2, 0.2, 0.2, 1)
 shape = SubResource("RectangleShape2D_8")
 
 [node name="RightWall" type="StaticBody2D" parent="Boundaries"]
-position = Vector2(1034, 300)
+position = Vector2(1029, 300)
 
 [node name="RightWallBody" type="ColorRect" parent="Boundaries/RightWall"]
 offset_left = 1024.0
 offset_top = -300.0
-offset_right = 1044.0
+offset_right = 1034.0
 offset_bottom = 300.0
 color = Color(0.2, 0.2, 0.2, 1)
 
 [node name="RightWallCollision" type="CollisionShape2D" parent="Boundaries/RightWall"]
 shape = SubResource("RectangleShape2D_8")
+
+[node name="TopWallNotch" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(260, 0)
+
+[node name="TopWallNotchBody" type="ColorRect" parent="Boundaries/TopWallNotch"]
+offset_left = -70.0
+offset_top = 0.0
+offset_right = 70.0
+offset_bottom = 40.0
+color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="TopWallNotchCollision" type="CollisionShape2D" parent="Boundaries/TopWallNotch"]
+position = Vector2(0, 20)
+shape = SubResource("RectangleShape2D_9")
+
+[node name="RightWallSpur" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(1024, 200)
+
+[node name="RightWallSpurBody" type="ColorRect" parent="Boundaries/RightWallSpur"]
+offset_left = -40.0
+offset_top = -80.0
+offset_right = 0.0
+offset_bottom = 80.0
+color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="RightWallSpurCollision" type="CollisionShape2D" parent="Boundaries/RightWallSpur"]
+position = Vector2(-20, 0)
+shape = SubResource("RectangleShape2D_10")
+
+[node name="BottomWallShelf" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(420, 600)
+
+[node name="BottomWallShelfBody" type="ColorRect" parent="Boundaries/BottomWallShelf"]
+offset_left = -80.0
+offset_top = -36.0
+offset_right = 80.0
+offset_bottom = 0.0
+color = Color(0.2, 0.2, 0.2, 1)
+
+[node name="BottomWallShelfCollision" type="CollisionShape2D" parent="Boundaries/BottomWallShelf"]
+position = Vector2(0, -18)
+shape = SubResource("RectangleShape2D_11")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
