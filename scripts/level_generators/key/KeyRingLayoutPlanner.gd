@@ -43,20 +43,27 @@ func _build_rings(offset: Vector2, level_width: float, level_height: float, leve
 	var available_space: float = max(outer_half - SETTINGS.MIN_INNER_HALF, 0.0)
 	var max_rings_by_spacing = int(floor(available_space / SETTINGS.MIN_RING_SPACING)) + 1
 	desired_rings = clamp(desired_rings, 2, max(max_rings_by_spacing, 2))
-	var step = max((outer_half - SETTINGS.MIN_INNER_HALF) / float(max(desired_rings - 1, 1)), SETTINGS.MIN_RING_SPACING * 0.5)
+	var base_inner_margin: float = SETTINGS.WALL_THICKNESS + SETTINGS.KEY_WALL_OFFSET
+	var min_inner_half_requirement: float = max(SETTINGS.MIN_INNER_HALF, base_inner_margin + sqrt(SETTINGS.MIN_INNER_AREA) * 0.5)
+	var spacing_target: float = SETTINGS.MIN_RING_SPACING
+	while desired_rings > 2 and (outer_half - float(desired_rings - 1) * spacing_target) < min_inner_half_requirement:
+		desired_rings -= 1
+	var step = max((outer_half - min_inner_half_requirement) / float(max(desired_rings - 1, 1)), SETTINGS.MIN_RING_SPACING * 0.5)
 	var min_spacing = min(step, SETTINGS.MIN_RING_SPACING)
 	var rings: Array = []
 	var current_half: float = outer_half
 	for i in range(desired_rings):
 		if i > 0:
-			var required_remaining = SETTINGS.MIN_INNER_HALF + float(desired_rings - i - 1) * min_spacing
-			current_half = max(current_half - step, required_remaining)
-		if i > 0 and rings.size() > 0:
+			var remaining = max(desired_rings - i - 1, 0)
+			var min_allowed_half: float = min_inner_half_requirement if remaining == 0 else (min_inner_half_requirement + float(remaining) * min_spacing)
+			var target_half: float = current_half - step
+			current_half = max(target_half, min_allowed_half)
 			var prev_half: float = float(rings[i - 1].get("half", outer_half))
-			if prev_half - current_half < min_spacing:
-				current_half = prev_half - min_spacing
-			current_half = max(current_half, SETTINGS.MIN_INNER_HALF)
-		if current_half <= SETTINGS.MIN_INNER_HALF * 0.75:
+			var max_allowed_half: float = prev_half - min_spacing
+			if max_allowed_half < min_allowed_half:
+				break
+			current_half = clamp(current_half, min_allowed_half, max_allowed_half)
+		if current_half <= min_inner_half_requirement * 0.6:
 			break
 		var ring := {
 			"index": i,
@@ -67,7 +74,7 @@ func _build_rings(offset: Vector2, level_width: float, level_height: float, leve
 			"bottom": center.y + current_half,
 			"center": center,
 			"wall_thickness": SETTINGS.WALL_THICKNESS,
-			"inner_margin": SETTINGS.WALL_THICKNESS + SETTINGS.KEY_WALL_OFFSET,
+			"inner_margin": base_inner_margin,
 			"doors": []
 		}
 		ring["width"] = float(ring["right"]) - float(ring["left"])

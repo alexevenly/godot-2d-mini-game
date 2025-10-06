@@ -113,13 +113,17 @@ func _wall_candidates(ring: Dictionary, wall: int, inner_margin: float, fraction
 	var right: float = float(ring.get("right", 0.0))
 	var top: float = float(ring.get("top", 0.0))
 	var bottom: float = float(ring.get("bottom", 0.0))
+	var ring_index := int(ring.get("index", 0))
 	var door_wall = int(layout.get("wall", -1))
 	var door_pos: Vector2 = layout.get("position", Vector2.ZERO)
 	var door_size: Vector2 = layout.get("size", Vector2.ZERO)
+	var wall_thickness: float = float(ring.get("wall_thickness", SETTINGS.WALL_THICKNESS))
+	var outer_offset := wall_thickness + SETTINGS.KEY_WALL_OFFSET * 0.5
+	var use_interior := true
 	if wall == 0:
 		var start_x = left + inner_margin
 		var end_x = right - inner_margin
-		var y = top + inner_margin
+		var y = top + inner_margin if use_interior else top - outer_offset
 		for fraction in fractions:
 			var x = lerp(start_x, end_x, clamp(fraction, 0.05, 0.95))
 			if door_wall == wall:
@@ -131,7 +135,7 @@ func _wall_candidates(ring: Dictionary, wall: int, inner_margin: float, fraction
 	elif wall == 1:
 		var start_y = top + inner_margin
 		var end_y = bottom - inner_margin
-		var x_right = right - inner_margin
+		var x_right = right - inner_margin if use_interior else right + outer_offset
 		for fraction_right in fractions:
 			var y_right = lerp(start_y, end_y, clamp(fraction_right, 0.05, 0.95))
 			if door_wall == wall:
@@ -143,7 +147,7 @@ func _wall_candidates(ring: Dictionary, wall: int, inner_margin: float, fraction
 	elif wall == 2:
 		var start_x_bottom = left + inner_margin
 		var end_x_bottom = right - inner_margin
-		var y_bottom = bottom - inner_margin
+		var y_bottom = bottom - inner_margin if use_interior else bottom + outer_offset
 		for fraction_bottom in fractions:
 			var x_bottom = lerp(start_x_bottom, end_x_bottom, clamp(fraction_bottom, 0.05, 0.95))
 			if door_wall == wall:
@@ -155,7 +159,7 @@ func _wall_candidates(ring: Dictionary, wall: int, inner_margin: float, fraction
 	elif wall == 3:
 		var start_y_left = top + inner_margin
 		var end_y_left = bottom - inner_margin
-		var x_left = left + inner_margin
+		var x_left = left + inner_margin if use_interior else left - outer_offset
 		for fraction_left in fractions:
 			var y_left = lerp(start_y_left, end_y_left, clamp(fraction_left, 0.05, 0.95))
 			if door_wall == wall:
@@ -174,18 +178,24 @@ func _door_fallback_position(ring: Dictionary, layout: Dictionary):
 	var top: float = float(ring.get("top", 0.0))
 	var bottom: float = float(ring.get("bottom", 0.0))
 	var center: Vector2 = layout.get("center", layout.get("position", Vector2.ZERO))
+	var ring_index := int(ring.get("index", 0))
+	var wall_thickness: float = float(ring.get("wall_thickness", SETTINGS.WALL_THICKNESS))
+	var outer_offset := wall_thickness + SETTINGS.KEY_WALL_OFFSET * 0.5
+	var use_interior := true
 	match wall:
 		0:
-			return Vector2(center.x, top + inner_margin)
+			return Vector2(center.x, top + inner_margin) if use_interior else Vector2(center.x, top - outer_offset)
 		1:
-			return Vector2(right - inner_margin, center.y)
+			return Vector2(right - inner_margin, center.y) if use_interior else Vector2(right + outer_offset, center.y)
 		2:
-			return Vector2(center.x, bottom - inner_margin)
+			return Vector2(center.x, bottom - inner_margin) if use_interior else Vector2(center.x, bottom + outer_offset)
 		3:
-			return Vector2(left + inner_margin, center.y)
+			return Vector2(left + inner_margin, center.y) if use_interior else Vector2(left - outer_offset, center.y)
 	return null
 
 func _is_candidate_valid(candidate: Vector2, used_key_positions: Array, pending: Array) -> bool:
+	if _context.exit_pos != Vector2.ZERO and candidate.distance_to(_context.exit_pos) < SETTINGS.EXIT_KEY_CLEARANCE:
+		return false
 	for pos in used_key_positions:
 		if pos.distance_to(candidate) < SETTINGS.KEY_SEPARATION:
 			return false

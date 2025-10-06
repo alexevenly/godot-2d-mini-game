@@ -2,6 +2,7 @@ extends "res://tests/unit/test_utils.gd"
 
 const KeyRingLayoutPlanner = preload("res://scripts/level_generators/key/KeyRingLayoutPlanner.gd")
 const KeyRingDoorSpawner = preload("res://scripts/level_generators/key/KeyRingDoorSpawner.gd")
+const KeyRingSettings = preload("res://scripts/level_generators/key/KeyRingSettings.gd")
 const MazeGenerator = preload("res://scripts/level_generators/MazeGenerator.gd")
 
 class KeyRingContextStub extends RefCounted:
@@ -11,6 +12,7 @@ class KeyRingContextStub extends RefCounted:
 	var key_barriers: Array = []
 	var obstacles: Array = []
 	var generated_nodes: Array = []
+	var exit_pos: Vector2 = Vector2.ZERO
 	var palette := [Color(0.92, 0.45, 0.32), Color(0.32, 0.58, 0.92), Color(0.52, 0.78, 0.36)]
 
 	func _init(test_suite):
@@ -110,7 +112,7 @@ func get_suite_name() -> String:
 func test_key_ring_layout_creates_nested_rings_with_doors() -> void:
 	var context := KeyRingContextStub.new(self)
 	var planner := KeyRingLayoutPlanner.new(context)
-	var layout := planner.create_layout(Vector2.ZERO, 800.0, 600.0, 6)
+	var layout := planner.create_layout(Vector2.ZERO, 1080.0, 800.0, 6)
 	var rings: Array = layout.get("rings", [])
 	assert_true(rings.size() >= 2)
 	var outer: Dictionary = rings[0]
@@ -129,13 +131,26 @@ func test_key_ring_layout_creates_nested_rings_with_doors() -> void:
 			assert_true(door.has("position"))
 	assert_true(total_doors >= rings.size())
 
+func test_key_ring_layout_inner_area_handles_exit_clearance() -> void:
+	var context := KeyRingContextStub.new(self)
+	var planner := KeyRingLayoutPlanner.new(context)
+	var layout := planner.create_layout(Vector2.ZERO, 1040.0, 800.0, 5)
+	var rings: Array = layout.get("rings", [])
+	assert_true(rings.size() >= 2)
+	var inner: Dictionary = rings[rings.size() - 1]
+	var usable_width: float = float(inner.get("usable_width", 0.0))
+	var usable_height: float = float(inner.get("usable_height", 0.0))
+	var inner_area: float = usable_width * usable_height
+	assert_true(inner_area >= KeyRingSettings.MIN_INNER_AREA)
+
 func test_key_ring_door_spawner_emits_blocking_door_and_perimeter_keys() -> void:
 	var context := KeyRingContextStub.new(self)
 	var planner := KeyRingLayoutPlanner.new(context)
-	var layout := planner.create_layout(Vector2.ZERO, 720.0, 540.0, 5)
+	var layout := planner.create_layout(Vector2.ZERO, 1040.0, 800.0, 5)
 	var rings: Array = layout.get("rings", [])
 	var obstacle_utils := ObstacleUtilsStub.new()
 	var spawner: KeyRingDoorSpawner = KeyRingDoorSpawner.new(context, obstacle_utils)
+	context.exit_pos = layout.get("exit", Vector2.ZERO)
 	spawner.spawn(rings, null)
 	assert_true(context.doors.size() >= 1)
 	assert_true(context.key_items.size() >= context.doors.size())
@@ -145,6 +160,8 @@ func test_key_ring_door_spawner_emits_blocking_door_and_perimeter_keys() -> void
 	assert_eq(obstacle_utils.cleared_positions.size(), context.key_items.size())
 	for key in context.key_items:
 		assert_instanceof(key, "Area2D")
+		if context.exit_pos != Vector2.ZERO:
+			assert_true(key.position.distance_to(context.exit_pos) >= KeyRingSettings.EXIT_KEY_CLEARANCE - 0.1)
 		var aligned := false
 		for ring in rings:
 			var margin: float = float(ring.get("inner_margin", 0.0))

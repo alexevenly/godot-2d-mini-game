@@ -1,4 +1,3 @@
-class_name UIController
 extends RefCounted
 
 var last_coin_total := -1

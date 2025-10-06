@@ -6,6 +6,7 @@ const LOGGER := preload("res://scripts/Logger.gd")
 const LEVEL_UTILS := preload("res://scripts/LevelUtils.gd")
 const GAME_STATE := preload("res://scripts/GameState.gd")
 const DEFAULT_DOOR_COLOR := Color(0.35, 0.35, 0.75, 1.0)
+const KEY_SETTINGS := preload("res://scripts/level_generators/key/KeyRingSettings.gd")
 
 var main
 var ui_controller
@@ -20,6 +21,10 @@ func calculate_generation_size(level_type: int) -> float:
 		generation_level_size = min(
 			generation_level_size + 0.35,
 			main.game_state.max_level_size + 0.25
+		)
+		generation_level_size = min(
+			generation_level_size * KEY_SETTINGS.LEVEL_SIZE_MULTIPLIER,
+			main.game_state.max_level_size
 		)
 	return generation_level_size
 

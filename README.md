@@ -31,7 +31,9 @@ Select the desired level template in the main menu. Available options:
 | **Maze** | Generates a procedural maze and places the exit at one of the farthest reachable cells from the spawn point. |
 | **Maze + Coins** | Same maze generation as above, with coins scattered along reachable corridors. |
 | **Maze + Keys** | Maze layout with a locked door near the exit. Collect the matching keys along the solution path to clear the door and finish. |
-| **Random** | Picks one of the above templates (including Maze + Keys) each time a new level is generated. |
+| **Maze Complex** | Dense labyrinth that fills the arena with thin wall lines, wide corridors, and multiple branches leading toward a central exit. |
+| **Maze Complex + Coins** | Complex maze variant with additional coin placement tuned for its wider passages and branch density. |
+| **Random** | Picks one of the above templates (including Maze + Keys and the complex variants) each time a new level is generated. |
 
 When you restart a failed level, the same template is reused. Advancing to the next level rerolls a template if **Random** is selected.
 
@@ -66,6 +68,8 @@ Automated tests cover the door planner's spacing and obstacle avoidance guarante
 Maze levels carve a depth-first search maze over the scaled play area, centre the grid, and ensure the player spawns inside a walkable cell. The exit is positioned on one of the farthest cells from that spawn. In the `Maze + Coins` variant, coins are distributed across distant open cells while avoiding the spawn and exit.
 
 The new `Maze + Keys` mode keeps the same procedural layout but locks the final stretch behind a color-coded door. Keys are seeded along the optimal route so that unlocking the door requires exploring the maze rather than hugging the start area.
+
+Complex maze modes generate a tighter grid with thinner walls and broader hallways to fill the entire arena. Their generator can optionally seed coins while maintaining clear sightlines to the exit, and the exit itself is scaled up to match the heightened density.
 
 ### Statistics Logging
 
