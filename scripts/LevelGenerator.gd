@@ -68,7 +68,8 @@ func _ensure_helpers() -> void:
 	if maze_generator == null:
 		maze_generator = MAZE_GENERATOR.new(self, obstacle_utils)
 	if key_level_generator == null:
-		key_level_generator = KEY_LEVEL_GENERATOR.new(self, obstacle_utils)
+			key_level_generator = KEY_LEVEL_GENERATOR.new()
+			add_child(key_level_generator)
 	if complex_maze_generator == null:
 		complex_maze_generator = COMPLEX_MAZE_GENERATOR.new(self)
 
@@ -81,7 +82,7 @@ func generate_level(level_size := 1.0, generate_obstacles := true, generate_coin
 	clear_existing_objects()
 	match level_type:
 		GAME_STATE.LevelType.KEYS:
-			key_level_generator.generate(main_scene, level, player_start_position)
+				_generate_keys_level(main_scene, level, player_start_position)
 		GAME_STATE.LevelType.MAZE:
 			maze_generator.generate_maze_level(false, main_scene, player_start_position)
 		GAME_STATE.LevelType.MAZE_COINS:
@@ -95,6 +96,61 @@ func generate_level(level_size := 1.0, generate_obstacles := true, generate_coin
 		_:
 			_generate_standard_level(level_size, generate_obstacles, generate_coins, min_exit_distance_ratio, use_full_map_coverage, main_scene, level, preserved_coin_count, player_start_position)
 	return 0
+
+func _generate_keys_level(main_scene, level: int, player_start_position: Vector2) -> void:
+	if key_level_generator == null:
+		return
+	if not (key_level_generator is Node):
+		if key_level_generator.has_method("generate"):
+			key_level_generator.generate(main_scene, level, player_start_position)
+		return
+	var dims = LEVEL_UTILS.get_scaled_level_dimensions(current_level_size)
+	var generated_level = key_level_generator.generate(level)
+	if generated_level == null:
+		LOGGER.log_error("KeysGenerator failed to produce a layout")
+		return
+	var cell_width := float(dims.width) / float(generated_level.width)
+	var cell_height := float(dims.height) / float(generated_level.height)
+	var computed_cell: float = max(1.0, min(cell_width, cell_height))
+	key_level_generator.cell_size = int(floor(computed_cell))
+	if key_level_generator.cell_size <= 0:
+		key_level_generator.cell_size = 1
+	var origin := Vector2(
+		dims.offset_x + (dims.width - float(key_level_generator.cell_size * generated_level.width)) / 2.0,
+		dims.offset_y + (dims.height - float(key_level_generator.cell_size * generated_level.height)) / 2.0
+	)
+	key_level_generator.origin_offset = origin
+	var parent_node = main_scene if main_scene else self
+	key_level_generator.render(generated_level, parent_node)
+	var render_data = key_level_generator.get_render_data()
+	var door_bodies = render_data.get("door_bodies", [])
+	doors.clear()
+	for body in door_bodies:
+		doors.append(body)
+	var door_lines = render_data.get("door_lines", [])
+	key_barriers.clear()
+	for line in door_lines:
+		key_barriers.append(line)
+	var wall_lines = render_data.get("wall_lines", [])
+	maze_walls.clear()
+	for wall_line in wall_lines:
+		maze_walls.append(wall_line)
+	var wall_bodies = render_data.get("wall_bodies", [])
+	for wall_body in wall_bodies:
+		maze_walls.append(wall_body)
+	var container_node = render_data.get("container", null)
+	if container_node != null:
+		maze_walls.append(container_node)
+	var key_nodes = render_data.get("keys", [])
+	key_items.clear()
+	for key_node in key_nodes:
+		key_items.append(key_node)
+	var exit_node = render_data.get("exit", null)
+	if exit_node:
+		maze_walls.append(exit_node)
+		exit_pos = key_level_generator.cell_to_world(generated_level.exit)
+		complex_maze_exit = exit_node
+	set_player_spawn_override(key_level_generator.cell_to_world(generated_level.start))
 
 func _apply_complex_maze_overrides() -> void:
 	# Higher-density maze with thinner borders (thin wall lines)
