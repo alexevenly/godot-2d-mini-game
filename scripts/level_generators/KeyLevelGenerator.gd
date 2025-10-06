@@ -116,7 +116,7 @@ func _compute_overlap_length(usable_span: float, total_span: float, wall_thickne
 	return clamp(span, 72.0, max_span)
 
 func _create_wall_overlap_obstacle(index: int, center: Vector2, size: Vector2, main_scene) -> void:
-	var obstacle := Node2D.new()
+	var obstacle := StaticBody2D.new()
 	obstacle.name = "KeyWallObstacle%d" % index
 	obstacle.position = center - size * 0.5
 	var body := ColorRect.new()
