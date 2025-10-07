@@ -6,6 +6,8 @@ const EDGE_TYPE_OPEN := StringName("open")
 const EDGE_TYPE_WALL := StringName("wall")
 const EDGE_TYPE_DOOR := StringName("door")
 
+const LEVEL_NODE_FACTORY := preload("res://scripts/level_generators/LevelNodeFactory.gd")
+
 const MIN_DIMENSION := 14
 const MAX_DIMENSION := 22
 const MIN_DOOR_PAIRS := 2
@@ -22,6 +24,8 @@ const COLOR_MAP := {
 	StringName("B"): Color(0.129412, 0.588235, 0.952941, 1.0),
 	StringName("P"): Color(0.611765, 0.152941, 0.690196, 1.0)
 }
+
+const KEY_SCRIPT := preload("res://scripts/Key.gd")
 
 @export var cell_size: int = 32
 @export var line_thickness: float = 0.12
@@ -143,30 +147,40 @@ func render(level: KeysLevel, parent: Node) -> void:
 	parent.add_child(container)
 	last_render_data["container"] = container
 	var thickness_px: float = clamp(cell_size * line_thickness, 2.0, 8.0)
+	var wall_color := Color(0.82, 0.82, 0.85, 1.0)
 	for wall in level.thin_walls:
-		var wall_line: Line2D = _draw_edge(container, wall.a, wall.b, thickness_px, Color.WHITE, true)
+		var wall_line: Line2D = _create_edge_line(container, wall.a, wall.b, thickness_px, wall_color, 1)
 		(last_render_data["wall_lines"] as Array[Line2D]).append(wall_line)
-	for door in level.doors:
-		var color: Color = COLOR_MAP.get(door.color, Color.WHITE)
-		var door_line: Line2D = _draw_edge(container, door.a, door.b, thickness_px, color, false)
-		var door_body: StaticBody2D = _draw_collision(container, door.a, door.b, thickness_px)
-		(last_render_data["door_lines"] as Array[Line2D]).append(door_line)
-		(last_render_data["door_bodies"] as Array[StaticBody2D]).append(door_body)
-	for wall in level.thin_walls:
-		var wall_body: StaticBody2D = _draw_collision(container, wall.a, wall.b, thickness_px)
+		var wall_body: StaticBody2D = _create_wall_body(container, wall.a, wall.b, thickness_px)
 		(last_render_data["wall_bodies"] as Array[StaticBody2D]).append(wall_body)
-	var key_size: float = min(cell_size * 0.35, cell_size * 0.4)
-	for key_spec in level.keys:
-		var key_node: Area2D = _draw_key(container, key_spec, key_size)
-		(last_render_data["keys"] as Array[Area2D]).append(key_node)
-	var exit_rect: ColorRect = _draw_exit(container, level.exit)
-	last_render_data["exit"] = exit_rect
+	var color_to_door: Dictionary = {}
+	for door_index in range(level.doors.size()):
+		var door_spec: DoorSpec = level.doors[door_index]
+		var door_color: Color = COLOR_MAP.get(door_spec.color, Color.WHITE)
+		var door_node: StaticBody2D = _create_door_node(container, door_index, door_spec, thickness_px, door_color)
+		(last_render_data["door_bodies"] as Array[StaticBody2D]).append(door_node)
+		color_to_door[door_spec.color] = door_node
+		var line: Line2D = _create_edge_line(container, door_spec.a, door_spec.b, thickness_px, door_color, 2)
+		(last_render_data["door_lines"] as Array[Line2D]).append(line)
+	var key_max: float = float(cell_size) * 0.4
+	var key_min: float = min(6.0, key_max)
+	var key_size: float = clamp(float(cell_size) * 0.35, key_min, key_max)
+	for key_index in range(level.keys.size()):
+		var key_spec: KeySpec = level.keys[key_index]
+		var key_node: Area2D = _create_key_node(container, key_index, key_spec, color_to_door, key_size)
+		if key_node:
+			(last_render_data["keys"] as Array[Area2D]).append(key_node)
+	var exit_node: Area2D = _create_exit_node(container, level.exit)
+	last_render_data["exit"] = exit_node
 
 func get_render_data() -> Dictionary:
 	return last_render_data.duplicate(true)
 
 func cell_to_world(cell: Vector2i) -> Vector2:
-	return Vector2((cell.x + 0.5) * float(cell_size), (cell.y + 0.5) * float(cell_size)) + origin_offset
+	return _cell_to_local(cell) + origin_offset
+
+func _cell_to_local(cell: Vector2i) -> Vector2:
+	return Vector2((cell.x + 0.5) * float(cell_size), (cell.y + 0.5) * float(cell_size))
 
 func find_path_with_keys(level: KeysLevel) -> Array[Vector2i]:
 	if level == null:
@@ -446,66 +460,126 @@ func _shuffle_with_rng(array: Array, rng: RandomNumberGenerator) -> void:
 		array[i] = array[j]
 		array[j] = temp
 
-func _draw_edge(parent: Node, a: Vector2i, b: Vector2i, thickness: float, color: Color, is_wall: bool) -> Line2D:
+func _create_edge_line(parent: Node, a: Vector2i, b: Vector2i, thickness: float, color: Color, z_index: int) -> Line2D:
+	var points := _edge_line_points(a, b)
 	var line := Line2D.new()
 	line.width = thickness
 	line.default_color = color
 	line.begin_cap_mode = Line2D.LINE_CAP_ROUND
 	line.end_cap_mode = Line2D.LINE_CAP_ROUND
-	var start_point: Vector2
-	var end_point: Vector2
-	if a.x != b.x:
-		var left: int = min(a.x, b.x)
-		var y: int = a.y
-		start_point = Vector2(left * cell_size, (y + 0.5) * cell_size)
-		end_point = Vector2((left + 1) * cell_size, (y + 0.5) * cell_size)
-	else:
-		var top: int = min(a.y, b.y)
-		var x: int = a.x
-		start_point = Vector2((x + 0.5) * cell_size, top * cell_size)
-		end_point = Vector2((x + 0.5) * cell_size, (top + 1) * cell_size)
-	line.add_point(start_point)
-	line.add_point(end_point)
-	line.z_index = 1 if is_wall else 2
+	line.z_index = z_index
+	line.add_point(points[0])
+	line.add_point(points[1])
 	parent.add_child(line)
 	return line
 
-func _draw_collision(parent: Node, a: Vector2i, b: Vector2i, thickness: float) -> StaticBody2D:
+func _create_wall_body(parent: Node, a: Vector2i, b: Vector2i, thickness: float) -> StaticBody2D:
+	var rect := _edge_rect(a, b, thickness)
 	var body := StaticBody2D.new()
+	body.position = rect.position
 	var shape := CollisionShape2D.new()
-	var rect := RectangleShape2D.new()
-	if a.x != b.x:
-		rect.size = Vector2(cell_size, thickness)
-		body.position = Vector2((min(a.x, b.x) + 0.5) * cell_size, (a.y + 0.5) * cell_size)
-	else:
-		rect.size = Vector2(thickness, cell_size)
-		body.position = Vector2((a.x + 0.5) * cell_size, (min(a.y, b.y) + 0.5) * cell_size)
-	shape.shape = rect
+	var collider := RectangleShape2D.new()
+	collider.size = rect.size
+	shape.shape = collider
+	shape.position = rect.size * 0.5
 	body.add_child(shape)
 	parent.add_child(body)
 	return body
 
-func _draw_key(parent: Node, key_spec: KeySpec, key_size: float) -> Area2D:
-	var area := Area2D.new()
-	area.position = Vector2((key_spec.cell.x + 0.5) * cell_size, (key_spec.cell.y + 0.5) * cell_size)
+func _create_door_node(parent: Node, door_index: int, door_spec: DoorSpec, thickness: float, color: Color) -> StaticBody2D:
+	var rect := _edge_rect(door_spec.a, door_spec.b, thickness)
+	var door := LEVEL_NODE_FACTORY.create_door_node(door_index, 1, false, rect.size.y, rect.size.x, color)
+	door.position = rect.position
+	parent.add_child(door)
+	return door
+
+func _create_key_node(parent: Node, key_index: int, key_spec: KeySpec, color_to_door: Dictionary, key_size: float) -> Area2D:
+	var door_node: StaticBody2D = color_to_door.get(key_spec.color, null)
+	if door_node == null:
+		return null
+	var key := Area2D.new()
+	key.name = "Key%d" % key_index
+	key.position = _cell_to_local(key_spec.cell)
+	key.set_script(KEY_SCRIPT)
+	key.door_reference = door_node
+	key.door_id = door_node.door_id
+	key.door_path = NodePath()
+	key.required_key_count = door_node.required_keys
+	var color: Color = COLOR_MAP.get(key_spec.color, Color.WHITE)
+	key.key_color = color
+	key.set_meta("group_color", color)
+
 	var rect := ColorRect.new()
-	rect.color = COLOR_MAP.get(key_spec.color, Color.WHITE)
+	rect.name = "KeyBody"
 	rect.size = Vector2(key_size, key_size)
 	rect.position = Vector2(-key_size * 0.5, -key_size * 0.5)
+	rect.color = color
+	key.add_child(rect)
+
 	var shape := CollisionShape2D.new()
+	shape.name = "KeyCollision"
 	var collider := RectangleShape2D.new()
 	collider.size = Vector2(key_size, key_size)
 	shape.shape = collider
 	shape.position = Vector2.ZERO
-	area.add_child(shape)
-	area.add_child(rect)
-	parent.add_child(area)
-	return area
+	key.add_child(shape)
+	parent.add_child(key)
+	return key
 
-func _draw_exit(parent: Node, exit_cell: Vector2i) -> ColorRect:
-	var rect := ColorRect.new()
-	rect.color = Color.html("#4caf50")
-	rect.size = Vector2(cell_size, cell_size)
-	rect.position = Vector2(exit_cell.x * cell_size, exit_cell.y * cell_size)
-	parent.add_child(rect)
-	return rect
+func _create_exit_node(parent: Node, exit_cell: Vector2i) -> Area2D:
+	var exit := Area2D.new()
+	exit.name = "Exit"
+	var rect := Rect2(exit_cell.x * float(cell_size), exit_cell.y * float(cell_size), float(cell_size), float(cell_size))
+	exit.position = rect.position
+
+	var body := ColorRect.new()
+	body.name = "ExitBody"
+	body.offset_right = rect.size.x
+	body.offset_bottom = rect.size.y
+	body.color = Color(0.4, 0.4, 0.4, 1.0)
+	exit.add_child(body)
+
+	var collision := CollisionShape2D.new()
+	collision.name = "ExitCollision"
+	var shape := RectangleShape2D.new()
+	shape.size = rect.size
+	collision.shape = shape
+	collision.position = rect.size * 0.5
+	exit.add_child(collision)
+
+	var label := Label.new()
+	label.name = "ExitLabel"
+	label.offset_left = 4
+	label.offset_top = 4
+	label.offset_right = rect.size.x - 4
+	label.offset_bottom = rect.size.y - 4
+	label.text = "EXIT"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	exit.add_child(label)
+
+	parent.add_child(exit)
+	return exit
+
+func _edge_rect(a: Vector2i, b: Vector2i, thickness: float) -> Rect2:
+	if a.x != b.x:
+		var left: int = min(a.x, b.x) + 1
+		var row: int = a.y
+		var center := Vector2(left * float(cell_size), (row + 0.5) * float(cell_size))
+		var size := Vector2(thickness, float(cell_size))
+		return Rect2(center - size * 0.5, size)
+	var top: int = min(a.y, b.y) + 1
+	var col: int = a.x
+	var center := Vector2((col + 0.5) * float(cell_size), top * float(cell_size))
+	var size := Vector2(float(cell_size), thickness)
+	return Rect2(center - size * 0.5, size)
+
+func _edge_line_points(a: Vector2i, b: Vector2i) -> Array:
+	if a.x != b.x:
+		var x_line: float = float(min(a.x, b.x) + 1) * float(cell_size)
+		var top: float = float(min(a.y, b.y)) * float(cell_size)
+		return [Vector2(x_line, top), Vector2(x_line, top + float(cell_size))]
+	var y_line: float = float(min(a.y, b.y) + 1) * float(cell_size)
+	var left: float = float(min(a.x, b.x)) * float(cell_size)
+	return [Vector2(left, y_line), Vector2(left + float(cell_size), y_line)]
+

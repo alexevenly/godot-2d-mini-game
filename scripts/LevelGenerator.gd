@@ -82,17 +82,22 @@ func generate_level(level_size := 1.0, generate_obstacles := true, generate_coin
 	clear_existing_objects()
 	match level_type:
 		GAME_STATE.LevelType.KEYS:
-				_generate_keys_level(main_scene, level, player_start_position)
+			_generate_keys_level(main_scene, level, player_start_position)
 		GAME_STATE.LevelType.MAZE:
 			maze_generator.generate_maze_level(false, main_scene, player_start_position)
+			_clear_non_maze_obstacles(main_scene)
 		GAME_STATE.LevelType.MAZE_COINS:
 			maze_generator.generate_maze_level(true, main_scene, player_start_position)
+			_clear_non_maze_obstacles(main_scene)
 		GAME_STATE.LevelType.MAZE_KEYS:
 			maze_generator.generate_maze_keys_level(main_scene, level, player_start_position)
+			_clear_non_maze_obstacles(main_scene)
 		GAME_STATE.LevelType.MAZE_COMPLEX:
 			complex_maze_generator.generate_complex_maze(false, false, main_scene, level, player_start_position)
+			_clear_non_maze_obstacles(main_scene)
 		GAME_STATE.LevelType.MAZE_COMPLEX_COINS:
 			complex_maze_generator.generate_complex_maze(true, false, main_scene, level, player_start_position)
+			_clear_non_maze_obstacles(main_scene)
 		_:
 			_generate_standard_level(level_size, generate_obstacles, generate_coins, min_exit_distance_ratio, use_full_map_coverage, main_scene, level, preserved_coin_count, player_start_position)
 	return 0
@@ -237,6 +242,29 @@ func _queue_free_nodes(nodes: Array) -> void:
 		if is_instance_valid(node):
 			node.queue_free()
 	nodes.clear()
+
+func _clear_non_maze_obstacles(main_scene) -> void:
+	if not obstacles.is_empty():
+		_queue_free_nodes(obstacles)
+	obstacles.clear()
+	_clear_named_children(self, ["Obstacle"])
+	if main_scene and main_scene is Node:
+		_clear_named_children(main_scene, ["Obstacle"])
+
+func _clear_named_children(root: Node, prefixes: Array[String]) -> void:
+	if root == null:
+		return
+	var pending: Array = []
+	for child in root.get_children():
+		var node_child: Node = child
+		var name: String = node_child.name
+		for prefix in prefixes:
+			if name.begins_with(prefix):
+				pending.append(node_child)
+				break
+	for node in pending:
+		if is_instance_valid(node):
+			node.queue_free()
 
 func _clear_spawner(spawner: Node, method_name: String) -> void:
 	if spawner and is_instance_valid(spawner) and spawner.has_method(method_name):
