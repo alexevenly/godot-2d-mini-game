@@ -247,16 +247,23 @@ func _clear_non_maze_obstacles(main_scene) -> void:
 	if not obstacles.is_empty():
 		_queue_free_nodes(obstacles)
 	obstacles.clear()
-	_clear_named_children(self, ["Obstacle"])
+	var prefixes: Array[String] = ["Obstacle", "ObstacleShadow", "Border"]
+	_clear_named_children(self, prefixes, [obstacle_spawner, coin_spawner, exit_spawner])
 	if main_scene and main_scene is Node:
-		_clear_named_children(main_scene, ["Obstacle"])
+		_clear_named_children(main_scene, prefixes)
 
-func _clear_named_children(root: Node, prefixes: Array[String]) -> void:
+func _clear_named_children(root: Node, prefixes: Array[String], skip_nodes: Array = []) -> void:
 	if root == null:
 		return
+	var skip_lookup: Dictionary = {}
+	for node in skip_nodes:
+		if node and is_instance_valid(node):
+			skip_lookup[node] = true
 	var pending: Array = []
 	for child in root.get_children():
 		var node_child: Node = child
+		if skip_lookup.has(node_child):
+			continue
 		var name: String = node_child.name
 		for prefix in prefixes:
 			if name.begins_with(prefix):
@@ -266,7 +273,7 @@ func _clear_named_children(root: Node, prefixes: Array[String]) -> void:
 		if is_instance_valid(node):
 			node.queue_free()
 
-func _clear_spawner(spawner: Node, method_name: String) -> void:
+func _clear_spawner(spawner, method_name: String) -> void:
 	if spawner and is_instance_valid(spawner) and spawner.has_method(method_name):
 		spawner.call(method_name)
 
