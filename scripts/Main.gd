@@ -20,6 +20,11 @@ const GAME_STATE := preload("res://scripts/GameState.gd")
 @onready var win_label: Label = $UI/WinLabel
 @onready var restart_button: Button = $UI/RestartButton
 @onready var menu_button: Button = $UI/MenuButton
+@onready var bonus_label: Label = $UI/BonusLabel
+@onready var pause_overlay: Control = $UI/PauseOverlay
+@onready var resume_button: Button = $UI/PauseOverlay/PausePanel/PauseVBox/ResumeButton
+@onready var pause_menu_button: Button = $UI/PauseOverlay/PausePanel/PauseVBox/PauseMenuButton
+@onready var pause_quit_button: Button = $UI/PauseOverlay/PausePanel/PauseVBox/PauseQuitButton
 @onready var key_container: Control = $UI/KeyContainer
 @onready var key_status_container: Control = $UI/KeyContainer/KeyStatus
 @onready var door_container: Control = $UI/DoorContainer
@@ -42,6 +47,9 @@ var exit: Area2D = null
 var prevent_game_over: bool = false
 var level_start_time: float = 0.0
 var level_initializing: bool = false
+var is_paused: bool = false
+@export var coin_time_bonus: float = 1.5
+@export var key_time_bonus: float = 2.0
 
 var ui_controller: UI_CONTROLLER = null
 var level_controller: LEVEL_CONTROLLER = null
@@ -64,7 +72,12 @@ func _ready() -> void:
 		door_container,
 		door_status_container,
 		speed_label,
-		path_indicator_label
+		path_indicator_label,
+		pause_overlay,
+		resume_button,
+		pause_menu_button,
+		pause_quit_button,
+		bonus_label
 	)
 	level_controller = LEVEL_CONTROLLER.new()
 	level_controller.setup(self, ui_controller)
@@ -76,6 +89,10 @@ func _ready() -> void:
 	timer.timeout.connect(_on_timer_timeout)
 	restart_button.pressed.connect(_on_restart_pressed)
 	menu_button.pressed.connect(_on_menu_pressed)
+	resume_button.pressed.connect(_on_resume_pressed)
+	pause_menu_button.pressed.connect(_on_menu_pressed)
+	pause_quit_button.pressed.connect(_on_quit_pressed)
+	_load_gameplay_config()
 	statistics_logger.init_logging()
 	level_controller.generate_new_level()
 	ui_controller.update_timer_display(game_time)
@@ -85,7 +102,9 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
-		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+		_toggle_pause_menu()
+	if is_paused:
+		return
 	if not game_state.is_game_active():
 		return
 	if level_initializing:
@@ -126,3 +145,37 @@ func _on_restart_pressed() -> void:
 func _on_menu_pressed() -> void:
 	prevent_game_over = false
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+
+func _load_gameplay_config() -> void:
+	var cfg := ConfigFile.new()
+	var err := cfg.load("res://config/game.cfg")
+	if err != OK:
+		return
+	coin_time_bonus = float(cfg.get_value("gameplay", "coin_time_bonus", coin_time_bonus))
+	key_time_bonus = float(cfg.get_value("gameplay", "key_time_bonus", key_time_bonus))
+
+func _toggle_pause_menu() -> void:
+	if not game_state.is_game_active():
+		return
+	if is_paused:
+		_resume_game()
+	else:
+		_pause_game()
+
+func _pause_game() -> void:
+	is_paused = true
+	if player and is_instance_valid(player):
+		player.set_physics_process(false)
+	ui_controller.show_pause_menu()
+
+func _resume_game() -> void:
+	is_paused = false
+	if player and is_instance_valid(player) and game_state.is_game_active():
+		player.set_physics_process(true)
+	ui_controller.hide_pause_menu()
+
+func _on_resume_pressed() -> void:
+	_resume_game()
+
+func _on_quit_pressed() -> void:
+	get_tree().quit()

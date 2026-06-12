@@ -24,9 +24,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -200.0
-offset_top = -150.0
+offset_top = -210.0
 offset_right = 200.0
-offset_bottom = 150.0
+offset_bottom = 210.0
 
 [node name="Title" type="Label" parent="VBoxContainer"]
 layout_mode = 2
@@ -34,9 +34,15 @@ text = "Mini 2D Game"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="MenuHint" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Pick a mode, collect bonuses, find the exit, and press Esc to pause."
+horizontal_alignment = 1
+autowrap_mode = 3
+
 [node name="PracticeButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Practice"
+text = "Start Practice"
 
 [node name="ChallengeButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2

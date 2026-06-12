@@ -11,14 +11,14 @@ Mini 2D Game is a top-down arena crawler built with Godot 4. Collect coins, mana
 
 1. Open the project in the Godot editor (`mini_2d_game/project.godot`).
 2. Run the project from the editor or export it for your target platform.
-3. Use the main menu to choose a difficulty and level type, then press **Start Game**.
+3. Use the main menu to choose a difficulty and level type, then press **Start Practice** or **Challenge Run**.
 
 ## Controls
 
 - `W`, `A`, `S`, `D` or arrow keys  move the cube
-- `Esc`  return to the main menu
+- `Esc` – pause or resume the active level
 
-Collecting a coin grants a temporary speed boost that now decays smoothly back to the base speed. While boosted, the cube leaves a ghost trail whose length reflects the remaining boost strength.
+Collecting a coin grants a temporary speed boost and a small time bonus that now decays smoothly back to the base speed. Keys also add emergency time so locked routes reward exploration. While boosted, the cube leaves a ghost trail whose length reflects the remaining boost strength.
 
 ## Level Types
 
@@ -40,6 +40,14 @@ When you restart a failed level, the same template is reused. Advancing to the n
 
 ## Gameplay Systems
 
+### Pause & Level Flow
+
+The run starts from the main menu and level completion presents a **Continue** action before generating the next stage. Pressing `Esc` during active gameplay opens the pause overlay, where you can resume, abandon the current run back to the main menu, or quit the game entirely.
+
+### Time Bonus Pickups
+
+Coins now add a configurable time bonus in addition to speed boosts, and keys add a larger rescue bonus for routes with locked doors. These bonuses are shown in the HUD with a short floating message and are configured in `config/game.cfg` via `coin_time_bonus` and `key_time_bonus`.
+
 ### Challenge Run Mutators
 
 The **Challenge Run** button starts a structured seven-level campaign instead of a random playlist. Each stage is named in the level-progress HUD, and later stages can override the menu's Limited Field of View setting or enable the tug-of-war movement drift that gently pushes the player sideways. This keeps practice mode predictable while giving the challenge route a stronger escalation arc.
@@ -50,11 +58,12 @@ The boost granted by coins is now configurable and fades out gradually instead o
 
 Edit `config/game.cfg` to tweak these values:
 
-- `speed_boost_multiplier`  bonus applied per coin (default `1.5`).
+- `speed_boost_multiplier`  bonus applied per coin (default `1.2`).
 - `speed_boost_decay_time`  seconds for a single coin's boost to fade.
 - `speed_boost_max_stacks`  how many boosts can stack before clamping.
 - `ghost_base_lifetime` / `ghost_extra_lifetime`  minimum and extra trail lifetime.
-- `ghost_spawn_interval` / `ghost_spawn_interval_min`  spawn cadence range.
+- `ghost_spawn_interval` / `ghost_spawn_interval_min` – spawn cadence range.
+- `coin_time_bonus` / `key_time_bonus` – seconds returned to the timer when collecting coins or keys.
 
 ### Coin Placement Safety
 

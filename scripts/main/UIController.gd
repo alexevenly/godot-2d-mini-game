@@ -18,6 +18,12 @@ var door_container: Control = null
 var door_status_container: Control = null
 var _key_ui_manager
 var path_indicator_label: Label = null
+var pause_overlay: Control = null
+var resume_button: Button = null
+var pause_menu_button: Button = null
+var pause_quit_button: Button = null
+var bonus_label: Label = null
+var bonus_tween: Tween = null
 
 var key_checkbox_nodes: Array[Button]:
 	get:
@@ -37,7 +43,12 @@ func setup(
 	door_container_ref: Control,
 	door_status_container_ref: Control,
 	speed_label_ref: Label = null,
-	path_indicator_ref: Label = null
+	path_indicator_ref: Label = null,
+	pause_overlay_ref: Control = null,
+	resume_button_ref: Button = null,
+	pause_menu_button_ref: Button = null,
+	pause_quit_button_ref: Button = null,
+	bonus_label_ref: Label = null
 ) -> void:
 	main = main_ref
 	timer_label = timer_label_ref
@@ -53,6 +64,11 @@ func setup(
 	door_status_container = door_status_container_ref
 	speed_label = speed_label_ref
 	path_indicator_label = path_indicator_ref
+	pause_overlay = pause_overlay_ref
+	resume_button = resume_button_ref
+	pause_menu_button = pause_menu_button_ref
+	pause_quit_button = pause_quit_button_ref
+	bonus_label = bonus_label_ref
 	if _key_ui_manager == null:
 		_key_ui_manager = KEY_UI_MANAGER.new()
 	_key_ui_manager.setup_containers(key_container, key_status_container, door_container, door_status_container)
@@ -161,3 +177,28 @@ func update_path_indicator(is_multi_path: bool) -> void:
 func hide_path_indicator() -> void:
 	if path_indicator_label:
 		path_indicator_label.visible = false
+
+func show_pause_menu() -> void:
+	if pause_overlay:
+		pause_overlay.visible = true
+	if resume_button:
+		resume_button.grab_focus()
+
+func hide_pause_menu() -> void:
+	if pause_overlay:
+		pause_overlay.visible = false
+
+func show_bonus_message(message: String) -> void:
+	if bonus_label == null:
+		return
+	if bonus_tween and bonus_tween.is_valid():
+		bonus_tween.kill()
+	bonus_label.text = message
+	bonus_label.visible = true
+	bonus_label.modulate = Color(1.0, 0.92, 0.25, 1.0)
+	bonus_tween = bonus_label.create_tween()
+	if bonus_tween == null:
+		return
+	bonus_tween.tween_interval(0.7)
+	bonus_tween.tween_property(bonus_label, "modulate:a", 0.0, 0.6)
+	bonus_tween.tween_callback(Callable(bonus_label, "hide"))
