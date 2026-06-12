@@ -75,8 +75,8 @@ func test_challenge_sequence_cycles_modes() -> void:
 	var state := _make_state()
 	state.set_level_type(GameState.LevelType.CHALLENGE)
 	assert_eq(state.selected_level_type, GameState.LevelType.CHALLENGE)
-	assert_eq(state.challenge_sequence.size(), 7)
-	var allowed := [GameState.LevelType.OBSTACLES_COINS, GameState.LevelType.KEYS, GameState.LevelType.MAZE, GameState.LevelType.MAZE_COINS, GameState.LevelType.MAZE_KEYS, GameState.LevelType.MAZE_COMPLEX, GameState.LevelType.MAZE_COMPLEX_COINS]
+	assert_eq(state.challenge_sequence.size(), GameState.MAX_CAMPAIGN_LEVELS)
+	var allowed := GameState.get_playable_level_types()
 	for mode in state.challenge_sequence:
 		assert_true(allowed.has(mode))
 	var first_mode := state.get_current_level_type()
@@ -85,3 +85,28 @@ func test_challenge_sequence_cycles_modes() -> void:
 	assert_true(allowed.has(first_mode))
 	assert_true(allowed.has(next_mode))
 	state.free()
+
+func test_challenge_sequence_has_stage_names_and_mutators() -> void:
+	var state := _make_state()
+	state.set_level_type(GameState.LevelType.CHALLENGE)
+	assert_eq(state.challenge_lfov_flags.size(), GameState.MAX_CAMPAIGN_LEVELS)
+	assert_eq(state.challenge_tug_flags.size(), GameState.MAX_CAMPAIGN_LEVELS)
+	assert_eq(state.challenge_stage_names.size(), GameState.MAX_CAMPAIGN_LEVELS)
+	assert_eq(state.get_current_challenge_stage_name(), "Warmup Cache")
+	assert_false(state.get_current_challenge_lfov())
+	assert_false(state.get_current_challenge_tug_enabled())
+	assert_eq(state.get_level_progress_text(), "Level: 1/7 - Warmup Cache")
+	state.current_level = 5
+	state._refresh_level_type(true)
+	assert_eq(state.get_current_level_type(), GameState.LevelType.MAZE_KEYS)
+	assert_eq(state.get_current_challenge_stage_name(), "Locked Passage")
+	assert_true(state.get_current_challenge_lfov())
+	assert_true(state.get_current_challenge_tug_enabled())
+	assert_true(state.tug_of_war_enabled)
+	state.set_level_type(GameState.LevelType.MAZE)
+	assert_false(state.tug_of_war_enabled)
+	state.free()
+
+func test_level_type_labels_cover_complex_modes() -> void:
+	assert_eq(GameState.get_level_type_label(GameState.LevelType.MAZE_COMPLEX), "Maze complex")
+	assert_eq(GameState.get_level_type_label(GameState.LevelType.MAZE_COMPLEX_COINS), "Maze complex + Coins")

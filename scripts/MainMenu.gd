@@ -13,17 +13,15 @@ const GameState = preload("res://scripts/GameState.gd")
 
 var difficulty_names = ["child", "regular", "hard", "challenge"]
 var current_difficulty_index = 1 # Start with "regular"
-var level_type_options = [
-	{"name": "Obstacles + Coins", "type": GameState.LevelType.OBSTACLES_COINS},
-	{"name": "Keys", "type": GameState.LevelType.KEYS},
-	{"name": "Maze", "type": GameState.LevelType.MAZE},
-	{"name": "Maze + Coins", "type": GameState.LevelType.MAZE_COINS},
-	{"name": "Maze + Keys", "type": GameState.LevelType.MAZE_KEYS},
-	{"name": "Maze complex", "type": GameState.LevelType.MAZE_COMPLEX},
-	{"name": "Maze complex + Coins", "type": GameState.LevelType.MAZE_COMPLEX_COINS},
-	{"name": "Random", "type": GameState.LevelType.RANDOM},
-]
+var level_type_options = _build_level_type_options()
 var current_level_type_index = 0
+
+func _build_level_type_options() -> Array:
+	var options: Array = []
+	for level_type in GameState.get_playable_level_types():
+		options.append({"name": GameState.get_level_type_label(level_type), "type": level_type})
+	options.append({"name": GameState.get_level_type_label(GameState.LevelType.RANDOM), "type": GameState.LevelType.RANDOM})
+	return options
 
 func _ready():
 	# Connect signals

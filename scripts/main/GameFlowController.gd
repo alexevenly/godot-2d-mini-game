@@ -60,9 +60,9 @@ func trigger_level_win() -> void:
 		main.timer.timeout.disconnect(main._on_timer_timeout)
 	if statistics_logger:
 		statistics_logger.log_level_statistics()
-	if main.game_state.current_level >= 7:
+	if main.game_state.current_level >= GAME_STATE.MAX_CAMPAIGN_LEVELS:
 		ui_controller.set_restart_button_text("Start all over again?")
-		LOGGER.log_game_mode("All 7 levels completed; awaiting restart")
+		LOGGER.log_game_mode("All %d levels completed; awaiting restart" % GAME_STATE.MAX_CAMPAIGN_LEVELS)
 		main.prevent_game_over = true
 		return
 	ui_controller.set_restart_button_text("Continue")
@@ -118,7 +118,7 @@ func handle_restart_pressed() -> void:
 			main.player.reset_speed_boost()
 	level_controller.clear_level_objects()
 	await main.get_tree().process_frame
-	if main.game_state.current_level > 7:
+	if main.game_state.current_level > GAME_STATE.MAX_CAMPAIGN_LEVELS:
 		main.game_state.reset_to_start()
 		LOGGER.log_game_mode("Level exceeded cap during restart; reset to %d" % main.game_state.current_level)
 	if not main.prevent_game_over:

@@ -4,7 +4,7 @@ This folder contains all gameplay scripts for the 2D mini game. The modules belo
 
 ## Core Gameplay Orchestration
 - **`Main.gd`** – Root scene controller that wires together the player, UI labels, timers, and spawners. It instantiates the dedicated controllers under `scripts/main/` to manage UI, level lifecycle, game flow, and statistics logging. The scene triggers `generate_new_level()` on start or after wins, connects run-time signals (coin pickups, exit activation, restart/menu buttons), and keeps authoritative counters for coins, keys, and timers while coordinating with `GameState` and `TimerManager`.
-- **`GameState.gd`** – Authoritative store for game progression. It tracks the current level, chosen level type, state (playing / won / lost), and tuning flags (obstacle & coin toggles, exit distance, coverage). `Main.gd` reads these values when preparing each level and updates them when the player wins or loses.
+- **`GameState.gd`** – Authoritative store for game progression. It tracks the current level, chosen level type, state (playing / won / lost), and tuning flags (obstacle & coin toggles, exit distance, coverage). It also owns shared level-type labels plus the Challenge Run sequence/mutators so menus, logging, and HUD text stay consistent. `Main.gd` reads these values when preparing each level and updates them when the player wins or loses.
 - **`TimerManager.gd`** – Central difficulty balancer. After every generation `Main.gd` calls `calculate_level_time()` to compute the allowed time based on difficulty presets, distance to coins and exit, recent player surplus, and level-type heuristics. It also records time left at level completion through `register_level_result()` for future adjustments.
 
 ### Main Scene Controllers (`scripts/main/`)
@@ -36,7 +36,7 @@ This folder contains all gameplay scripts for the 2D mini game. The modules belo
 - **`SmoothCamera.gd`** – Camera2D that follows the player with velocity-based look-ahead and lerped movement to keep the action centered.
 
 ## UI & Entry Points
-- **`MainMenu.gd`** – Front-end menu that sets the difficulty on `TimerManager`, persists the preferred level type via `Engine` metadata, and transitions into the main scene.
+- **`MainMenu.gd`** – Front-end menu that builds practice-mode level choices from `GameState`, sets the difficulty on `TimerManager`, persists the preferred level type via `Engine` metadata, and transitions into the main scene or Challenge Run.
 - **HUD nodes managed by `UIController.gd`** – Labels, buttons, and key indicators updated through the controller to reflect timer countdowns, coin totals, key status, level progress, and win/lose states.
 
 ## State, Timing, and Metrics Flow

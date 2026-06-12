@@ -34,10 +34,15 @@ Select the desired level template in the main menu. Available options:
 | **Maze Complex** | Dense labyrinth that fills the arena with thin wall lines, wide corridors, and multiple branches leading toward a central exit. |
 | **Maze Complex + Coins** | Complex maze variant with additional coin placement tuned for its wider passages and branch density. |
 | **Random** | Picks one of the above templates (including Maze + Keys and the complex variants) each time a new level is generated. |
+| **Challenge Run** | A curated 7-stage gauntlet launched from the main menu. It visits every playable archetype once, adds named stage goals to the HUD, and enables stage-specific Limited Field of View / tug-of-war mutators on later levels. |
 
-When you restart a failed level, the same template is reused. Advancing to the next level rerolls a template if **Random** is selected.
+When you restart a failed level, the same template is reused. Advancing to the next level rerolls a template if **Random** is selected. Challenge Run progresses through **Warmup Cache**, **Key Circuit**, **Lantern Maze**, **Coin Detour**, **Locked Passage**, **Open Labyrinth**, and **Final Vault** so the campaign steadily moves from familiar collection toward restricted-visibility maze pressure.
 
 ## Gameplay Systems
+
+### Challenge Run Mutators
+
+The **Challenge Run** button starts a structured seven-level campaign instead of a random playlist. Each stage is named in the level-progress HUD, and later stages can override the menu's Limited Field of View setting or enable the tug-of-war movement drift that gently pushes the player sideways. This keeps practice mode predictable while giving the challenge route a stronger escalation arc.
 
 ### Speed Boost & Ghost Trail
 
