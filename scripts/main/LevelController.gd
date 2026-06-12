@@ -93,6 +93,7 @@ func handle_coin_collected(body: Node, coin: Area2D) -> void:
 		if main.player and is_instance_valid(main.player):
 			if main.player.has_method("apply_speed_boost"):
 				main.player.apply_speed_boost()
+		_apply_time_bonus("coin_time_bonus", "Coin bonus")
 		coin.queue_free()
 		coins.erase(coin)
 	main.exit_active = main.collected_coins >= main.total_coins
@@ -107,8 +108,27 @@ func handle_key_collected(door_id: int) -> void:
 	if main.collected_keys_count < main.total_keys:
 		main.collected_keys_count += 1
 	main.collected_keys_count = min(main.collected_keys_count, main.total_keys)
+	_apply_time_bonus("key_time_bonus", "Key bonus")
 	ui_controller.mark_key_collected(door_id)
 	ui_controller.update_key_status_display(main.collected_keys_count)
+
+func _apply_time_bonus(property_name: String, label: String) -> void:
+	if main == null:
+		return
+	var current_time = main.get("game_time")
+	if current_time == null:
+		return
+	var bonus_value = main.get(property_name)
+	if bonus_value == null:
+		return
+	var bonus: float = maxf(float(bonus_value), 0.0)
+	if bonus <= 0.0:
+		return
+	main.set("game_time", float(current_time) + bonus)
+	if ui_controller:
+		ui_controller.update_timer_display(float(main.get("game_time")))
+		if ui_controller.has_method("show_bonus_message"):
+			ui_controller.show_bonus_message("%s +%.1fs" % [label, bonus])
 
 func handle_door_opened(door_id: int, door_color: Color) -> void:
 	if ui_controller:
