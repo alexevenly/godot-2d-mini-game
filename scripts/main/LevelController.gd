@@ -7,16 +7,6 @@ const GAME_STATE := preload("res://scripts/GameState.gd")
 const LEVEL_OBJECT_BINDER := preload("res://scripts/main/level/LevelObjectBinder.gd")
 const LEVEL_GENERATION_SERVICE := preload("res://scripts/main/level/LevelGenerationService.gd")
 
-const LEVEL_TYPE_LABELS := [
-	"Obstacles+Coins",
-	"Keys",
-	"Maze",
-	"Maze+Coins",
-	"Maze+Keys",
-	"Random",
-	"Challenge"
-]
-
 var main = null
 var ui_controller = null
 var game_flow_controller = null
@@ -41,7 +31,7 @@ func set_game_flow_controller(controller) -> void:
 
 func generate_new_level() -> void:
 	main.level_initializing = true
-	if main.game_state.current_level > 7:
+	if main.game_state.current_level > GAME_STATE.MAX_CAMPAIGN_LEVELS:
 		main.game_state.reset_to_start()
 		LOGGER.log_game_mode("Level exceeded cap, reset to level %d" % main.game_state.current_level)
 	var level_type: int = main.game_state.get_current_level_type()
@@ -158,5 +148,4 @@ func get_active_coins() -> Array[Area2D]:
 	return coins
 
 func _log_level_type(level_type: int) -> void:
-	var label: String = LEVEL_TYPE_LABELS[level_type] if level_type < LEVEL_TYPE_LABELS.size() else str(level_type)
-	LOGGER.log_game_mode("Preparing level type: %s" % label)
+	LOGGER.log_game_mode("Preparing level type: %s" % GAME_STATE.get_level_type_label(level_type))

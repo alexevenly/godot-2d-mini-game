@@ -2,17 +2,28 @@ class_name GameState
 extends Node
 
 const GameLogger = preload("res://scripts/Logger.gd")
-
+const MAX_CAMPAIGN_LEVELS := 7
+const BASE_LEVEL_SIZE := 0.85
+const MAX_LEVEL_SIZE := 2.0
 # Game state management
 enum GameStateType {PLAYING, WON, LOST}
 enum LevelType {OBSTACLES_COINS, KEYS, MAZE, MAZE_COINS, MAZE_KEYS, MAZE_COMPLEX, MAZE_COMPLEX_COINS, RANDOM, CHALLENGE}
+const CHALLENGE_STAGE_CONFIGS := [
+	{"name": "Warmup Cache", "type": LevelType.OBSTACLES_COINS, "lfov": false, "tug": false},
+	{"name": "Key Circuit", "type": LevelType.KEYS, "lfov": false, "tug": false},
+	{"name": "Lantern Maze", "type": LevelType.MAZE, "lfov": true, "tug": false},
+	{"name": "Coin Detour", "type": LevelType.MAZE_COINS, "lfov": true, "tug": false},
+	{"name": "Locked Passage", "type": LevelType.MAZE_KEYS, "lfov": true, "tug": true},
+	{"name": "Open Labyrinth", "type": LevelType.MAZE_COMPLEX, "lfov": false, "tug": true},
+	{"name": "Final Vault", "type": LevelType.MAZE_COMPLEX_COINS, "lfov": true, "tug": true},
+]
 var current_state = GameStateType.PLAYING
 
 # Progressive level scaling
 var current_level = 1
 var victories = 0
-var current_level_size = 0.85 # Start at 85% of full size
-var max_level_size = 2.0 # 200% of base size
+var current_level_size = BASE_LEVEL_SIZE # Start at 85% of full size
+var max_level_size = MAX_LEVEL_SIZE # 200% of base size
 var level_size_increment = 0.0
 
 # Game configuration
@@ -31,10 +42,12 @@ var current_level_type: LevelType = LevelType.OBSTACLES_COINS
 var challenge_sequence: Array = []
 var challenge_stage_index: int = 0
 var challenge_lfov_flags: Array = []
+var challenge_tug_flags: Array = []
+var challenge_stage_names: Array = []
 
 func _ready():
 	# Calculate level size increment
-	level_size_increment = (max_level_size - current_level_size) / 7.0
+	level_size_increment = (max_level_size - current_level_size) / float(MAX_CAMPAIGN_LEVELS)
 	if Engine.has_meta("level_type_selection"):
 		var stored_type = int(Engine.get_meta("level_type_selection"))
 		if stored_type >= 0 and stored_type <= LevelType.CHALLENGE:
@@ -45,13 +58,13 @@ func reset_to_start():
 	current_level = 1
 	victories = 0
 	current_state = GameStateType.PLAYING
-	current_level_size = 0.85
+	current_level_size = BASE_LEVEL_SIZE
 	challenge_stage_index = 0
 	_refresh_level_type(true)
 
 func advance_level():
 	# Check if we've completed all levels BEFORE incrementing
-	if current_level >= 7:
+	if current_level >= MAX_CAMPAIGN_LEVELS:
 		reset_to_start()
 		return true # Indicates we've completed all levels
 
@@ -59,10 +72,10 @@ func advance_level():
 	victories += 1
 
 	# Update level size
-	current_level_size = 0.85 + (victories * level_size_increment)
+	current_level_size = BASE_LEVEL_SIZE + (victories * level_size_increment)
 	current_level_size = min(current_level_size, max_level_size)
 	if selected_level_type == LevelType.CHALLENGE:
-		challenge_stage_index = clamp(current_level - 1, 0, 6)
+		challenge_stage_index = clamp(current_level - 1, 0, MAX_CAMPAIGN_LEVELS - 1)
 	_refresh_level_type(true)
 
 	return false
@@ -70,17 +83,22 @@ func advance_level():
 func drop_progress_on_loss():
 	current_level = 1
 	victories = 0
-	current_level_size = 0.85
+	current_level_size = BASE_LEVEL_SIZE
 	challenge_stage_index = 0
 	_refresh_level_type(true)
 
 func get_level_progress_text() -> String:
-	return "Level: " + str(current_level) + "/7"
+	var base_text := "Level: " + str(current_level) + "/" + str(MAX_CAMPAIGN_LEVELS)
+	if selected_level_type == LevelType.CHALLENGE:
+		var stage_name := get_current_challenge_stage_name()
+		if stage_name != "":
+			base_text += " - " + stage_name
+	return base_text
 
 func get_next_level_size() -> float:
-	if current_level >= 7:
-		return 0.85 # Reset to start
-	return 0.85 + (victories * level_size_increment)
+	if current_level >= MAX_CAMPAIGN_LEVELS:
+		return BASE_LEVEL_SIZE # Reset to start
+	return BASE_LEVEL_SIZE + (victories * level_size_increment)
 
 func is_game_active() -> bool:
 	return current_state == GameStateType.PLAYING
@@ -97,7 +115,7 @@ func set_level_type(new_type: LevelType):
 		_generate_challenge_sequence()
 		challenge_stage_index = 0
 	_refresh_level_type(true)
-	GameLogger.log_game_mode("Level type selection updated to %s" % _get_level_type_label(selected_level_type))
+	GameLogger.log_game_mode("Level type selection updated to %s" % get_level_type_label(selected_level_type))
 
 func get_current_level_type() -> LevelType:
 	return current_level_type
@@ -110,13 +128,13 @@ func set_tug_of_war_enabled(enabled: bool) -> void:
 func update_tug_of_war_force(delta: float) -> void:
 	if not tug_of_war_enabled:
 		return
-	
+
 	# Simple tug of war: gradually shift force based on player position
 	# This is a simplified implementation - in a real game you'd have more complex logic
 	var random_factor = randf_range(-0.1, 0.1)
 	tug_of_war_force += random_factor * delta
 	tug_of_war_force = clamp(tug_of_war_force, -1.0, 1.0)
-	
+
 	# Gradually return to center
 	tug_of_war_force *= 0.95
 
@@ -135,25 +153,35 @@ func _refresh_level_type(force_new: bool = false):
 			current_level_type = LevelType.OBSTACLES_COINS
 		else:
 			current_level_type = challenge_sequence[challenge_stage_index]
-		# Enforce LFOV per challenge stage regardless of main menu setting
-		if challenge_lfov_flags.size() == challenge_sequence.size():
-			var lfov: bool = bool(challenge_lfov_flags[challenge_stage_index])
-			Engine.set_meta("limited_field_of_view", lfov)
+		_apply_challenge_stage_mutators()
 	elif selected_level_type == LevelType.RANDOM:
+		set_tug_of_war_enabled(false)
 		if force_new or current_level_type == LevelType.RANDOM:
 			current_level_type = _pick_random_level_type()
 	else:
+		set_tug_of_war_enabled(false)
 		current_level_type = selected_level_type
 	if previous_type != current_level_type:
-		GameLogger.log_game_mode("Current level type set to %s" % _get_level_type_label(current_level_type))
+		GameLogger.log_game_mode("Current level type set to %s" % get_level_type_label(current_level_type))
 
 func _pick_random_level_type() -> LevelType:
-	var options: Array = [LevelType.OBSTACLES_COINS, LevelType.KEYS, LevelType.MAZE, LevelType.MAZE_COINS, LevelType.MAZE_KEYS, LevelType.MAZE_COMPLEX, LevelType.MAZE_COMPLEX_COINS]
+	var options: Array = get_playable_level_types()
 	if options.is_empty():
 		return LevelType.OBSTACLES_COINS
 	return options[randi() % options.size()]
 
-func _get_level_type_label(level_type: LevelType) -> String:
+static func get_playable_level_types() -> Array:
+	return [
+		LevelType.OBSTACLES_COINS,
+		LevelType.KEYS,
+		LevelType.MAZE,
+		LevelType.MAZE_COINS,
+		LevelType.MAZE_KEYS,
+		LevelType.MAZE_COMPLEX,
+		LevelType.MAZE_COMPLEX_COINS,
+	]
+
+static func get_level_type_label(level_type: int) -> String:
 	match level_type:
 		LevelType.OBSTACLES_COINS:
 			return "Obstacles + Coins"
@@ -176,37 +204,30 @@ func _get_level_type_label(level_type: LevelType) -> String:
 	return str(level_type)
 
 func _generate_challenge_sequence() -> void:
-	# Define 7 stages and whether each should use LFOV (true) during challenge
-	var types: Array = [
-		LevelType.KEYS, # no LFOV
-		LevelType.MAZE, # LFOV
-		LevelType.MAZE_COINS, # LFOV
-		LevelType.MAZE_KEYS, # LFOV
-		LevelType.MAZE_COMPLEX, # no LFOV
-		LevelType.MAZE_COMPLEX, # LFOV enforced
-		LevelType.MAZE_COMPLEX_COINS # no LFOV
-	]
-	var lfov: Array = [
-		false,
-		true,
-		true,
-		true,
-		false,
-		true,
-		false
-	]
-	# Shuffle indices to keep pairing between type and LFOV
-	var indices: Array = []
-	for i in range(types.size()):
-		indices.append(i)
-	indices.shuffle()
 	var seq: Array = []
 	var flags: Array = []
-	for i in indices:
-		seq.append(types[i])
-		flags.append(lfov[i])
+	var tug_flags: Array = []
+	var stage_names: Array = []
+	for stage in CHALLENGE_STAGE_CONFIGS:
+		seq.append(stage["type"])
+		flags.append(bool(stage["lfov"]))
+		tug_flags.append(bool(stage["tug"]))
+		stage_names.append(str(stage["name"]))
 	challenge_sequence = seq
 	challenge_lfov_flags = flags
+	challenge_tug_flags = tug_flags
+	challenge_stage_names = stage_names
+
+func _apply_challenge_stage_mutators() -> void:
+	var has_lfov_flag := challenge_lfov_flags.size() == challenge_sequence.size()
+	var has_tug_flag := challenge_tug_flags.size() == challenge_sequence.size()
+	if has_lfov_flag:
+		var lfov: bool = bool(challenge_lfov_flags[challenge_stage_index])
+		Engine.set_meta("limited_field_of_view", lfov)
+	if has_tug_flag:
+		set_tug_of_war_enabled(bool(challenge_tug_flags[challenge_stage_index]))
+	else:
+		set_tug_of_war_enabled(false)
 
 func get_current_challenge_lfov() -> bool:
 	if selected_level_type != LevelType.CHALLENGE:
@@ -215,3 +236,19 @@ func get_current_challenge_lfov() -> bool:
 		return Engine.has_meta("limited_field_of_view") and bool(Engine.get_meta("limited_field_of_view"))
 	var idx = clamp(current_level - 1, 0, challenge_lfov_flags.size() - 1)
 	return bool(challenge_lfov_flags[idx])
+
+func get_current_challenge_tug_enabled() -> bool:
+	if selected_level_type != LevelType.CHALLENGE:
+		return tug_of_war_enabled
+	if challenge_tug_flags.size() != challenge_sequence.size():
+		return false
+	var idx = clamp(current_level - 1, 0, challenge_tug_flags.size() - 1)
+	return bool(challenge_tug_flags[idx])
+
+func get_current_challenge_stage_name() -> String:
+	if selected_level_type != LevelType.CHALLENGE:
+		return ""
+	if challenge_stage_names.size() != challenge_sequence.size():
+		return ""
+	var idx = clamp(current_level - 1, 0, challenge_stage_names.size() - 1)
+	return str(challenge_stage_names[idx])

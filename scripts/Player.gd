@@ -89,7 +89,7 @@ func _physics_process(delta):
 
 	# Apply tug of war force if enabled
 	var tug_force = Vector2.ZERO
-	var game_state = get_node("/root/Main/GameState")
+	var game_state = get_node_or_null("/root/Main/GameState")
 	if game_state and game_state.has_method("get_tug_of_war_force"):
 		tug_force = game_state.get_tug_of_war_force()
 
